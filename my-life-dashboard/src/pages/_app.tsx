@@ -14,9 +14,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     photo: "https://avatars.githubusercontent.com/u/102186472?v=4",
   };
 
-  // Aqui você pode definir as opções da barra lateral
-  const options = ["Graficos", "Mensagens", "Configurações"];
-
   return (
     <div className="h-screen flex flex-col">
       {/* Aqui fica o cabeçalho */}
@@ -24,17 +21,17 @@ function MyApp({ Component, pageProps }: AppProps) {
         <div className="flex items-center">
           <Image
             src={user.photo}
-            width={35}
-            height={35}
-            style={{ objectFit: "contain", borderRadius: "12px" }}
+            width={50}
+            height={50}
+            style={{ objectFit: "contain", borderRadius: "20px" }}
             alt="thumbnail"
           />
-          <h1 className="ml-2">{user.name}</h1>
+          <h1 className="ml-4">Olá {user.name}, seja bem vindo!</h1>
         </div>
-        <div className="flex flex-row cursor-pointer">
+        <Link href="/" className="flex flex-row cursor-pointer">
           <RiLogoutBoxRLine className="mr-1" size={25} />
           <button>Logout</button>
-        </div>
+        </Link>
       </header>
 
       {/* Aqui fica o corpo da página */}
@@ -42,25 +39,25 @@ function MyApp({ Component, pageProps }: AppProps) {
         {/* Aqui fica a barra lateral */}
         <nav className="w-60 h-full bg-gradient-to-b from-blue-500 from-10% via-blue-600 via-30% to-blue-600 to-100% flex flex-col gap-7">
           <Link href="/resume">
-            <button className="p-4 hover:bg-blue-600 focus:outline-none text-white rounded-full w-full flex items-center mt-10 m-3 hover:shadow-sm">
+            <button className="p-4 hover:bg-blue-600 hover:shadow-sm focus:outline-none text-white rounded-full w-full flex items-center mt-10 m-3 transition-colors duration-300">
               <AiOutlineHome className="mr-3" size={25} />
               Página Principal
             </button>
           </Link>
           <Link href="/history">
-            <button className="p-4 hover:bg-blue-600 focus:outline-none text-white rounded-full w-full flex items-center m-3 hover:shadow-sm">
+            <button className="p-4 hover:bg-blue-600 focus:outline-none text-white rounded-full w-full flex items-center m-3 hover:shadow-sm transition-colors duration-300">
               <GiPayMoney className="mr-3" size={25} />
               Histórico de Gastos
             </button>
           </Link>
           <Link href="/diary">
-            <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm">
+            <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
               <SlNotebook className="mr-3" size={25} />
               Diário
             </button>
           </Link>
           <Link href="/config">
-            <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center m-3 hover:shadow-sm">
+            <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
               <AiOutlineSetting className="mr-3" size={25} />
               Configurações
             </button>
