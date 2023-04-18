@@ -5,7 +5,8 @@ export default function Resume() {
   const [today, setToday] = useState(2500);
   const [investments, setInvestments] = useState(20000);
 
-  const [creditCard, setCreditCard] = useState(2400);
+  const [creditCard, setCreditCard] = useState(1150);
+  const [creditCardAvg, setCreditCardAvg] = useState(1350);
   const [paycheck, setPaycheck] = useState(3500);
 
   const totalBalance = parseFloat(today) + parseFloat(investments);
@@ -30,12 +31,14 @@ export default function Resume() {
     parseFloat(condom) +
     parseFloat(cleaning) +
     parseFloat(internet) +
+    parseFloat(creditCard) +
     parseFloat(phone);
   const totalAverage =
     parseFloat(energyAvg) +
     parseFloat(waterAvg) +
     parseFloat(condomAvg) +
     parseFloat(cleaningAvg) +
+    parseFloat(creditCardAvg) +
     parseFloat(internetAvg) +
     parseFloat(phoneAvg);
 
@@ -55,15 +58,15 @@ export default function Resume() {
   }).format(totalAverage);
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <div className="flex flex-1 flex-row gap-4">
+    <div className="flex flex-1 flex-col gap-3">
+      <div className="flex flex-1 flex-row gap-3">
         {/* Primeiro Bloco */}
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-4 w-2/4">
-          <div className="font-bold text-white text-xl mb-2 text-center ">
+        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-3 w-2/4">
+          <div className="font-bold text-white text-lg mb-2 text-center ">
             Status Geral
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">
+            <div className="font-bold text-white text-base mb-2">
               Conta Corrente
             </div>
             <NumericFormat
@@ -72,14 +75,14 @@ export default function Resume() {
               prefix="R$ "
               allowNegative={false}
               value={today}
-              className="rounded-lg p-2 text-center w-36"
+              className="rounded-lg p-1 text-center w-36"
               onValueChange={(values) => {
                 setToday(parseFloat(values.floatValue));
               }}
             />
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">
+            <div className="font-bold text-white text-base mb-2">
               Investimentos / Cripto
             </div>
             <NumericFormat
@@ -95,7 +98,7 @@ export default function Resume() {
             />
           </div>
           <div className="flex flex-1 justify-evenly items-center">
-            <div className="font-bold text-white text-lg mb-2">
+            <div className="font-bold text-white text-base mb-2">
               Total Patrimônio Hoje
             </div>
             <div className="bg-white rounded-lg flex p-3 w-30  justify-center">
@@ -104,29 +107,35 @@ export default function Resume() {
           </div>
         </div>
         {/* Segundo Bloco */}
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-4 w-2/4">
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-xl mb-2 text-center">
+        <div className="bg-blue-600 rounded-lg p-4 flex flex-row gap-3 w-2/4">
+          <div className="flex flex-1 justify-center items-center flex-col">
+            <div className="font-bold text-white text-lg mb-2 text-center ">
               Data Hoje
             </div>
-            <input type="date" />
+            <input type="date" className="p-2 rounded-lg" />
           </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-xl mb-2 text-center">
+          <div className="flex flex-1 justify-center items-center flex-col">
+            <div className="font-bold text-white text-lg mb-2 text-center ">
               Data Final Mês
             </div>
-            <input type="date" />
+            <input type="date" className="p-2 rounded-lg" />
+          </div>
+          <div className="flex flex-1 justify-center items-center flex-col">
+            <div className="font-bold text-white text-lg mb-2 text-center ">
+              Dias Restantes
+            </div>
+            <input value={20} className="p-2 rounded-lg text-center w-20" />
           </div>
         </div>
       </div>
       {/* Terceiro Bloco */}
-      <div className="flex flex-1 flex-row gap-4">
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-4 w-2/4">
-          <div className="font-bold text-white text-xl mb-2 text-center">
+      <div className="flex flex-1 flex-row gap-3">
+        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-3 w-2/4">
+          <div className="font-bold text-white text-lg mb-2 text-center">
             Contas do Mês x Média Anual
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">
+            <div className="font-bold text-white text-base mb-2">
               Conta de Luz
             </div>
             <div>
@@ -155,7 +164,7 @@ export default function Resume() {
             </div>
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">
+            <div className="font-bold text-white text-base mb-2">
               Conta de Água
             </div>
             <div>
@@ -184,7 +193,9 @@ export default function Resume() {
             </div>
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">Condominio</div>
+            <div className="font-bold text-white text-base mb-2">
+              Condominio
+            </div>
             <div>
               <NumericFormat
                 thousandSeparator="."
@@ -211,7 +222,7 @@ export default function Resume() {
             </div>
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">Faxineira</div>
+            <div className="font-bold text-white text-base mb-2">Faxineira</div>
             <div>
               <NumericFormat
                 thousandSeparator="."
@@ -238,7 +249,7 @@ export default function Resume() {
             </div>
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">Internet</div>
+            <div className="font-bold text-white text-base mb-2">Internet</div>
             <div>
               <NumericFormat
                 thousandSeparator="."
@@ -265,7 +276,7 @@ export default function Resume() {
             </div>
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg mb-2">Telefone</div>
+            <div className="font-bold text-white text-base mb-2">Telefone</div>
             <div>
               <NumericFormat
                 thousandSeparator="."
@@ -292,7 +303,36 @@ export default function Resume() {
             </div>
           </div>
           <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-2xl text-center mb-2">
+            <div className="font-bold text-white text-base mb-2">
+              Cartão de Crédito
+            </div>
+            <div>
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={creditCard}
+                className="rounded-lg p-2 text-center w-24 mr-6"
+                onValueChange={(values) => {
+                  setCreditCard(parseFloat(values.floatValue));
+                }}
+              />
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={creditCardAvg}
+                className="rounded-lg p-2 text-center w-24"
+                onValueChange={(values) => {
+                  setCreditCardAvg(parseFloat(values.floatValue));
+                }}
+              />
+            </div>
+          </div>
+          <div className="flex flex-1 justify-between items-center">
+            <div className="font-bold text-white text-lg justify-center flex flex-1 mb-2">
               Total
             </div>
             <div className="flex gap-2 flex-row">
@@ -306,31 +346,15 @@ export default function Resume() {
           </div>
         </div>
         {/* Quarto Bloco */}
-        <div className="bg-gray-400  rounded-lg p-4 flex flex-col gap-4 w-2/4">
-          <div className="font-bold text-white text-lg mb-2">Em construção</div>
+        <div className="bg-gray-400  rounded-lg p-4 flex flex-col gap-3 w-2/4">
+          <div className="font-bold text-white text-base mb-2">
+            Em construção
+          </div>
         </div>
       </div>
-      <div className="bg-blue-800  rounded-lg p-4 flex flex-col gap-4 w-2/4">
+      <div className="bg-blue-800  rounded-lg p-4 flex flex-col gap-3 w-2/4">
         <div className="flex flex-1 justify-between items-center">
-          <div className="font-bold text-white text-lg mb-2">
-            Cartão de Crédito
-          </div>
-          <div>
-            <NumericFormat
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              allowNegative={false}
-              value={creditCard}
-              className="rounded-lg p-2 text-center w-24 mr-6"
-              onValueChange={(values) => {
-                setCreditCard(parseFloat(values.floatValue));
-              }}
-            />
-          </div>
-        </div>
-        <div className="flex flex-1 justify-between items-center">
-          <div className="font-bold text-white text-lg mb-2">
+          <div className="font-bold text-white text-base mb-2">
             Salário Liquido
           </div>
           <div>
