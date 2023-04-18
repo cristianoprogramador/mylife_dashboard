@@ -17,8 +17,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div className="h-screen flex flex-col">
       {/* Aqui fica o cabeçalho */}
-      <header className="h-16 bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between px-4 text-white rounded-br-2xl">
-        <div className="flex items-center">
+      <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
+        <div className="flex  items-center">
           <Image
             src={user.photo}
             width={50}
