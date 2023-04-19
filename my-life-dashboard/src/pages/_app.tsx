@@ -6,6 +6,7 @@ import { GiPayMoney } from "react-icons/gi";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { SlNotebook } from "react-icons/sl";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
+import { SiSimpleanalytics } from "react-icons/si";
 
 function MyApp({ Component, pageProps }: AppProps) {
   // Aqui você pode definir as informações de login do usuário, como a foto e o nome
@@ -50,6 +51,12 @@ function MyApp({ Component, pageProps }: AppProps) {
               Histórico de Gastos
             </button>
           </Link>
+          <Link href="/analysis">
+            <button className="p-4 hover:bg-blue-600 focus:outline-none text-white rounded-full w-full flex items-center m-3 hover:shadow-sm transition-colors duration-300">
+              <SiSimpleanalytics className="mr-3" size={25} />
+              Análise de Gastos
+            </button>
+          </Link>
           <Link href="/diary">
             <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
               <SlNotebook className="mr-3" size={25} />
@@ -65,7 +72,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </nav>
 
         {/* Aqui fica o conteúdo da página */}
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-4 flex justify-center">
           <Component {...pageProps} />
         </div>
       </main>
