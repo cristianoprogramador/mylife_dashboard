@@ -15,12 +15,12 @@ export function ForecastBalance({
   // Inicialize o totalPatrimony com a soma dos valores da conta corrente, investimentos e cripto
   // let totalPatrimony = currentAccount + investments;
 
-  console.log("MES VINDO", month);
-  console.log("Conta Corrente", currentAccount);
-  console.log("Salario Mensal", paycheck);
-  console.log("Média de Gastos", currentAccountAvg);
-  console.log("Total Investido", investments);
-  console.log("Média de Investmento", investmentsAvg);
+  // console.log("MES VINDO", month);
+  // console.log("Conta Corrente", currentAccount);
+  // console.log("Salario Mensal", paycheck);
+  // console.log("Média de Gastos", currentAccountAvg);
+  // console.log("Total Investido", investments);
+  // console.log("Média de Investmento", investmentsAvg);
 
   for (let i = 0; i < 8; i++) {
     const avgExpense = paycheck - currentAccountAvg;
