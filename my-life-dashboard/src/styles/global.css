@@ -19,11 +19,11 @@ a {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(237, 237, 237);
+  background-color: #208fff;
   border-radius: 40px;
 }
 

@@ -7,13 +7,17 @@ import { RiLogoutBoxRLine } from "react-icons/ri";
 import { SlNotebook } from "react-icons/sl";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
 import { SiSimpleanalytics } from "react-icons/si";
+import { AuthContext, AuthProvider } from "@/contexts/AuthContext";
+import { useContext } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   // Aqui você pode definir as informações de login do usuário, como a foto e o nome
-  const user = {
+  const userTest = {
     name: "Cristiano",
     photo: "https://avatars.githubusercontent.com/u/102186472?v=4",
   };
+  const { user } = useContext(AuthContext);
+  console.log(user);
 
   return (
     <div className="h-screen flex flex-col">
@@ -21,13 +25,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
         <div className="flex  items-center">
           <Image
-            src={user.photo}
+            src={userTest.photo}
             width={50}
             height={50}
             style={{ objectFit: "contain", borderRadius: "20px" }}
             alt="thumbnail"
           />
-          <h1 className="ml-4">Olá {user.name}, seja bem vindo!</h1>
+          <h1 className="ml-4">Olá {userTest.name}, seja bem vindo!</h1>
         </div>
         <Link href="/" className="flex flex-row cursor-pointer">
           <RiLogoutBoxRLine className="mr-1" size={25} />
@@ -72,9 +76,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         </nav>
 
         {/* Aqui fica o conteúdo da página */}
-        <div className="flex-1 p-4 flex justify-center">
-          <Component {...pageProps} />
-        </div>
+        <AuthProvider>
+          <div className="flex-1 p-4 flex justify-center">
+            <Component {...pageProps} />
+          </div>
+        </AuthProvider>
       </main>
     </div>
   );

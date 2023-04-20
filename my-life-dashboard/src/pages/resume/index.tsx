@@ -593,64 +593,7 @@ export default function Resume() {
             paycheck={paycheck}
           />
         </div>
-        {/* Bloco Bottom */}
       </div>
-      {/* <div className="bg-blue-800 rounded-lg p-4 flex flex-col gap-3  ">
-        <div className="flex flex-1 justify-center gap-20 items-center">
-          <div className="flex  justify-center items-center flex-col">
-            <div className="font-bold text-white text-base ">
-              Investimento no Mês
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={stocksInvestiment}
-                className="rounded-lg p-2 text-center w-20 mr-6"
-                onValueChange={(values) => {
-                  setStocksInvestiment(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex  justify-center items-center flex-col">
-            <div className="font-bold text-white text-base">
-              Média Anual de Investimento
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={stocksInvestimentAvg}
-                className="rounded-lg p-2 text-center w-20 mr-6"
-                onValueChange={(values) => {
-                  setStocksInvestimentAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-1 justify-center gap-10 items-center">
-          <div className="font-bold text-white text-base">Salário Liquido</div>
-          <div>
-            <NumericFormat
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              allowNegative={false}
-              value={paycheck}
-              className="rounded-lg p-2 text-center w-20 mr-6"
-              onValueChange={(values) => {
-                setPaycheck(parseFloat(values.floatValue));
-              }}
-            />
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }
