@@ -1,16 +1,23 @@
 import Head from "next/head";
 import { AiFillLock } from "react-icons/ai";
 import { useForm } from "react-hook-form";
-import { useContext } from "react";
+import { FormEvent, useContext } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
+import { GetServerSideProps } from "next";
+import { getSession, signIn } from "next-auth/react";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
-  const { signIn } = useContext(AuthContext);
+  // const { signIn } = useContext(AuthContext);
 
-  async function handleSignIn(data) {
-    await signIn(data);
-  }
+  // async function handleSignIn(data) {
+  //   await signIn(data);
+  // }
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    signIn("credentials");
+  };
 
   return (
     <div className="flex flex-1 justify-center align-middle">
@@ -29,7 +36,7 @@ export default function Home() {
             Faça login em sua conta
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSignIn)}>
+        <form className="mt-8 space-y-6" onSubmit={onSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -104,8 +111,36 @@ export default function Home() {
               Entrar
             </button>
           </div>
+          <div onClick={() => signIn("github")} className="cursor-pointer">
+            <img
+              className="mx-auto h-10 w-auto"
+              src="/github.svg"
+              alt="Workflow"
+            />
+          </div>
         </form>
       </div>
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+
+  console.log("CADE A SESSION", session);
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/resume",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};

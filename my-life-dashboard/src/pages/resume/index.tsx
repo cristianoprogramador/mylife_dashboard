@@ -2,6 +2,8 @@ import { ForecastBalance } from "@/components/ForecastBalance";
 import { useState, useEffect } from "react";
 import { NumericFormat } from "react-number-format";
 import { format, differenceInDays } from "date-fns";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 
 export default function Resume() {
   const [today, setToday] = useState(2500);
@@ -597,3 +599,24 @@ export default function Resume() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context);
+
+  console.log("CADE A SESSION", session);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};

@@ -5,11 +5,11 @@ import "@/styles/global.css";
 import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <div className="h-screen flex flex-col">
-      {/* <SessionProvider> */}
-      <AuthProvider>
+      <SessionProvider session={session}>
+        {/* <AuthProvider> */}
         <Header />
         <main className="flex flex-row flex-1">
           <SideBar />
@@ -17,8 +17,8 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Component {...pageProps} />
           </div>
         </main>
-      </AuthProvider>
-      {/* </SessionProvider> */}
+        {/* </AuthProvider> */}
+      </SessionProvider>
     </div>
   );
 }

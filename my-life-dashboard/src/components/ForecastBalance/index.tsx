@@ -39,7 +39,7 @@ export function ForecastBalance({
     investments += avgInvestment;
   }
 
-  console.log(tableData);
+  // console.log(tableData);
 
   return (
     <>
