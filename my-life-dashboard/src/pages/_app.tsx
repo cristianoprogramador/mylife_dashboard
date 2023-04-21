@@ -1,87 +1,24 @@
-import type { AppProps } from "next/app";
+import { Header } from "@/components/Header";
+import { SideBar } from "@/components/SideBar";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "@/styles/global.css";
-import Image from "next/image";
-import Link from "next/link";
-import { GiPayMoney } from "react-icons/gi";
-import { RiLogoutBoxRLine } from "react-icons/ri";
-import { SlNotebook } from "react-icons/sl";
-import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
-import { SiSimpleanalytics } from "react-icons/si";
-import { AuthContext, AuthProvider } from "@/contexts/AuthContext";
-import { useContext } from "react";
+import type { AppProps } from "next/app";
+import { SessionProvider } from "next-auth/react";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  // Aqui você pode definir as informações de login do usuário, como a foto e o nome
-  const userTest = {
-    name: "Cristiano",
-    photo: "https://avatars.githubusercontent.com/u/102186472?v=4",
-  };
-  const { user } = useContext(AuthContext);
-  console.log(user);
-
   return (
     <div className="h-screen flex flex-col">
-      {/* Aqui fica o cabeçalho */}
-      <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
-        <div className="flex  items-center">
-          <Image
-            src={userTest.photo}
-            width={50}
-            height={50}
-            style={{ objectFit: "contain", borderRadius: "20px" }}
-            alt="thumbnail"
-          />
-          <h1 className="ml-4">Olá {userTest.name}, seja bem vindo!</h1>
-        </div>
-        <Link href="/" className="flex flex-row cursor-pointer">
-          <RiLogoutBoxRLine className="mr-1" size={25} />
-          <button>Logout</button>
-        </Link>
-      </header>
-
-      {/* Aqui fica o corpo da página */}
-      <main className="flex flex-row flex-1">
-        {/* Aqui fica a barra lateral */}
-        <nav className="w-60 h-full bg-gradient-to-b from-blue-500 from-10% via-blue-600 via-30% to-blue-600 to-100% flex flex-col gap-7">
-          <Link href="/resume">
-            <button className="p-4 hover:bg-blue-600 hover:shadow-sm focus:outline-none text-white rounded-full w-full flex items-center mt-10 m-3 transition-colors duration-300">
-              <AiOutlineHome className="mr-3" size={25} />
-              Página Principal
-            </button>
-          </Link>
-          <Link href="/history">
-            <button className="p-4 hover:bg-blue-600 focus:outline-none text-white rounded-full w-full flex items-center m-3 hover:shadow-sm transition-colors duration-300">
-              <GiPayMoney className="mr-3" size={25} />
-              Histórico de Gastos
-            </button>
-          </Link>
-          <Link href="/analysis">
-            <button className="p-4 hover:bg-blue-600 focus:outline-none text-white rounded-full w-full flex items-center m-3 hover:shadow-sm transition-colors duration-300">
-              <SiSimpleanalytics className="mr-3" size={25} />
-              Análise de Gastos
-            </button>
-          </Link>
-          <Link href="/diary">
-            <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
-              <SlNotebook className="mr-3" size={25} />
-              Diário
-            </button>
-          </Link>
-          <Link href="/config">
-            <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
-              <AiOutlineSetting className="mr-3" size={25} />
-              Configurações
-            </button>
-          </Link>
-        </nav>
-
-        {/* Aqui fica o conteúdo da página */}
-        <AuthProvider>
+      {/* <SessionProvider> */}
+      <AuthProvider>
+        <Header />
+        <main className="flex flex-row flex-1">
+          <SideBar />
           <div className="flex-1 p-4 flex justify-center">
             <Component {...pageProps} />
           </div>
-        </AuthProvider>
-      </main>
+        </main>
+      </AuthProvider>
+      {/* </SessionProvider> */}
     </div>
   );
 }

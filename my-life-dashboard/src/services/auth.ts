@@ -14,9 +14,9 @@ export async function signInRequest(data: SignInRequestData) {
   return {
     token: uuid(),
     user: {
-      name: "Diego Fernandes",
-      email: "diego@rocketseat.com.br",
-      avatar_url: "https://github.com/diego3g.png",
+      name: "Cristiano",
+      email: "cristiano@email.com",
+      avatar_url: "https://github.com/cristianoprogramador.png",
     },
   };
 }
@@ -26,9 +26,9 @@ export async function recoverUserInformation() {
 
   return {
     user: {
-      name: "Diego Fernandes",
-      email: "diego@rocketseat.com.br",
-      avatar_url: "https://github.com/diego3g.png",
+      name: "Cristiano",
+      email: "cristiano@email.com",
+      avatar_url: "https://github.com/cristianoprogramador.png",
     },
   };
 }
