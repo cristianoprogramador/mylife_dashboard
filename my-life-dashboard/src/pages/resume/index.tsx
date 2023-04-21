@@ -603,7 +603,7 @@ export default function Resume() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  console.log("CADE A SESSION", session);
+  // console.log("CADE A SESSION", session);
 
   if (!session) {
     return {

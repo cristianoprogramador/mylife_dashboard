@@ -19,16 +19,20 @@ export function Header() {
   return (
     <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
       <div className="flex  items-center">
-        {session?.user?.image && (
-          <Image
-            src={session?.user?.image}
-            width={50}
-            height={50}
-            style={{ objectFit: "contain", borderRadius: "20px" }}
-            alt="thumbnail"
-          />
+        {session?.user?.image ? (
+          <>
+            <Image
+              src={session?.user?.image}
+              width={50}
+              height={50}
+              style={{ objectFit: "contain", borderRadius: "20px" }}
+              alt="thumbnail"
+            />
+            <h1 className="ml-4">Olá {session?.user?.name}, seja bem vindo!</h1>
+          </>
+        ) : (
+          <h1 className="ml-4">Olá, entre com sua conta!</h1>
         )}
-        <h1 className="ml-4">Olá {session?.user?.name}, seja bem vindo!</h1>
       </div>
       <Link href="/" className="flex flex-row cursor-pointer">
         <RiLogoutBoxRLine className="mr-1" size={25} />

@@ -111,11 +111,18 @@ export default function Home() {
               Entrar
             </button>
           </div>
-          <div onClick={() => signIn("github")} className="cursor-pointer">
+          <div className="flex flex-row">
             <img
-              className="mx-auto h-10 w-auto"
+              className="mx-auto h-10 w-auto cursor-pointer"
               src="/github.svg"
               alt="Workflow"
+              onClick={() => signIn("github")}
+            />
+            <img
+              className="mx-auto h-10 w-auto cursor-pointer"
+              src="/google.svg"
+              alt="Workflow"
+              onClick={() => signIn("google")}
             />
           </div>
         </form>
@@ -127,7 +134,7 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  console.log("CADE A SESSION", session);
+  // console.log("CADE A SESSION", session);
 
   if (session) {
     return {
