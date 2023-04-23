@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { format, toDate } from "date-fns";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
+import { NumericFormat } from "react-number-format";
 
 type RowData = {
   Data: number;
@@ -10,12 +11,27 @@ type RowData = {
   Obs: string;
   Tipo: string;
   Valor: number;
-  Antecipou: string;
   Cartão: string;
 };
 
+interface FormChangeEvent extends React.ChangeEvent<HTMLInputElement> {
+  target: HTMLInputElement & {
+    name: string;
+    value: string;
+  };
+}
+
+const today = new Date();
+const todayInExcel =
+  Math.floor((today.getTime() - new Date(1899, 11, 31).getTime()) / 86400000) +
+  1;
+
+const requiredFields = ["Data", "Descrição", "Tipo", "Valor"];
+
 export default function History() {
   const [rowData, setRowData] = useState<RowData[]>([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isFormValid, setIsFormValid] = useState(true);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -31,18 +47,36 @@ export default function History() {
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json<RowData>(worksheet);
 
+      const expectedColumns = [
+        "Data",
+        "Descrição",
+        "Obs",
+        "Tipo",
+        "Valor",
+        "Cartão",
+      ]; // nomes das colunas esperadas
+      const columnNames = Object.keys(rows[0]); // pega os nomes das colunas do arquivo carregado
+
+      // verifica se todas as colunas esperadas estão presentes no arquivo
+      if (!expectedColumns.every((column) => columnNames.includes(column))) {
+        setErrorMessage(
+          "Arquivo inválido: faltando colunas (verifique se o nome está igual da tabela exemplo)"
+        );
+        return;
+      }
+
+      setErrorMessage("");
       setRowData((prevRowData) => [...prevRowData, ...rows]);
     };
     reader.readAsBinaryString(file);
   };
 
   const [formValues, setFormValues] = useState<RowData>({
-    Data: 0,
+    Data: todayInExcel,
     Descrição: "",
     Obs: "",
     Tipo: "",
     Valor: 0,
-    Antecipou: "",
     Cartão: "",
   });
 
@@ -50,31 +84,105 @@ export default function History() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    if (name === "Valor") {
+      // Remove o prefixo "R$ " e o separador de milhar
+      const valorSemPrefixo = value.replace("R$ ", "").replace(".", "");
+
+      // Converte o valor para number
+      const valorNumerico = parseFloat(valorSemPrefixo.replace(",", "."));
+
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        [name]: valorNumerico,
+      }));
+    } else {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+    }
+    setIsFormValid(true);
+  };
+
+  const handleDateChange = (event: any) => {
+    const newDate = new Date(event.target.value);
+    const excelDate =
+      Math.floor(
+        (newDate.getTime() - new Date(1899, 11, 30).getTime()) / 86400000
+      ) + 1;
+    // setExcelDate(excelDate);
     setFormValues((prevValues) => ({
       ...prevValues,
-      [name]: value,
+      Data: excelDate,
     }));
   };
 
   const handleAddRow = () => {
-    setRowData((prevData) => [...prevData, formValues]);
-    setFormValues({
-      Data: 0,
-      Descrição: "",
-      Obs: "",
-      Tipo: "",
-      Valor: 0,
-      Antecipou: "",
-      Cartão: "",
+    if (Object.values(formValues).every((value) => value !== "")) {
+      setRowData((prevData) => [...prevData, formValues]);
+      setFormValues({
+        Data: todayInExcel,
+        Descrição: "",
+        Obs: "",
+        Tipo: "",
+        Valor: 0,
+        Cartão: "",
+      });
+    } else {
+      console.log("TA FALTANDO AE");
+    }
+  };
+
+  const downloadFile = () => {
+    const link = document.createElement("a");
+    link.href = "/TabelaExemplo.xlsx";
+    link.download = "TabelaExemplo.xlsx";
+    link.click();
+  };
+
+  const handleDeleteRow = (index: number) => {
+    setRowData((prevData) => {
+      const newData = [...prevData];
+      newData.splice(index, 1);
+      return newData;
     });
   };
 
+  console.log(rowData);
+
   return (
     <div>
-      <input type="file" accept=".xlsx" onChange={handleFileUpload} />
+      <div className="flex flex-row justify-between">
+        <div>
+          <label className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+            <span>Selecionar arquivo</span>
+            <input
+              type="file"
+              accept=".xlsx"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+          </label>
+          <button
+            className="py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 ml-5"
+            onClick={() => setRowData([])}
+          >
+            Limpar dados
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={downloadFile}
+            className="py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 ml-5"
+          >
+            Download da Tabela Exemplo
+          </button>
+        </div>
+      </div>
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
       <form className="mt-9">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="col-span-1">
             <label
               className="block text-gray-700 font-bold mb-2"
               htmlFor="Data"
@@ -82,15 +190,15 @@ export default function History() {
               Data
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="Data"
-              name="Data"
-              type="number"
-              value={formValues.Data}
-              onChange={handleFormChange}
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              type="date"
+              id="date"
+              name="date"
+              onChange={handleDateChange}
+              required
             />
           </div>
-          <div>
+          <div className="col-span-1">
             <label
               className="block text-gray-700 font-bold mb-2"
               htmlFor="Descrição"
@@ -98,20 +206,21 @@ export default function History() {
               Descrição
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
               id="Descrição"
               name="Descrição"
               type="text"
               value={formValues.Descrição}
               onChange={handleFormChange}
+              required
             />
           </div>
-          <div>
+          <div className="col-span-1">
             <label className="block text-gray-700 font-bold mb-2" htmlFor="Obs">
               Obs
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
               id="Obs"
               name="Obs"
               type="text"
@@ -119,12 +228,15 @@ export default function History() {
               onChange={handleFormChange}
             />
           </div>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2" htmlFor="Obs">
+          <div className="col-span-1">
+            <label
+              className="block text-gray-700 font-bold mb-2"
+              htmlFor="Tipo"
+            >
               Tipo
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
               id="Tipo"
               name="Tipo"
               type="text"
@@ -132,38 +244,41 @@ export default function History() {
               onChange={handleFormChange}
             />
           </div>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2" htmlFor="Obs">
+          <div className="col-span-1">
+            <label
+              className="block text-gray-700 font-bold mb-2"
+              htmlFor="Valor"
+            >
               Valor
             </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            <NumericFormat
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
               id="Valor"
               name="Valor"
-              type="text"
               value={formValues.Valor}
-              onChange={handleFormChange}
+              onValueChange={(values) =>
+                handleFormChange({
+                  target: {
+                    name: "Valor",
+                    value: values.formattedValue,
+                  },
+                } as FormChangeEvent)
+              }
+              thousandSeparator="."
+              decimalSeparator=","
+              prefix="R$ "
+              allowNegative={false}
             />
           </div>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2" htmlFor="Obs">
-              Antecipou
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="Antecipou"
-              name="Antecipou"
-              type="text"
-              value={formValues.Antecipou}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2" htmlFor="Obs">
+          <div className="col-span-1">
+            <label
+              className="block text-gray-700 font-bold mb-2"
+              htmlFor="Cartão"
+            >
               Cartão
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
               id="Cartão"
               name="Cartão"
               type="text"
@@ -171,9 +286,15 @@ export default function History() {
               onChange={handleFormChange}
             />
           </div>
-          <button type="button" onClick={handleAddRow}>
-            Salvar
-          </button>
+          <div className="flex justify-center align-middle items-end">
+            <button
+              type="button"
+              onClick={handleAddRow}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-28"
+            >
+              Salvar
+            </button>
+          </div>
         </div>
       </form>
       <div className="bg-white shadow-md rounded overflow-x-auto mt-9">
@@ -185,8 +306,8 @@ export default function History() {
               <th className="py-3 px-3 text-center">Obs</th>
               <th className="py-3 px-3 text-center">Tipo</th>
               <th className="py-3 px-3 text-center">Valor</th>
-              <th className="py-3 px-3 text-center">Antecipou</th>
               <th className="py-3 px-3 text-center">Cartão</th>
+              <th className="py-3 px-3 text-center">Deletar Info.</th>
             </tr>
           </thead>
           <tbody className=" text-sm">
@@ -207,9 +328,22 @@ export default function History() {
                     <td className="py-3 px-3 text-center ">{row.Descrição}</td>
                     <td className="py-3 px-3 text-center ">{row.Obs}</td>
                     <td className="py-3 px-3 text-center ">{row.Tipo}</td>
-                    <td className="py-3 px-3 text-center ">{row.Valor}</td>
-                    <td className="py-3 px-3 text-center ">{row.Antecipou}</td>
+                    <td className="py-3 px-3 text-center ">
+                      R$:{" "}
+                      {Number(row.Valor).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </td>
                     <td className="py-3 px-3 text-center ">{row.Cartão}</td>
+                    <td className="py-3 px-3 text-center">
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => handleDeleteRow(index)}
+                      >
+                        Excluir
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
