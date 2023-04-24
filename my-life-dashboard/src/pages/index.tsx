@@ -2,23 +2,21 @@ import Head from "next/head";
 import { AiFillLock } from "react-icons/ai";
 import { useForm } from "react-hook-form";
 import { FormEvent, useContext } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, signIn } from "next-auth/react";
+import Image from "next/image";
+import { getUsers } from "./api/users";
+import Link from "next/link";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
-  // const { signIn } = useContext(AuthContext);
-
-  // async function handleSignIn(data) {
-  //   await signIn(data);
-  // }
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    signIn("credentials");
+    const email = e.currentTarget.email.value;
+    const password = e.currentTarget.password.value;
+    signIn("credentials", { email, password });
   };
-
   return (
     <div className="flex flex-1 justify-center align-middle">
       <Head>
@@ -27,8 +25,10 @@ export default function Home() {
 
       <div className="max-w-sm w-full space-y-8 mt-7">
         <div>
-          <img
+          <Image
             className="mx-auto h-20 w-auto"
+            height={80}
+            width={80}
             src="/dashboard.svg"
             alt="Workflow"
           />
@@ -65,7 +65,7 @@ export default function Home() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-2"
                 placeholder="Senha"
               />
             </div>
@@ -88,12 +88,12 @@ export default function Home() {
             </div>
 
             <div className="text-sm">
-              <a
+              <Link
                 href="#"
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
                 Esqueceu sua senha?
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -110,16 +110,31 @@ export default function Home() {
               </span>
               Entrar
             </button>
+            <div>
+              <div className="text-sm flex justify-center mt-2">
+                Não tem uma conta?
+                <Link
+                  href="/signup"
+                  className="font-medium text-indigo-600 hover:text-indigo-500 ml-2"
+                >
+                  Crie agora!
+                </Link>
+              </div>
+            </div>
           </div>
           <div className="flex flex-row">
-            <img
+            <Image
               className="mx-auto h-10 w-auto cursor-pointer"
+              height={40}
+              width={40}
               src="/github.svg"
               alt="Workflow"
               onClick={() => signIn("github")}
             />
-            <img
+            <Image
               className="mx-auto h-10 w-auto cursor-pointer"
+              height={40}
+              width={40}
               src="/google.svg"
               alt="Workflow"
               onClick={() => signIn("google")}
@@ -134,7 +149,9 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  // console.log("CADE A SESSION", session);
+  const users = await getUsers();
+
+  console.log("TEM ALGO", users);
 
   if (session) {
     return {

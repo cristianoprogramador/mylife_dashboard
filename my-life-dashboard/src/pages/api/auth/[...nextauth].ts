@@ -2,6 +2,7 @@ import NextAuth from "next-auth/next";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { loginUser } from "@/lib/users";
 
 export default NextAuth({
   providers: [
@@ -15,20 +16,20 @@ export default NextAuth({
     }),
     CredentialsProvider({
       name: "NextAuthCredentials",
-      credentials: {},
+      credentials: {
+        email: { label: "Email", type: "text", placeholder: "Email" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
-        // aqui eu faria a autentificação com minha API
-        console.log(credentials);
-
-        // await api.post('/signin', credentials)
-
-        return {
-          // aqui vc retorna o que vem do backend
-          name: "Cristiano",
-          email: "cristiano@email.com",
-          image:
-            "https://yt3.ggpht.com/yti/AHyvSCA5PH0IrMiwSJVIyEq3OHSDNmxxPhilImXoDL5SWg=s88-c-k-c0x00ffffff-no-rj-mo",
-        };
+        console.log("TEM ALGO AQUI", credentials);
+        try {
+          const { email, password } = credentials;
+          const user = await loginUser(email, password);
+          return user;
+        } catch (error) {
+          console.error(error);
+          throw new Error("Invalid login");
+        }
       },
     }),
   ],

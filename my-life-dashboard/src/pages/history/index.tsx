@@ -4,6 +4,7 @@ import { format, toDate } from "date-fns";
 import { getSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { NumericFormat } from "react-number-format";
+import { ModalUpdate } from "@/components/ModalUpdate";
 
 type RowData = {
   Data: number;
@@ -141,6 +142,7 @@ export default function History() {
   };
 
   const handleDeleteRow = (index: number) => {
+    console.log(index);
     setRowData((prevData) => {
       const newData = [...prevData];
       newData.splice(index, 1);
@@ -148,7 +150,7 @@ export default function History() {
     });
   };
 
-  console.log(rowData);
+  // console.log(rowData);
 
   return (
     <div>
@@ -301,13 +303,30 @@ export default function History() {
         <table className="min-w-max w-full table-auto">
           <thead>
             <tr className="bg-blue-200 text-xs leading-normal">
-              <th className="py-3 px-3 text-center">Data</th>
-              <th className="py-3 px-3 text-center">Descrição</th>
-              <th className="py-3 px-3 text-center">Obs</th>
-              <th className="py-3 px-3 text-center">Tipo</th>
-              <th className="py-3 px-3 text-center">Valor</th>
-              <th className="py-3 px-3 text-center">Cartão</th>
-              <th className="py-3 px-3 text-center">Deletar Info.</th>
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Data
+              </th>
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Descrição
+              </th>
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Obs
+              </th>
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Tipo
+              </th>
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Valor
+              </th>
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Cartão
+              </th>
+              {/* <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Editar Info.
+              </th> */}
+              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                Deletar Info.
+              </th>
             </tr>
           </thead>
           <tbody className=" text-sm">
@@ -336,6 +355,9 @@ export default function History() {
                       })}
                     </td>
                     <td className="py-3 px-3 text-center ">{row.Cartão}</td>
+                    {/* <td className="py-3 px-3 text-center">
+                      <ModalUpdate title="Abrir Modal" state={row} />
+                    </td> */}
                     <td className="py-3 px-3 text-center">
                       <button
                         className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
