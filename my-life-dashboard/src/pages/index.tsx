@@ -17,6 +17,7 @@ export default function Home() {
     const password = e.currentTarget.password.value;
     signIn("credentials", { email, password });
   };
+
   return (
     <div className="flex flex-1 justify-center align-middle">
       <Head>
@@ -151,7 +152,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const users = await getUsers();
 
-  console.log("TEM ALGO", users);
+  // console.log("TEM ALGO", users);
 
   if (session) {
     return {

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { format, toDate } from "date-fns";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { NumericFormat } from "react-number-format";
-import { ModalUpdate } from "@/components/ModalUpdate";
 
 type RowData = {
   Data: number;
@@ -33,6 +32,7 @@ export default function History() {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(true);
+  const { data: session } = useSession();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -150,7 +150,36 @@ export default function History() {
     });
   };
 
-  // console.log(rowData);
+  const saveData = async () => {
+    const data = {
+      email: session?.user?.email,
+      rowData: rowData,
+      // rowData: [
+      //   {
+      //     Data: 20220425,
+      //     Descrição: "Descrição do gasto",
+      //     Obs: "Observação do gasto",
+      //     Tipo: "Tipo do gasto",
+      //     Valor: 123.45,
+      //     Cartão: "Nome do cartão",
+      //   },
+      //   // adicione aqui os outros objetos do array de rowData
+      // ],
+    };
+    try {
+      const response = await fetch("/api/spending_history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+    }
+  };
 
   return (
     <div>
@@ -297,6 +326,15 @@ export default function History() {
               Salvar
             </button>
           </div>
+          <div className="flex justify-center align-middle items-end">
+            <button
+              type="button"
+              onClick={saveData}
+              className="px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-32"
+            >
+              Enviar ao Servidor
+            </button>
+          </div>
         </div>
       </form>
       <div className="bg-white shadow-md rounded overflow-x-auto mt-9">
@@ -379,7 +417,7 @@ export default function History() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  // console.log("CADE A SESSION", session);
+  console.log("CADE A SESSION", session?.user?.email);
 
   if (!session) {
     return {

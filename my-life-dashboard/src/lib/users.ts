@@ -50,12 +50,12 @@ export const loginUser = async (email: string, password: string) => {
       email,
     ]);
     if (rows.length === 0) {
-      throw new Error("User not found");
+      throw new Error("Usuario não encontrado");
     }
     const user = rows[0];
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      throw new Error("Password does not match");
+      throw new Error("Senha incorreta");
     }
     // Retorna um objeto com as informações do usuário
     return { name: user.name, email: user.email, image: "/person.svg" };
