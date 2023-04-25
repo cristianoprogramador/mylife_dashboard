@@ -3,6 +3,7 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginUser } from "@/lib/users";
+import { generateToken } from "@/utils/auth";
 
 export default NextAuth({
   providers: [
@@ -25,7 +26,8 @@ export default NextAuth({
         try {
           const { email, password } = credentials;
           const user = await loginUser(email, password);
-          return user;
+          const token = generateToken({ id: user.id, email: user.email });
+          return { token, user };
         } catch (error) {
           console.error(error);
           throw new Error("Invalid login");

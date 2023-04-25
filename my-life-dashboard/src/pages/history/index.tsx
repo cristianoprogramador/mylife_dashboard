@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { format, toDate } from "date-fns";
 import { getSession, useSession } from "next-auth/react";
@@ -14,6 +14,17 @@ type RowData = {
   Cartão: string;
 };
 
+type SpendingHistoryData = {
+  id: number;
+  email: string;
+  card: string;
+  date: string;
+  description: string;
+  type: string;
+  value: number;
+  obs: string;
+};
+
 interface FormChangeEvent extends React.ChangeEvent<HTMLInputElement> {
   target: HTMLInputElement & {
     name: string;
@@ -26,13 +37,50 @@ const todayInExcel =
   Math.floor((today.getTime() - new Date(1899, 11, 31).getTime()) / 86400000) +
   1;
 
-const requiredFields = ["Data", "Descrição", "Tipo", "Valor"];
-
 export default function History() {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(true);
   const { data: session } = useSession();
+
+  const [data, setData] = useState<RowData[]>([]);
+
+  // console.log(data);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/spending_history?email=${session?.user?.email}`
+        );
+        const responseData = await response.json();
+
+        const formattedData = responseData.map((item: SpendingHistoryData) => {
+          const date = new Date(item.date);
+          const excelDate =
+            Math.floor(
+              (date.getTime() - new Date(1899, 11, 30).getTime()) / 86400000
+            ) + 1;
+          const rowData: RowData = {
+            Data: excelDate,
+            Descrição: item.description,
+            Obs: item.obs,
+            Tipo: item.type,
+            Valor: item.value,
+            Cartão: item.card,
+          };
+
+          return rowData;
+        });
+
+        setRowData(formattedData);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+
+    fetchData();
+  }, [session]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -150,21 +198,10 @@ export default function History() {
     });
   };
 
-  const saveData = async () => {
+  const saveToServer = async () => {
     const data = {
       email: session?.user?.email,
       rowData: rowData,
-      // rowData: [
-      //   {
-      //     Data: 20220425,
-      //     Descrição: "Descrição do gasto",
-      //     Obs: "Observação do gasto",
-      //     Tipo: "Tipo do gasto",
-      //     Valor: 123.45,
-      //     Cartão: "Nome do cartão",
-      //   },
-      //   // adicione aqui os outros objetos do array de rowData
-      // ],
     };
     try {
       const response = await fetch("/api/spending_history", {
@@ -321,18 +358,18 @@ export default function History() {
             <button
               type="button"
               onClick={handleAddRow}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-28"
+              className="px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-28"
             >
-              Salvar
+              Adicionar na Lista
             </button>
           </div>
           <div className="flex justify-center align-middle items-end">
             <button
               type="button"
-              onClick={saveData}
-              className="px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-32"
+              onClick={saveToServer}
+              className="px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-28 mr-3"
             >
-              Enviar ao Servidor
+              Salvar no Servidor
             </button>
           </div>
         </div>

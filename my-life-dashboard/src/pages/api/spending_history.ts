@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import connection from "../db";
-const XLSX = require("xlsx");
 
 type RowData = {
   Data: number;
@@ -19,6 +18,8 @@ type RequestBody = {
 const saveSpendingHistory = async (email: string, rowData: RowData[]) => {
   const conn = await connection();
   try {
+    await conn.execute("DELETE FROM spending_history WHERE email = ?", [email]);
+
     for (const data of rowData) {
       // Converter a data do formato do Excel para o formato de data do MySQL
       const excelDate = data.Data;
@@ -55,11 +56,27 @@ export default async function handler(
   if (req.method === "POST") {
     const { email, rowData } = req.body as RequestBody;
     try {
-      await saveSpendingHistory(email, rowData);
+      await saveSpendingHistory(email, rowData); // salva as novas informações
       res.status(200).json({ message: "Dados salvos com sucesso!" });
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
       res.status(500).json({ message: "Erro ao salvar dados" });
+    }
+  } else if (req.method === "GET") {
+    const email = req.query.email as string;
+    const conn = await connection();
+
+    try {
+      const [rows] = await conn.execute(
+        "SELECT * FROM spending_history WHERE email = ?",
+        [email]
+      );
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+      res.status(500).json({ message: "Erro ao buscar dados" });
+    } finally {
+      conn.end();
     }
   } else {
     res.status(404).json({ message: "Rota não encontrada" });
