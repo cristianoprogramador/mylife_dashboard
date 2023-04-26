@@ -4,6 +4,7 @@ import { NumericFormat } from "react-number-format";
 import { format, differenceInDays } from "date-fns";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import Head from "next/head";
 
 export default function Resume() {
   const [today, setToday] = useState(2500);
@@ -134,6 +135,9 @@ export default function Resume() {
 
   return (
     <div className="flex flex-col">
+      <Head>
+        <title>Resumo</title>
+      </Head>
       <div className="flex flex-row gap-2 p-2">
         {/* Primeiro Bloco */}
         <div className="bg-blue-600 rounded-lg p-4 flex flex-col w-96">

@@ -4,6 +4,7 @@ import { format, toDate } from "date-fns";
 import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { NumericFormat } from "react-number-format";
+import Head from "next/head";
 
 type RowData = {
   Data: number;
@@ -204,13 +205,16 @@ export default function History() {
       rowData: rowData,
     };
     try {
-      const response = await fetch("/api/spending_history", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `/api/spending_history?email=${session?.user?.email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
       const responseData = await response.json();
       console.log(responseData);
     } catch (error) {
@@ -220,6 +224,9 @@ export default function History() {
 
   return (
     <div>
+      <Head>
+        <title>Histórico de Gasto</title>
+      </Head>
       <div className="flex flex-row justify-between">
         <div>
           <label className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
@@ -454,7 +461,7 @@ export default function History() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  console.log("CADE A SESSION", session?.user?.email);
+  console.log("CADE A SESSION", session);
 
   if (!session) {
     return {

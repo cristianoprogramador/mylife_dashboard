@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import connection from "../db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]";
 
 type RowData = {
   Data: number;
@@ -53,6 +55,19 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    res.status(401).json({ message: "You must be logged in." });
+    return;
+  }
+
+  if (session.user?.email !== req.query.email) {
+    console.log("EMAIL DA SESSAO", session.user?.email);
+    console.log(req.query.email);
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
   if (req.method === "POST") {
     const { email, rowData } = req.body as RequestBody;
     try {

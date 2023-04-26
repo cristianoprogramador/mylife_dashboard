@@ -3,9 +3,9 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginUser } from "@/lib/users";
-import { generateToken } from "@/utils/auth";
+import { NextAuthOptions } from "next-auth";
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -21,13 +21,12 @@ export default NextAuth({
         email: { label: "Email", type: "text", placeholder: "Email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         console.log("TEM ALGO AQUI", credentials);
         try {
           const { email, password } = credentials;
           const user = await loginUser(email, password);
-          const token = generateToken({ id: user.id, email: user.email });
-          return { token, user };
+          return user;
         } catch (error) {
           console.error(error);
           throw new Error("Invalid login");
@@ -36,4 +35,6 @@ export default NextAuth({
     }),
   ],
   secret: process.env.SECRET,
-});
+};
+
+export default NextAuth(authOptions);
