@@ -1,5 +1,5 @@
 import React from "react";
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 Chart.register(...registerables);
 import { format, startOfMonth, subMonths } from "date-fns";
@@ -31,21 +31,48 @@ export default function MonthlySpendingChart({ expenses }: any) {
     return acc;
   }, {});
 
-  // console.log("OQ NAO TA INDO PRA EXIBI", filteredExpenses);
-  // console.log("OQ TA INDO PRA EXIBI", Object.values(groupedExpenses));
+  const currentMonthExpenses = groupedExpenses[formatMonthYear(new Date())];
+
+  const previousMonth = subMonths(new Date(), 1);
+  const previousMonthExpenses = groupedExpenses[formatMonthYear(previousMonth)];
+
+  const twoMonthsAgo = subMonths(new Date(), 2);
+  const twoMonthsAgoExpenses = groupedExpenses[formatMonthYear(twoMonthsAgo)];
 
   const expensesByMonth = Object.values(groupedExpenses).slice(-numMonths);
 
   const data = {
-    labels: expensesByMonth.map((item: any) => item.monthYear),
+    labels: expenses
+      .filter((item, index, array) => {
+        return array.findIndex((t) => t.type === item.type) === index;
+      })
+      .map((item: any) => item.type),
     datasets: [
       {
-        label: "Gastos",
+        label: "2 Meses atrás",
+        backgroundColor: "rgba(17, 88, 221, 0.2)",
+        borderColor: "#6366ff",
+        borderWidth: 2,
+        hoverBackgroundColor: "rgba(122, 99, 255, 0.4)",
+        hoverBorderColor: "#6d63ff",
+        data: expensesByMonth.map((item: any) => item.value.toFixed(2)),
+      },
+      {
+        label: "Mes Anterior",
         backgroundColor: "rgba(255,99,132,0.2)",
         borderColor: "rgba(255,99,132,1)",
-        borderWidth: 3,
+        borderWidth: 2,
         hoverBackgroundColor: "rgba(255,99,132,0.4)",
         hoverBorderColor: "rgba(255,99,132,1)",
+        data: expensesByMonth.map((item: any) => item.value.toFixed(2)),
+      },
+      {
+        label: "Mês Atual",
+        backgroundColor: "rgba(7, 207, 17, 0.2)",
+        borderColor: "#36cc11",
+        borderWidth: 2,
+        hoverBackgroundColor: "rgba(23, 185, 8, 0.4)",
+        hoverBorderColor: "#34c707",
         data: expensesByMonth.map((item: any) => item.value.toFixed(2)),
       },
     ],
@@ -67,32 +94,11 @@ export default function MonthlySpendingChart({ expenses }: any) {
     },
   };
 
-  const handleNumMonthsChange = (event: any) => {
-    const numMonths = parseInt(event.target.value);
-    if (numMonths >= 3 && numMonths <= 12) {
-      setNumMonths(numMonths);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-xl font-bold mb-2">Gasto Total x Mês a Mês</h2>
-      <div className="flex items-center">
-        <label htmlFor="num-months-input" className="mr-2">
-          Número de meses:
-        </label>
-        <input
-          type="number"
-          id="num-months-input"
-          min="3"
-          max="12"
-          value={numMonths}
-          onChange={handleNumMonthsChange}
-          className="px-2 py-1 border rounded-md"
-        />
-      </div>
       <div className=" max-w-screen-md">
-        <Line data={data} options={options} height={300} width={600} />
+        <Bar data={data} options={options} height={300} width={600} />
       </div>
     </div>
   );

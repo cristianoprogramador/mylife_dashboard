@@ -1,6 +1,8 @@
 import MonthlySpendingChart from "@/components/MonthlySpendingChart";
+import ExpenseByCategory from "@/components/TypeOfSpendingChart";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
+import Head from "next/head";
 import { useState, useEffect } from "react";
 
 type SpendingHistoryData = {
@@ -39,7 +41,11 @@ export default function Analysis() {
 
   return (
     <div className="flex flex-1">
+      <Head>
+        <title>Análise Grafica dos Gastos</title>
+      </Head>
       <MonthlySpendingChart expenses={rowData} />
+      <ExpenseByCategory expenses={rowData} />
     </div>
   );
 }
