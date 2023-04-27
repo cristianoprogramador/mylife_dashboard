@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
-import { GiPayMoney } from "react-icons/gi";
+import { GiPayMoney, GiStairsGoal } from "react-icons/gi";
 import { SiSimpleanalytics } from "react-icons/si";
 import { SlNotebook } from "react-icons/sl";
 
@@ -29,6 +29,12 @@ export function SideBar() {
         <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
           <SlNotebook className="mr-3" size={25} />
           Diário
+        </button>
+      </Link>
+      <Link href="/goals">
+        <button className="p-4 hover:bg-blue-700 focus:outline-none text-white rounded-full w-full flex items-center  m-3 hover:shadow-sm transition-colors duration-300">
+          <GiStairsGoal className="mr-3" size={25} />
+          Objetivos Mensais
         </button>
       </Link>
       <Link href="/config">

@@ -13,8 +13,6 @@ export default function PieChart({ expenses }) {
     return date >= start && date <= end;
   });
 
-  console.log(filteredExpenses);
-
   // Agrupa as despesas por tipo
   const groupedExpenses = filteredExpenses.reduce((acc, curr) => {
     const type = curr.type;
@@ -29,13 +27,21 @@ export default function PieChart({ expenses }) {
     return acc;
   }, {});
 
-  console.log(groupedExpenses);
+  const totalExpenses = filteredExpenses.reduce((acc, curr) => {
+    const value = parseFloat(curr.value.replace(",", "."));
+    return acc + value;
+  }, 0);
+
+  const percentExpenses = {};
+  Object.entries(groupedExpenses).forEach(([type, value]) => {
+    percentExpenses[type] = ((value / totalExpenses) * 100).toFixed(2);
+  });
 
   const data = {
-    labels: Object.keys(groupedExpenses),
+    labels: Object.keys(percentExpenses),
     datasets: [
       {
-        data: Object.values(groupedExpenses),
+        data: Object.values(percentExpenses),
         backgroundColor: [
           "rgba(255, 99, 132, 0.6)",
           "rgba(54, 162, 235, 0.6)",
@@ -57,16 +63,20 @@ export default function PieChart({ expenses }) {
   };
 
   return (
-    <div>
-      <div>
-        <label>Select a month:</label>
+    <div className="flex flex-col items-center ml-16">
+      <h2 className="text-xl font-bold mb-2">% De Gasto</h2>
+      <div className="flex items-center">
+        <label htmlFor="num-months-input" className="mr-2">
+          Número de meses:
+        </label>
         <input
+          className="ml-4 text-center border rounded-md px-1 py-1"
           type="month"
           value={selectedMonth.toISOString().slice(0, 7)}
           onChange={(event) => setSelectedMonth(new Date(event.target.value))}
         />
       </div>
-      <Pie data={data} width={400} />
+      <Pie data={data} width={350} />
     </div>
   );
 }

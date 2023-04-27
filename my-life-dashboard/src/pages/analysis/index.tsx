@@ -1,5 +1,6 @@
 import MonthlySpendingChart from "@/components/MonthlySpendingChart";
 import PieChart from "@/components/PieChart";
+import StackedBarChart from "@/components/StackedBarChart";
 import ExpenseByCategory from "@/components/TypeOfSpendingChart";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
@@ -45,12 +46,13 @@ export default function Analysis() {
       <Head>
         <title>Análise Grafica dos Gastos</title>
       </Head>
-      <div className="flex flex-row justify-around align-middle">
+      <div className="flex flex-row justify-around align-middle w-full">
         <MonthlySpendingChart expenses={rowData} />
         <ExpenseByCategory expenses={rowData} />
       </div>
-      <div className="flex flex-row justify-around align-middle">
+      <div className="flex flex-row justify-around align-middle w-full">
         <PieChart expenses={rowData} />
+        <StackedBarChart expenses={rowData} />
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import ptBR from "date-fns/locale/pt-BR";
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 import {
@@ -33,6 +34,13 @@ type GroupedExpenses = {
   };
 };
 
+function formatMonthYear(date: any) {
+  return format(new Date(date), "MMM yy", { locale: ptBR }).replace(
+    /^\w/,
+    (c) => c.toUpperCase()
+  );
+}
+
 export default function MonthlySpendingChart({ expenses }: any) {
   const [numMonths, setNumMonths] = useState(3);
 
@@ -47,7 +55,7 @@ export default function MonthlySpendingChart({ expenses }: any) {
   // Agrupa as despesas por tipo e mês
   const groupedExpensesByMonthAndType = filteredExpenses.reduce(
     (acc: GroupedExpenses, curr: Expense) => {
-      const monthYear = format(new Date(curr.date), "MM/yyyy");
+      const monthYear = formatMonthYear(curr.date);
       const type = curr.type;
       const value = parseFloat(curr.value.replace(",", "."));
 

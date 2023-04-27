@@ -4,11 +4,14 @@ import { Chart, registerables } from "chart.js";
 Chart.register(...registerables);
 import { format, startOfMonth, subMonths } from "date-fns";
 import { useState } from "react";
+import ptBR from "date-fns/locale/pt-BR";
 
 function formatMonthYear(date: any) {
-  return format(new Date(date), "MMM yy");
+  return format(new Date(date), "MMM yy", { locale: ptBR }).replace(
+    /^\w/,
+    (c) => c.toUpperCase()
+  );
 }
-
 export default function MonthlySpendingChart({ expenses }: any) {
   const [numMonths, setNumMonths] = useState(8);
 
