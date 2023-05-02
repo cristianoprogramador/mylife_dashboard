@@ -1,7 +1,7 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const today = new Date().toISOString().substr(0, 10);
@@ -36,7 +36,7 @@ export default function Diary() {
   ]);
 
   const [diaryEntries, setDiaryEntries] = useState([]);
-  console.log(diaryEntries);
+  // console.log(diaryEntries);
 
   const handleAddOption = (event) => {
     event.preventDefault();
@@ -75,14 +75,80 @@ export default function Diary() {
       setErrorMsg("");
       reset();
     }
-    console.log("entry antes de ser adicionado:", entry);
+    // console.log("entry antes de ser adicionado:", entry);
   };
 
-  const handleDeleteRow = (entryToDelete) => {
+  const handleDeleteRow = (entryToDelete: any) => {
     setDiaryEntries((prevEntries) =>
       prevEntries.filter((entry) => entry !== entryToDelete)
     );
   };
+
+  const saveToServer = async () => {
+    const data = new URLSearchParams();
+    data.append("email", session?.user?.email);
+    data.append("diaryEntries", JSON.stringify(diaryEntries));
+
+    try {
+      const response = await fetch(
+        `/api/users_diary?email=${session?.user?.email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: data,
+        }
+      );
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/users_diary?email=${session?.user?.email}`
+        );
+        const responseData = await response.json();
+
+        const formattedData = responseData.reduce((acc, item) => {
+          const oldDate = new Date(item.date).toLocaleDateString();
+          const parts = oldDate.split("/");
+          const newDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+          // console.log(newDate);
+
+          const date = newDate;
+          const type = item.type;
+          const information = item.information;
+
+          if (acc[date]) {
+            acc[date][type] = information;
+          } else {
+            acc[date] = {
+              [type]: information,
+            };
+          }
+
+          return acc;
+        }, {});
+
+        const rowData = Object.entries(formattedData).map(([date, data]) => ({
+          date,
+          data,
+        }));
+
+        setDiaryEntries(rowData);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+
+    fetchData();
+  }, [session]);
 
   return (
     <div className="p-4 space-y-4 w-4/5">
@@ -158,6 +224,15 @@ export default function Diary() {
               Adicionar entrada
             </button>
           </div>
+          <div className="flex justify-center items-center">
+            <button
+              onClick={saveToServer}
+              type="button"
+              className=" bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg col-span-3 sm:col-span-1 h-12"
+            >
+              Salvar no Servidor
+            </button>
+          </div>
         </div>
       </form>
 
@@ -180,21 +255,11 @@ export default function Diary() {
         </thead>
         <tbody>
           {diaryEntries.map((entry) => {
-            console.log(entry.date);
-            console.log(
-              new Date(entry.date).toLocaleDateString("pt-BR", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            );
             const entryDate = new Date(entry.date);
             const brazilOffset = 3 * 60; // fuso horário do Brasil é UTC-3
             const entryDateWithOffset = new Date(
               entryDate.getTime() + brazilOffset * 60 * 1000
             );
-            console.log(entryDateWithOffset);
             return (
               <tr key={entry.date} className="bg-white">
                 <td className="w-1/4 py-2 px-4 border-gray-400 border text-center">

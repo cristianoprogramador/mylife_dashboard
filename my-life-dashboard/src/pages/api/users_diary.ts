@@ -3,44 +3,32 @@ import connection from "../db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 
-type RowData = {
-  Data: number;
-  Descrição: string;
-  Obs: string;
-  Tipo: string;
-  Valor: number;
-  Cartão: string;
+type DiaryEntry = {
+  date: string;
+  data: {
+    [key: string]: string;
+  };
 };
 
 type RequestBody = {
   email: string;
-  rowData: RowData[];
+  diaryEntries: DiaryEntry[];
 };
 
-const saveSpendingHistory = async (email: string, rowData: RowData[]) => {
+const saveUsersDiary = async (email: string, diaryEntries: any[]) => {
   const conn = await connection();
   try {
-    await conn.execute("DELETE FROM spending_history WHERE email = ?", [email]);
+    await conn.execute("DELETE FROM user_diary WHERE email = ?", [email]);
 
-    for (const data of rowData) {
-      // Converter a data do formato do Excel para o formato de data do MySQL
-      const excelDate = data.Data;
-      const jsDate = new Date((excelDate - 25569) * 86400 * 1000);
-      const mysqlDate = jsDate.toISOString().slice(0, 10);
-
-      // Inserir no banco de dados usando a função DATE_FORMAT()
-      await conn.execute(
-        "INSERT INTO spending_history (email, date, description, obs, type, value, card) VALUES (?, DATE_FORMAT(?, '%Y-%m-%d'), ?, ?, ?, ?, ?)",
-        [
-          email,
-          mysqlDate,
-          data.Descrição,
-          data.Obs,
-          data.Tipo,
-          data.Valor,
-          data.Cartão,
-        ]
-      );
+    for (const entry of diaryEntries) {
+      const date = entry.date;
+      const data = entry.data;
+      for (const [type, information] of Object.entries(data)) {
+        await conn.execute(
+          "INSERT INTO user_diary (email, date, type, information) VALUES (?, ?, ?, ?)",
+          [email, date, type, information]
+        );
+      }
     }
     console.log("Dados salvos com sucesso!");
   } catch (error) {
@@ -69,9 +57,11 @@ export default async function handler(
   }
 
   if (req.method === "POST") {
-    const { email, rowData } = req.body as RequestBody;
+    const { email, diaryEntries } = req.body;
+    const parsedDiaryEntries = JSON.parse(diaryEntries);
+
     try {
-      await saveSpendingHistory(email, rowData); // salva as novas informações
+      await saveUsersDiary(email, parsedDiaryEntries);
       res.status(200).json({ message: "Dados salvos com sucesso!" });
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
@@ -83,7 +73,7 @@ export default async function handler(
 
     try {
       const [rows] = await conn.execute(
-        "SELECT * FROM spending_history WHERE email = ?",
+        "SELECT * FROM user_diary WHERE email = ?",
         [email]
       );
       res.status(200).json(rows);
