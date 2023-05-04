@@ -23,20 +23,11 @@ export default function Diary() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
-
-  const [options, setOptions] = useState([
-    "Trabalho",
-    "Academia",
-    "Estudos",
-    "Lazer",
-    "VideoGame",
-  ]);
+  const [options, setOptions] = useState([]);
 
   const [diaryEntries, setDiaryEntries] = useState([]);
-  // console.log(diaryEntries);
+  const [edits, setEdits] = useState({});
+  const [editing, setEditing] = useState({});
 
   const handleAddOption = (event) => {
     event.preventDefault();
@@ -142,6 +133,13 @@ export default function Diary() {
         }));
 
         setDiaryEntries(rowData);
+        const uniqueOptions = new Set();
+        for (let obj of rowData) {
+          for (let key in obj.data) {
+            uniqueOptions.add(key);
+          }
+        }
+        setOptions(Array.from(uniqueOptions));
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
       }
@@ -150,7 +148,32 @@ export default function Diary() {
     fetchData();
   }, [session]);
 
-  console.log(diaryEntries);
+  const handleInputChange = (event, date, option) => {
+    const newEdits = { ...edits };
+    if (!newEdits[date]) {
+      newEdits[date] = {};
+    }
+    newEdits[date][option] = event.target.textContent;
+    setEdits(newEdits);
+  };
+
+  const handleSave = (date, option) => {
+    const entry = diaryEntries.find((e) => e.date === date);
+    const newEntry = { ...entry };
+    const editedValue = edits[date]?.[option];
+    if (editedValue !== undefined) {
+      newEntry.data[option] = edits[date][option];
+      const index = diaryEntries.findIndex((e) => e.date === date);
+      const newDiaryEntries = [
+        ...diaryEntries.slice(0, index),
+        newEntry,
+        ...diaryEntries.slice(index + 1),
+      ];
+      setDiaryEntries(newDiaryEntries);
+      setEdits({});
+      saveToServer();
+    }
+  };
 
   return (
     <div className="p-4 space-y-4 w-4/5">
@@ -282,9 +305,21 @@ export default function Diary() {
                       <span
                         contentEditable={true}
                         suppressContentEditableWarning={true}
+                        onBlur={() => handleSave(entry.date, option)}
+                        onInput={(event) =>
+                          handleInputChange(event, entry.date, option)
+                        }
                       >
                         {entry.data[option]}
                       </span>
+                      {edits[entry.date]?.[option] && (
+                        <button
+                          onClick={() => handleSave(entry.date, option)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                        >
+                          Salvar
+                        </button>
+                      )}
                     </td>
                   ))}
                   <td className="w-1/4 py-2 px-4 border-gray-400 border text-center ">
