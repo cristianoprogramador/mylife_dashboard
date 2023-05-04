@@ -150,6 +150,8 @@ export default function Diary() {
     fetchData();
   }, [session]);
 
+  console.log(diaryEntries);
+
   return (
     <div className="p-4 space-y-4 w-4/5">
       <div className="text-center text-2xl font-bold mb-8">
@@ -254,46 +256,48 @@ export default function Diary() {
           </tr>
         </thead>
         <tbody>
-          {diaryEntries.map((entry) => {
-            const entryDate = new Date(entry.date);
-            const brazilOffset = 3 * 60; // fuso horário do Brasil é UTC-3
-            const entryDateWithOffset = new Date(
-              entryDate.getTime() + brazilOffset * 60 * 1000
-            );
-            return (
-              <tr key={entry.date} className="bg-white">
-                <td className="w-1/4 py-2 px-4 border-gray-400 border text-center">
-                  {entryDateWithOffset.toLocaleDateString("pt-BR", {
-                    weekday: "long",
-                    year: "2-digit",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}
-                </td>
-                {options.map((option) => (
-                  <td
-                    key={option}
-                    className="w-1/4 py-2 px-4 border-gray-400 border"
-                  >
-                    <span
-                      contentEditable={true}
-                      suppressContentEditableWarning={true}
-                    >
-                      {entry.data[option]}
-                    </span>
+          {diaryEntries
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .map((entry) => {
+              const entryDate = new Date(entry.date);
+              const brazilOffset = 3 * 60; // fuso horário do Brasil é UTC-3
+              const entryDateWithOffset = new Date(
+                entryDate.getTime() + brazilOffset * 60 * 1000
+              );
+              return (
+                <tr key={entry.date} className="bg-white">
+                  <td className="w-1/4 py-2 px-4 border-gray-400 border text-center">
+                    {entryDateWithOffset.toLocaleDateString("pt-BR", {
+                      weekday: "long",
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
                   </td>
-                ))}
-                <td className="w-1/4 py-2 px-4 border-gray-400 border text-center ">
-                  <button
-                    onClick={() => handleDeleteRow(entry)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Excluir
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
+                  {options.map((option) => (
+                    <td
+                      key={option}
+                      className="w-1/4 py-2 px-4 border-gray-400 border"
+                    >
+                      <span
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                      >
+                        {entry.data[option]}
+                      </span>
+                    </td>
+                  ))}
+                  <td className="w-1/4 py-2 px-4 border-gray-400 border text-center ">
+                    <button
+                      onClick={() => handleDeleteRow(entry)}
+                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>
