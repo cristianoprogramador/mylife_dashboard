@@ -19,21 +19,20 @@ export const months = [
   "Dezembro",
 ];
 
-interface Goal {
+type Goal = {
   objetivo: string;
   mes: string;
   ano: string;
   valor: string;
-}
+};
 
 export default function Goals() {
   const [objectivesData, setObjectivesData] = useState({});
   const [objectives, setObjectives] = useState([]);
   const [newObjective, setNewObjective] = useState("");
   const [addObjectiveClicked, setAddObjectiveClicked] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(2023);
+  const [selectedYear, setSelectedYear] = useState(2024);
   const { data: session } = useSession();
-  const [userGoals, setUserGoals] = useState([]);
 
   const filteredMonths = selectedYear
     ? months
@@ -49,7 +48,8 @@ export default function Goals() {
         })
     : [];
 
-  console.log(objectivesData);
+  console.log("DADOS COMPLETOS", objectivesData);
+  console.log("APENAS OS OBJETIVOS", objectives);
 
   const handleInputChange = (e, month, objective) => {
     const newObjectivesData = { ...objectivesData };
@@ -75,15 +75,19 @@ export default function Goals() {
   };
 
   const saveToServer = async () => {
-    const data = new URLSearchParams();
     const goals: Goal[] = [];
 
     Object.keys(objectivesData).forEach((monthYear) => {
       const [month, year] = monthYear.split("/");
-      const { teste } = objectivesData[monthYear];
-      goals.push({ objetivo: "teste", mes: month, ano: year, valor: teste });
+      const objectives = objectivesData[monthYear] as Objective;
+
+      Object.keys(objectives).forEach((goalName) => {
+        const value = objectives[goalName];
+        goals.push({ objetivo: goalName, mes: month, ano: year, valor: value });
+      });
     });
 
+    const data = new URLSearchParams();
     data.append("goals", JSON.stringify(goals));
     data.append("email", session?.user?.email);
 
@@ -97,7 +101,7 @@ export default function Goals() {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: data,
+          body: data.toString(),
         }
       );
       const responseData = await response.json();
@@ -111,41 +115,64 @@ export default function Goals() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `/api/users_goals?email=${session?.user?.email}`
+          `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`
         );
         const responseData = await response.json();
 
-        const formattedData = responseData.reduce((acc, curr) => {
-          const key = `${curr.mes}/${curr.ano}`;
-          if (!acc[key]) {
-            acc[key] = {};
-          }
-          acc[key][curr.objetivo] = curr.valor;
-          return acc;
-        }, {});
+        if (responseData.length > 0) {
+          const formattedData = responseData.reduce((acc, curr) => {
+            const key = `${curr.mes}/${curr.ano}`;
+            if (!acc[key]) {
+              acc[key] = {};
+            }
+            acc[key][curr.objetivo] = curr.valor;
+            return acc;
+          }, {});
 
-        const goals = responseData.map((item) => item.objetivo);
-        const uniqueObjectives = [
-          ...new Set(responseData.map((item) => item.objetivo)),
-        ];
-        setObjectives(uniqueObjectives);
+          const uniqueObjectives = [
+            ...new Set(responseData.map((item) => item.objetivo)),
+          ];
+          setObjectives(uniqueObjectives);
 
-        setObjectivesData(formattedData);
+          setObjectivesData(formattedData);
+        } else {
+          setObjectives([]);
+          setObjectivesData({});
+        }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
       }
     };
 
-    fetchData();
-  }, [session]);
+    if (selectedYear) {
+      fetchData();
+    }
+  }, [session, selectedYear]);
 
-  console.log(userGoals);
+  console.log(objectives);
+
+  function handleDeleteObjective(obj) {
+    setObjectives((prevObjectives) => prevObjectives.filter((o) => o !== obj));
+
+    setObjectivesData((prevData) => {
+      const newData = { ...prevData };
+      for (const key of Object.keys(newData)) {
+        if (newData[key].hasOwnProperty(obj)) {
+          delete newData[key][obj];
+        }
+      }
+      return newData;
+    });
+  }
 
   return (
     <div className="flex flex-col space-y-4">
       <Head>
         <title>Objetivos Mensais</title>
       </Head>
+      <div className="font-bold text-lg mb-2 text-center ">
+        Crie um objetivo para acompanhar
+      </div>
       <select
         className="px-4 py-2 text-center border rounded"
         value={selectedYear}
@@ -159,29 +186,30 @@ export default function Goals() {
         ))}
       </select>
       {selectedYear && (
-        <div className="flex space-x-4 flex-col">
-          <div className="font-bold text-lg mb-2 text-center ">
-            Crie um objetivo para acompanhar
+        <div className="flex space-x-4 flex-row">
+          <div>
+            <textarea
+              className="p-2 border rounded w-56 text-center"
+              rows={3}
+              placeholder="Digite seu objetivo"
+              value={newObjective}
+              onChange={handleNewObjectiveChange}
+            />
           </div>
-          <textarea
-            className="flex-1 p-2 border rounded"
-            rows={3}
-            placeholder="Digite seu objetivo"
-            value={newObjective}
-            onChange={handleNewObjectiveChange}
-          />
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={handleAddObjectiveClick}
-          >
-            Adicionar
-          </button>
-          <button
-            onClick={saveToServer}
-            className="px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
-          >
-            Salvar no Servidor
-          </button>
+          <div className="flex flex-col justify-center align-middle">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={handleAddObjectiveClick}
+            >
+              Adicionar
+            </button>
+            <button
+              onClick={saveToServer}
+              className="px-4 mt-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
+            >
+              Salvar no Servidor
+            </button>
+          </div>
         </div>
       )}
       {selectedYear && (
@@ -192,9 +220,17 @@ export default function Goals() {
                 <tr>
                   <th className="px-4 py-2">Detalhe suas ações</th>
                   {objectives.map((obj) => (
-                    <th className="px-4 py-2" key={obj}>
-                      {obj}
-                    </th>
+                    <>
+                      <th className="px-4 py-2" key={obj}>
+                        {obj}
+                        <button
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                          onClick={() => handleDeleteObjective(obj)}
+                        >
+                          X
+                        </button>
+                      </th>
+                    </>
                   ))}
                 </tr>
               </thead>
@@ -211,7 +247,7 @@ export default function Goals() {
                       >
                         <textarea
                           rows={2}
-                          className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-center"
                           value={objectivesData[month]?.[obj] || ""}
                           onChange={(e) => handleInputChange(e, month, obj)}
                         />

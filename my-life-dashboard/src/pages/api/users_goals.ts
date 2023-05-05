@@ -13,19 +13,16 @@ interface Goal {
 
 const saveUserGoals = async (email: string, goalsString: string) => {
   const goals = JSON.parse(goalsString);
-  // console.log(goals);
   if (!Array.isArray(goals)) {
     throw new TypeError("Goals is not an array");
   }
   const conn = await connection();
   try {
-    await conn.execute("DELETE FROM user_goals WHERE email = ?", [email]);
-
     for (const goal of goals) {
       const { objetivo, mes, ano, valor } = goal;
       await conn.execute(
-        "INSERT INTO user_goals (email, objetivo, mes, ano, valor) VALUES (?, ?, ?, ?, ?)",
-        [email, objetivo, mes, ano, valor]
+        "INSERT INTO user_goals (email, objetivo, mes, ano, valor) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE valor = ?",
+        [email, objetivo, mes, ano, valor, valor]
       );
     }
     console.log("Objetivos salvos com sucesso!");
@@ -65,12 +62,13 @@ export default async function handler(
     }
   } else if (req.method === "GET") {
     const email = req.query.email as string;
+    const year = req.query.year as string;
     const conn = await connection();
 
     try {
       const [rows] = await conn.execute(
-        "SELECT * FROM user_goals WHERE email = ?",
-        [email]
+        "SELECT * FROM user_goals WHERE email = ? AND ano = ?",
+        [email, year]
       );
       res.status(200).json(rows);
     } catch (error) {
