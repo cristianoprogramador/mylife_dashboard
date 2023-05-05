@@ -11,8 +11,9 @@ interface Goal {
 }
 [];
 
-const saveUserGoals = async (email: string, goals: Goal[]) => {
-  console.log(goals);
+const saveUserGoals = async (email: string, goalsString: string) => {
+  const goals = JSON.parse(goalsString);
+  // console.log(goals);
   if (!Array.isArray(goals)) {
     throw new TypeError("Goals is not an array");
   }

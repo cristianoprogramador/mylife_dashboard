@@ -33,10 +33,7 @@ export default function Goals() {
   const [addObjectiveClicked, setAddObjectiveClicked] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2023);
   const { data: session } = useSession();
-
-  useEffect(() => {
-    setObjectives([]);
-  }, [selectedYear]);
+  const [userGoals, setUserGoals] = useState([]);
 
   const filteredMonths = selectedYear
     ? months
@@ -109,6 +106,40 @@ export default function Goals() {
       console.error("Erro ao salvar dados:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/users_goals?email=${session?.user?.email}`
+        );
+        const responseData = await response.json();
+
+        const formattedData = responseData.reduce((acc, curr) => {
+          const key = `${curr.mes}/${curr.ano}`;
+          if (!acc[key]) {
+            acc[key] = {};
+          }
+          acc[key][curr.objetivo] = curr.valor;
+          return acc;
+        }, {});
+
+        const goals = responseData.map((item) => item.objetivo);
+        const uniqueObjectives = [
+          ...new Set(responseData.map((item) => item.objetivo)),
+        ];
+        setObjectives(uniqueObjectives);
+
+        setObjectivesData(formattedData);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+
+    fetchData();
+  }, [session]);
+
+  console.log(userGoals);
 
   return (
     <div className="flex flex-col space-y-4">
