@@ -11,13 +11,26 @@ interface Goal {
 }
 [];
 
-const saveUserGoals = async (email: string, goalsString: string) => {
+const saveUserGoals = async (
+  email: string,
+  goalsString: string,
+  year: string
+) => {
   const goals = JSON.parse(goalsString);
+  // console.log(email);
+  // console.log(goalsString);
+  // console.log(year);
   if (!Array.isArray(goals)) {
     throw new TypeError("Goals is not an array");
   }
   const conn = await connection();
+
   try {
+    await conn.execute("DELETE FROM user_goals WHERE email = ? AND ano = ?", [
+      email,
+      year,
+    ]);
+
     for (const goal of goals) {
       const { objetivo, mes, ano, valor } = goal;
       await conn.execute(
@@ -46,15 +59,15 @@ export default async function handler(
   }
 
   if (session.user?.email !== req.query.email) {
-    console.log("EMAIL DA SESSAO", session.user?.email);
-    console.log(req.query.email);
+    // console.log("EMAIL DA SESSAO", session.user?.email);
+    // console.log(req.query.email);
     return res.status(403).json({ message: "Forbidden" });
   }
 
   if (req.method === "POST") {
-    const { email, goals } = req.body;
+    const { email, goals, year } = req.body;
     try {
-      await saveUserGoals(email, goals);
+      await saveUserGoals(email, goals, year);
       res.status(200).json({ message: "Objetivos salvos com sucesso!" });
     } catch (error) {
       console.error("Erro ao salvar objetivos:", error);

@@ -31,7 +31,7 @@ export default function Goals() {
   const [objectives, setObjectives] = useState([]);
   const [newObjective, setNewObjective] = useState("");
   const [addObjectiveClicked, setAddObjectiveClicked] = useState(false);
-  const [selectedYear, setSelectedYear] = useState(2024);
+  const [selectedYear, setSelectedYear] = useState(2023);
   const { data: session } = useSession();
 
   const filteredMonths = selectedYear
@@ -48,11 +48,9 @@ export default function Goals() {
         })
     : [];
 
-  console.log("DADOS COMPLETOS", objectivesData);
-  console.log("APENAS OS OBJETIVOS", objectives);
-
   const handleInputChange = (e, month, objective) => {
     const newObjectivesData = { ...objectivesData };
+    console.log(newObjectivesData);
     if (!newObjectivesData[month]) {
       newObjectivesData[month] = {};
     }
@@ -61,11 +59,13 @@ export default function Goals() {
   };
 
   const handleAddObjectiveClick = () => {
-    setAddObjectiveClicked(true);
-    setObjectives((prevObjectives) => [...prevObjectives, newObjective]);
-    setNewObjective("");
+    if (newObjective.trim() !== "") {
+      // verifique se o valor do input não é vazio depois de remover espaços em branco
+      setAddObjectiveClicked(true);
+      setObjectives((prevObjectives) => [...prevObjectives, newObjective]);
+      setNewObjective("");
+    }
   };
-
   const handleNewObjectiveChange = (e) => {
     setNewObjective(e.target.value);
   };
@@ -81,21 +81,34 @@ export default function Goals() {
       const [month, year] = monthYear.split("/");
       const objectives = objectivesData[monthYear] as Objective;
 
-      Object.keys(objectives).forEach((goalName) => {
+      const nonEmptyObjectives = Object.keys(objectives).filter((goalName) => {
         const value = objectives[goalName];
-        goals.push({ objetivo: goalName, mes: month, ano: year, valor: value });
+        return value.trim() !== "";
       });
+
+      if (nonEmptyObjectives.length > 0) {
+        nonEmptyObjectives.forEach((goalName) => {
+          const value = objectives[goalName];
+          goals.push({
+            objetivo: goalName,
+            mes: month,
+            ano: year,
+            valor: value,
+          });
+        });
+      }
     });
 
     const data = new URLSearchParams();
     data.append("goals", JSON.stringify(goals));
     data.append("email", session?.user?.email);
+    data.append("year", selectedYear.toString());
 
-    console.log(JSON.stringify(goals));
+    // console.log(JSON.stringify(goals));
 
     try {
       const response = await fetch(
-        `/api/users_goals?email=${session?.user?.email}`,
+        `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`,
         {
           method: "POST",
           headers: {
@@ -149,8 +162,6 @@ export default function Goals() {
     }
   }, [session, selectedYear]);
 
-  console.log(objectives);
-
   function handleDeleteObjective(obj) {
     setObjectives((prevObjectives) => prevObjectives.filter((o) => o !== obj));
 
@@ -178,7 +189,6 @@ export default function Goals() {
         value={selectedYear}
         onChange={(event) => handleYearButtonClick(Number(event.target.value))}
       >
-        <option value="">Selecione um ano</option>
         {[2023, 2024, 2025].map((year) => (
           <option key={year} value={year}>
             {year}
@@ -219,18 +229,16 @@ export default function Goals() {
               <thead>
                 <tr>
                   <th className="px-4 py-2">Detalhe suas ações</th>
-                  {objectives.map((obj) => (
-                    <>
-                      <th className="px-4 py-2" key={obj}>
-                        {obj}
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
-                          onClick={() => handleDeleteObjective(obj)}
-                        >
-                          X
-                        </button>
-                      </th>
-                    </>
+                  {objectives.map((obj, index) => (
+                    <th className="px-4 py-2" key={`${obj}_${index}`}>
+                      {obj}
+                      <button
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                        onClick={() => handleDeleteObjective(obj)}
+                      >
+                        X
+                      </button>
+                    </th>
                   ))}
                 </tr>
               </thead>
