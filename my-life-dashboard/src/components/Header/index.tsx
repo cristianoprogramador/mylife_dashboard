@@ -7,10 +7,10 @@ import { RiLogoutBoxRLine } from "react-icons/ri";
 
 export function Header() {
   // Aqui você pode definir as informações de login do usuário, como a foto e o nome
-  const userTest = {
-    name: "Cristiano",
-    avatar_url: "https://avatars.githubusercontent.com/u/102186472?v=4",
-  };
+  // const userTest = {
+  //   name: "Cristiano",
+  //   avatar_url: "https://avatars.githubusercontent.com/u/102186472?v=4",
+  // };
   // const { user } = useContext(AuthContext);
   // console.log(user);
 
