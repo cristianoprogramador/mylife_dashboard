@@ -1,9 +1,48 @@
+import Dropzone from "react-dropzone";
+import { useCallback, useState } from "react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import axios from "axios";
+
 type ProfileProps = {
   onGoBackClick: () => void;
 };
 
 export default function Profile(props: ProfileProps) {
   const { onGoBackClick } = props;
+  const { data: session } = useSession();
+  const [showDefaultImage, setShowDefaultImage] = useState(true);
+
+  const [image, setImage] = useState<File | null>(null);
+  const handleDrop = (acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      setImage(acceptedFiles[0]);
+      setShowDefaultImage(false);
+      console.log(acceptedFiles[0]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", image);
+      console.log("TA INDO ALGO", image);
+
+      const response = await axios.post(
+        `/api/upload?email=${session?.user?.email}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Image uploaded:", response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="bg-gray-100 p-6">
@@ -19,6 +58,36 @@ export default function Profile(props: ProfileProps) {
       <p className="text-lg mb-4">
         Aqui você pode visualizar seus dados de conta.
       </p>
+      <h1>{session?.user?.name}'s Profile</h1>
+      {showDefaultImage && (
+        <div>
+          <Image
+            src={session?.user?.image}
+            height={200}
+            width={200}
+            alt="Imagem"
+          />
+        </div>
+      )}
+      {image && (
+        <div>
+          <Image
+            src={URL.createObjectURL(image)}
+            alt="Imagem selecionada"
+            height={200}
+            width={200}
+          />
+        </div>
+      )}
+      <Dropzone onDrop={handleDrop}>
+        {({ getRootProps, getInputProps }) => (
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <p style={{ cursor: "pointer" }}>Selecionar Foto</p>
+          </div>
+        )}
+      </Dropzone>
+      <button onClick={handleSubmit}>Upload</button>
     </div>
   );
 }

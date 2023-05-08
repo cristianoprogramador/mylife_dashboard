@@ -30,8 +30,8 @@ export const createUser = async (
     }
 
     const [result] = await conn.execute(
-      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-      [name, email, hashedPassword]
+      "INSERT INTO users (name, email, password, image) VALUES (?, ?, ?, ?)",
+      [name, email, hashedPassword, "/person.svg"]
     );
 
     return { userId: result.insertId };
@@ -58,7 +58,7 @@ export const loginUser = async (email: string, password: string) => {
       throw new Error("Senha incorreta");
     }
     // Retorna um objeto com as informações do usuário
-    return { name: user.name, email: user.email, image: "/person.svg" };
+    return { name: user.name, email: user.email, image: user.image };
   } catch (error) {
     console.error(error);
     throw error;
