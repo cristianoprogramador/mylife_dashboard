@@ -24,23 +24,19 @@ export default function Profile(props: ProfileProps) {
 
   const handleSubmit = async () => {
     try {
+      if (!image) return;
       const formData = new FormData();
-      formData.append("file", image);
+      formData.append("myImage", image);
       console.log("TA INDO ALGO", image);
 
-      const response = await axios.post(
+      const { data } = await axios.post(
         `/api/upload?email=${session?.user?.email}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
 
-      console.log("Image uploaded:", response.data);
-    } catch (error) {
-      console.error(error);
+      console.log("Image uploaded:", data);
+    } catch (error: any) {
+      console.log(error.response?.data);
     }
   };
 
