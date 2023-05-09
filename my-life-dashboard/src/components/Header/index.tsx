@@ -1,34 +1,37 @@
 import { AuthContext } from "@/contexts/AuthContext";
+import axios from "axios";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 
-export function Header() {
-  // Aqui você pode definir as informações de login do usuário, como a foto e o nome
-  // const userTest = {
-  //   name: "Cristiano",
-  //   avatar_url: "https://avatars.githubusercontent.com/u/102186472?v=4",
-  // };
-  // const { user } = useContext(AuthContext);
-  // console.log(user);
+interface ProfileProps {
+  name: string;
+  image: string;
+}
 
+export function Header() {
   const { data: session } = useSession();
+  // console.log(session?.user?.image);
+  // const [userData, setUserData] = useState<ProfileProps | null>(null);
+
+  const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
+  // console.log(dataProfile);
 
   return (
     <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
       <div className="flex  items-center">
-        {session?.user?.image ? (
+        {dataProfile ? (
           <>
             <Image
-              src={session?.user?.image}
+              src={dataProfile?.image}
               width={50}
               height={50}
-              style={{ objectFit: "contain", borderRadius: "20px" }}
+              style={{ borderRadius: "25px" }}
               alt="thumbnail"
             />
-            <h1 className="ml-4">Olá {session?.user?.name}, seja bem vindo!</h1>
+            <h1 className="ml-4">Olá {dataProfile?.name}, seja bem vindo!</h1>
           </>
         ) : (
           <h1 className="ml-4">Olá, entre com sua conta!</h1>

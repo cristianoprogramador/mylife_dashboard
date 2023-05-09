@@ -13,6 +13,9 @@ export default function Profile(props: ProfileProps) {
   const { data: session } = useSession();
   const [showDefaultImage, setShowDefaultImage] = useState(true);
 
+  const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
+  console.log(dataProfile);
+
   const [image, setImage] = useState<File | null>(null);
   const handleDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -54,11 +57,11 @@ export default function Profile(props: ProfileProps) {
       <p className="text-lg mb-4">
         Aqui você pode visualizar seus dados de conta.
       </p>
-      <h1>{session?.user?.name}'s Profile</h1>
+      <h1>Perfil do {dataProfile.name}</h1>
       {showDefaultImage && (
         <div>
           <Image
-            src={session?.user?.image}
+            src={dataProfile.image}
             height={200}
             width={200}
             alt="Imagem"

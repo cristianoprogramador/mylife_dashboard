@@ -150,8 +150,6 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  const users = await getUsers();
-
   // console.log("TEM ALGO", users);
 
   if (session) {

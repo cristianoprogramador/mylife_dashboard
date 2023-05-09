@@ -25,8 +25,8 @@ const readFile = (
   if (saveLocally) {
     options.uploadDir = path.join(process.cwd(), "/public/images");
     options.filename = (name, ext, path, form) => {
-      fileName =
-        "/images/" + Date.now().toString() + "_" + path.originalFilename;
+      fileName = Date.now().toString() + "_" + path.originalFilename;
+
       return fileName;
     };
   }
@@ -45,7 +45,7 @@ const updateUserImage = async (email: string, image: string) => {
     const conn = await connection();
     const [rows] = await conn.execute(
       `UPDATE users SET image = ? WHERE email = ?`,
-      [image, email]
+      ["/images/" + image, email]
     );
     conn.end();
     return rows.affectedRows > 0;

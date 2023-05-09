@@ -66,3 +66,57 @@ export const loginUser = async (email: string, password: string) => {
     conn.end();
   }
 };
+
+export const createUserProvider = async (
+  name: string,
+  email: string,
+  password: string,
+  image: string
+) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const conn = await connection();
+
+  try {
+    const [rows] = await conn.execute("SELECT id FROM users WHERE email = ?", [
+      email,
+    ]);
+
+    if (rows.length > 0) {
+      return { error: "E-mail já existe, tentar outro!" };
+    }
+
+    const [result] = await conn.execute(
+      "INSERT INTO users (name, email, password, image) VALUES (?, ?, ?, ?)",
+      [name, email, hashedPassword, image]
+    );
+
+    return { userId: result.insertId };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    conn.end();
+  }
+};
+
+export const createUserFromProvider = async (user: any) => {
+  const { name, email, image } = user;
+  // Use a default password for new users
+  const password = "defaultPassword";
+
+  try {
+    const result = await createUserProvider(name, email, password, image);
+    // If a new user was successfully created, return their user object
+    if (result.userId) {
+      return {
+        name,
+        email,
+        image,
+      };
+    }
+  } catch (error) {
+    console.error(error);
+    // If an error occurred, throw it to be caught by the signIn callback
+    throw new Error("Failed to create new user");
+  }
+};
