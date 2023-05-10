@@ -1,8 +1,10 @@
+import LightDarkMode from "@/components/LightDarkMode";
 import Profile from "@/components/Profile";
+import UserContext from "@/contexts/userContext";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { FaCog, FaBell, FaUser, FaGithub } from "react-icons/fa";
 
 export default function Config() {
@@ -12,6 +14,7 @@ export default function Config() {
     { label: "Dados da Conta", icon: <FaUser size={25} /> },
     { label: "Código no GitHub", icon: <FaGithub size={25} /> },
   ];
+  const { theme, toggleTheme } = useContext(UserContext);
 
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -26,20 +29,7 @@ export default function Config() {
   const renderOptionScreen = () => {
     switch (selectedOption) {
       case "Tema":
-        return (
-          <div className="bg-gray-100 p-6">
-            <h1 className="text-2xl font-bold mb-4">Tema</h1>
-            <p className="text-lg mb-4">
-              Aqui você pode escolher o tema do site.
-            </p>
-            <button
-              onClick={handleGoBackClick}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-            >
-              Voltar
-            </button>
-          </div>
-        );
+        return <LightDarkMode onGoBackClick={handleGoBackClick} />;
       case "Notificações":
         return (
           <div className="bg-gray-100 p-6">

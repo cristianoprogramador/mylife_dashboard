@@ -9,45 +9,41 @@ interface UserProviderProps {
 type User = {
   name: string;
   image: string;
+  toggleTheme: () => void;
 };
 
 type UserContextType = {
   user: User | null;
   setUser: (user: User | null) => void;
+  theme: string;
+  toggleTheme: () => void;
 };
 
 const UserContext = createContext<UserContextType>({
   user: null,
   setUser: () => {},
+  theme: "light",
+  toggleTheme: () => {},
 });
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const { data: session } = useSession();
+  const [theme, setTheme] = useState("light");
 
-  const fetchUser = async () => {
-    try {
-      const { data } = await axios.get(
-        `/api/users?email=${session?.user?.email}`
-      );
-      setUser(data);
-      localStorage.setItem("userData", JSON.stringify(data));
-    } catch (error: any) {
-      console.log(error.response?.data);
-    }
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
   };
 
-  useEffect(() => {
-    if (isFirstLoad) {
-      fetchUser();
-      setIsFirstLoad(false);
-      console.log("Executou o Contexto");
-    }
-  }, [isFirstLoad]);
-
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        theme,
+        toggleTheme,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

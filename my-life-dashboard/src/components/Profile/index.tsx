@@ -1,8 +1,9 @@
 import Dropzone from "react-dropzone";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import axios from "axios";
+import UserContext from "@/contexts/userContext";
 
 type ProfileProps = {
   onGoBackClick: () => void;
@@ -38,6 +39,9 @@ export default function Profile(props: ProfileProps) {
       );
 
       console.log("Image uploaded:", data);
+      window.location.reload();
+
+      // fetchUser();
     } catch (error: any) {
       console.log(error.response?.data);
     }
@@ -54,20 +58,21 @@ export default function Profile(props: ProfileProps) {
       });
 
       console.log("Name updated:", newName);
+      window.location.reload();
+
+      // fetchUser();
     } catch (error: any) {
       console.log(error.response?.data);
     }
   };
-
-  console.log(image);
 
   const handleNameChange = (e: any) => {
     setNewName(e.target.value);
   };
 
   return (
-    <div className="bg-gray-100 p-6">
-      <div className="flex flex-row items-center text-center gap-3 mb-4">
+    <div className="bg-gray-100 p-6 flex flex-col items-center">
+      <div className="flex flex-row w-full justify-start gap-3 mb-4">
         <button
           onClick={onGoBackClick}
           className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
@@ -81,24 +86,24 @@ export default function Profile(props: ProfileProps) {
       </p>
 
       {showDefaultImage && (
-        <div className="flex justify-center">
+        <div className="flex justify-center h-40 w-40">
           <Image
             src={dataProfile.image}
-            height={200}
-            width={200}
+            height={160}
+            width={160}
             alt="Imagem"
-            style={{ borderRadius: "100px" }}
+            style={{ borderRadius: "80px", objectFit: "cover" }}
           />
         </div>
       )}
       {image && (
-        <div>
+        <div className="flex justify-center h-40 w-40">
           <Image
             src={URL.createObjectURL(image)}
             alt="Imagem selecionada"
-            height={200}
-            width={200}
-            style={{ borderRadius: "100px" }}
+            height={160}
+            width={160}
+            style={{ borderRadius: "80px", objectFit: "cover" }}
           />
         </div>
       )}
@@ -112,7 +117,7 @@ export default function Profile(props: ProfileProps) {
             <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 cursor-pointer flex justify-center">
               Selecionar Foto
             </button>
-            {!image && (
+            {image && (
               <button
                 className="mt-4 bg-green-500 text-white py-2 px-10 rounded-lg hover:bg-green-600"
                 onClick={handleSubmit}
@@ -124,7 +129,7 @@ export default function Profile(props: ProfileProps) {
         )}
       </Dropzone>
 
-      <div className="mt-4 flex flex-row justify-between">
+      <div className="mt-4 flex flex-row justify-around w-full">
         <label htmlFor="name" className="block font-medium text-gray-700">
           Nome
         </label>
