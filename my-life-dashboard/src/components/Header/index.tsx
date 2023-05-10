@@ -16,8 +16,18 @@ export function Header() {
   // console.log(session?.user?.image);
   // const [userData, setUserData] = useState<ProfileProps | null>(null);
 
-  const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
+  const dataProfile =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("userData") || "null")
+      : null;
   // console.log(dataProfile);
+
+  function handleLogout() {
+    localStorage.removeItem("userData");
+    signOut();
+  }
+
+  // console.log("VEIO IMAGE", dataProfile?.image);
 
   return (
     <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
@@ -39,7 +49,7 @@ export function Header() {
       </div>
       <Link href="/" className="flex flex-row cursor-pointer">
         <RiLogoutBoxRLine className="mr-1" size={25} />
-        <button onClick={() => signOut()}>Logout</button>
+        <button onClick={handleLogout}>Logout</button>
       </Link>
     </header>
   );

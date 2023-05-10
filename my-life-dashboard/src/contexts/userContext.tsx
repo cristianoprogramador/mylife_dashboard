@@ -26,8 +26,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const { data: session } = useSession();
 
-  console.log("TA NO CONTEXT", user);
-
   const fetchUser = async () => {
     try {
       const { data } = await axios.get(
@@ -44,6 +42,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     if (isFirstLoad) {
       fetchUser();
       setIsFirstLoad(false);
+      console.log("Executou o Contexto");
     }
   }, [isFirstLoad]);
 

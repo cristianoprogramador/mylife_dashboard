@@ -12,9 +12,10 @@ export default function Profile(props: ProfileProps) {
   const { onGoBackClick } = props;
   const { data: session } = useSession();
   const [showDefaultImage, setShowDefaultImage] = useState(true);
+  const [newName, setNewName] = useState("");
 
   const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
-  console.log(dataProfile);
+  // console.log(dataProfile);
 
   const [image, setImage] = useState<File | null>(null);
   const handleDrop = (acceptedFiles: File[]) => {
@@ -30,7 +31,6 @@ export default function Profile(props: ProfileProps) {
       if (!image) return;
       const formData = new FormData();
       formData.append("myImage", image);
-      console.log("TA INDO ALGO", image);
 
       const { data } = await axios.post(
         `/api/upload?email=${session?.user?.email}`,
@@ -41,6 +41,28 @@ export default function Profile(props: ProfileProps) {
     } catch (error: any) {
       console.log(error.response?.data);
     }
+  };
+
+  const handleSubmitName = async () => {
+    try {
+      if (!newName || newName === dataProfile.name) {
+        return;
+      }
+      console.log(newName);
+      await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
+        name: newName,
+      });
+
+      console.log("Name updated:", newName);
+    } catch (error: any) {
+      console.log(error.response?.data);
+    }
+  };
+
+  console.log(image);
+
+  const handleNameChange = (e: any) => {
+    setNewName(e.target.value);
   };
 
   return (
@@ -57,14 +79,15 @@ export default function Profile(props: ProfileProps) {
       <p className="text-lg mb-4">
         Aqui você pode visualizar seus dados de conta.
       </p>
-      <h1>Perfil do {dataProfile.name}</h1>
+
       {showDefaultImage && (
-        <div>
+        <div className="flex justify-center">
           <Image
             src={dataProfile.image}
             height={200}
             width={200}
             alt="Imagem"
+            style={{ borderRadius: "100px" }}
           />
         </div>
       )}
@@ -75,18 +98,53 @@ export default function Profile(props: ProfileProps) {
             alt="Imagem selecionada"
             height={200}
             width={200}
+            style={{ borderRadius: "100px" }}
           />
         </div>
       )}
       <Dropzone onDrop={handleDrop}>
         {({ getRootProps, getInputProps }) => (
-          <div {...getRootProps()}>
+          <div
+            className="flex flex-row justify-center items-center gap-3"
+            {...getRootProps()}
+          >
             <input {...getInputProps()} />
-            <p style={{ cursor: "pointer" }}>Selecionar Foto</p>
+            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 cursor-pointer flex justify-center">
+              Selecionar Foto
+            </button>
+            {!image && (
+              <button
+                className="mt-4 bg-green-500 text-white py-2 px-10 rounded-lg hover:bg-green-600"
+                onClick={handleSubmit}
+              >
+                Salvar no Servidor
+              </button>
+            )}
           </div>
         )}
       </Dropzone>
-      <button onClick={handleSubmit}>Upload</button>
+
+      <div className="mt-4 flex flex-row justify-between">
+        <label htmlFor="name" className="block font-medium text-gray-700">
+          Nome
+        </label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          className="mt-1 block rounded-md bg-gray-200 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-center"
+          value={newName || dataProfile.name}
+          onChange={handleNameChange}
+        />
+      </div>
+      <div className="mt-4 flex justify-center">
+        <button
+          className="mt-4 bg-green-500 text-white py-2 px-10 rounded-lg hover:bg-green-600"
+          onClick={handleSubmitName}
+        >
+          Atualizar Nome
+        </button>
+      </div>
     </div>
   );
 }

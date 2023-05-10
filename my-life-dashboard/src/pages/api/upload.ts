@@ -55,6 +55,21 @@ const updateUserImage = async (email: string, image: string) => {
   }
 };
 
+const updateUser = async (email: string, newName: string) => {
+  try {
+    const conn = await connection();
+    const [rows] = await conn.execute(
+      `UPDATE users SET name = ? WHERE email = ?`,
+      [newName, email]
+    );
+    conn.end();
+    return rows.affectedRows > 0;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 const handler: NextApiHandler = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
 
@@ -67,6 +82,22 @@ const handler: NextApiHandler = async (req, res) => {
     console.log("EMAIL DA SESSAO", session.user?.email);
     console.log(req.query.email);
     return res.status(403).json({ message: "Forbidden" });
+  }
+
+  if (req.method === "PUT") {
+    console.log(req.body);
+    if (!req.body || !req.body.name) {
+      return res.status(400).json({ message: "Missing name field" });
+    }
+
+    const { name } = req.body;
+    try {
+      await updateUser(req.query.email as string, { name });
+      res.status(200).json({ message: "Dados salvos com sucesso!" });
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+      res.status(500).json({ message: "Erro ao salvar dados" });
+    }
   }
 
   try {
