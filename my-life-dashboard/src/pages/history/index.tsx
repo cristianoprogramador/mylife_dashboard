@@ -5,6 +5,7 @@ import { getSession, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { NumericFormat } from "react-number-format";
 import Head from "next/head";
+import { useTheme } from "next-themes";
 
 type RowData = {
   Data: number;
@@ -222,14 +223,35 @@ export default function History() {
     }
   };
 
+  const { theme, setTheme } = useTheme();
+
+  const bgColor = theme === "dark" ? "bg-gray-400" : "bg-white";
+  const bgColorTable = theme === "dark" ? "bg-gray-300" : "bg-blue-200";
+  const bgColorHover =
+    theme === "dark"
+      ? "border-b border-gray-200 hover:bg-gray-400"
+      : "border-b border-gray-200 hover:bg-blue-100";
+  const bgColorButtonBlue =
+    theme === "dark"
+      ? "py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+  const bgColorButtonRed =
+    theme === "dark"
+      ? "py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+  const bgColorButtonGreen =
+    theme === "dark"
+      ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+
   return (
-    <div>
+    <div className={`${bgColor} p-8 rounded-md`}>
       <Head>
         <title>Histórico de Gasto</title>
       </Head>
-      <div className="flex flex-row justify-between">
-        <div>
-          <label className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+      <div className="flex flex-row justify-between ">
+        <div className="flex gap-3">
+          <label className={`${bgColorButtonBlue}`}>
             <span>Selecionar arquivo</span>
             <input
               type="file"
@@ -239,17 +261,14 @@ export default function History() {
             />
           </label>
           <button
-            className="py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 ml-5"
+            className={`${bgColorButtonRed}`}
             onClick={() => setRowData([])}
           >
             Limpar dados
           </button>
         </div>
         <div>
-          <button
-            onClick={downloadFile}
-            className="py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 ml-5"
-          >
+          <button onClick={downloadFile} className={`${bgColorButtonGreen}`}>
             Download da Tabela Exemplo
           </button>
         </div>
@@ -365,7 +384,7 @@ export default function History() {
             <button
               type="button"
               onClick={handleAddRow}
-              className="px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-28"
+              className={`${bgColorButtonBlue}`}
             >
               Adicionar na Lista
             </button>
@@ -374,7 +393,7 @@ export default function History() {
             <button
               type="button"
               onClick={saveToServer}
-              className="px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out h-14 w-28 mr-3"
+              className={`${bgColorButtonGreen}`}
             >
               Salvar no Servidor
             </button>
@@ -382,9 +401,9 @@ export default function History() {
         </div>
       </form>
       <div className="bg-white shadow-md rounded overflow-x-auto mt-9">
-        <table className="min-w-max w-full table-auto">
+        <table className="min-w-max w-full table-auto text-black">
           <thead>
-            <tr className="bg-blue-200 text-xs leading-normal">
+            <tr className={`${bgColorTable} text-xs leading-normal`}>
               <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
                 Data
               </th>
@@ -421,10 +440,7 @@ export default function History() {
                 const formattedDate = format(jsDate, "dd/MM/yyyy");
 
                 return (
-                  <tr
-                    className="border-b border-gray-200 hover:bg-blue-100"
-                    key={index}
-                  >
+                  <tr className={` ${bgColorHover}`} key={index}>
                     <td className="py-3 px-3 text-center ">{formattedDate}</td>
                     <td className="py-3 px-3 text-center ">{row.Descrição}</td>
                     <td className="py-3 px-3 text-center ">{row.Obs}</td>
@@ -442,7 +458,7 @@ export default function History() {
                     </td> */}
                     <td className="py-3 px-3 text-center">
                       <button
-                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                        className={`${bgColorButtonRed}`}
                         onClick={() => handleDeleteRow(index)}
                       >
                         Excluir

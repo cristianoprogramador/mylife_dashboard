@@ -1,6 +1,7 @@
 import { data } from "autoprefixer";
 import { addMonths, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useTheme } from "next-themes";
 
 export function ForecastBalance({
   month,
@@ -39,7 +40,13 @@ export function ForecastBalance({
     investments += avgInvestment;
   }
 
-  // console.log(tableData);
+  const { theme, setTheme } = useTheme();
+
+  const bgColor = theme === "dark" ? "bg-gray-300" : "bg-blue-200";
+  const bgColorHover =
+    theme === "dark"
+      ? "border-b border-gray-200 hover:bg-gray-400"
+      : "border-b border-gray-200 hover:bg-blue-100";
 
   return (
     <>
@@ -47,9 +54,9 @@ export function ForecastBalance({
         Projeção baseado na Média
       </div>
       <div className="bg-white shadow-md rounded overflow-x-auto">
-        <table className="min-w-max w-full table-auto">
+        <table className="min-w-max w-full table-auto text-black">
           <thead>
-            <tr className="bg-blue-200 text-xs leading-normal">
+            <tr className={`${bgColor} text-xs leading-normal`}>
               <th className="py-3 px-3 text-center">Mês</th>
               <th className="py-3 px-3 text-center">Conta Corrente</th>
               <th className="py-3 px-3 text-center">Total Investido</th>
@@ -58,10 +65,7 @@ export function ForecastBalance({
           </thead>
           <tbody className=" text-sm">
             {tableData.map((data) => (
-              <tr
-                className="border-b border-gray-200 hover:bg-blue-100"
-                key={data.month}
-              >
+              <tr className={` ${bgColorHover}`} key={data.month}>
                 <td className="py-3 px-3 text-center ">{data.month}</td>
                 <td className="py-3 px-3 text-center ">
                   R$:{" "}

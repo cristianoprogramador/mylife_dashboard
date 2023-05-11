@@ -1,10 +1,12 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import axios from "axios";
 import { signOut, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useState, useEffect } from "react";
 import { RiLogoutBoxRLine } from "react-icons/ri";
+import { MdOutlineLightMode, MdOutlineNightlight } from "react-icons/md";
 
 interface ProfileProps {
   name: string;
@@ -15,6 +17,7 @@ export function Header() {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [dataProfile, setDataProfile] = useState<ProfileProps | null>(null);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     async function fetchDataProfile() {
@@ -24,6 +27,10 @@ export function Header() {
     }
     fetchDataProfile();
   }, []);
+
+  const handleChange = (option: string) => {
+    setTheme(option);
+  };
 
   async function getUserDataProfile() {
     const dataProfile =
@@ -58,16 +65,28 @@ export function Header() {
   }
 
   return (
-    <header className=" bg-gradient-to-r from-blue-500 from-20% via-blue-600 via-30% to-blue-600 flex items-center justify-between p-4 text-white rounded-br-2xl">
+    <header
+      className={`bg-gradient-to-r ${
+        theme === "dark"
+          ? "from-gray-700 from-20% via-gray-800 to-black"
+          : "from-blue-500 from-20% via-blue-600 via-30% to-blue-600"
+      } flex items-center justify-between p-4 text-white rounded-br-2xl`}
+    >
       <div className="flex items-center">
         {dataProfile ? (
           <>
             <div className="flex justify-center h-14 w-14">
               <Image
                 src={dataProfile?.image}
-                width={50}
-                height={50}
-                style={{ borderRadius: "25px", objectFit: "cover" }}
+                width={0}
+                height={0}
+                sizes="100vw"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
                 alt="thumbnail"
               />
             </div>
@@ -82,6 +101,19 @@ export function Header() {
         )}
       </div>
       <Link href="/" className="flex flex-row cursor-pointer">
+        {theme === "dark" ? (
+          <MdOutlineNightlight
+            className="mr-8"
+            size={25}
+            onClick={() => handleChange("light")}
+          />
+        ) : (
+          <MdOutlineLightMode
+            className="mr-8"
+            size={25}
+            onClick={() => handleChange("dark")}
+          />
+        )}
         <RiLogoutBoxRLine className="mr-1" size={25} />
         <button onClick={handleLogout}>Logout</button>
       </Link>

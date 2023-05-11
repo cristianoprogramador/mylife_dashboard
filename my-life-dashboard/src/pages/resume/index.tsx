@@ -5,6 +5,7 @@ import { format, differenceInDays } from "date-fns";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import Head from "next/head";
+import { useTheme } from "next-themes";
 
 export default function Resume() {
   const [today, setToday] = useState(2500);
@@ -133,14 +134,19 @@ export default function Resume() {
 
   const investmentsOfMonth = stocksInvestiment + investments;
 
+  const { theme, setTheme } = useTheme();
+
+  const bgColor = theme === "dark" ? "bg-slate-600" : "bg-blue-600";
+  const bgColorTotals = theme === "dark" ? "bg-gray-900" : "bg-white";
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col items-center">
       <Head>
         <title>Resumo</title>
       </Head>
       <div className="flex flex-row gap-2 p-2">
         {/* Primeiro Bloco */}
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col w-96">
+        <div className={`${bgColor} rounded-lg p-4 flex flex-col w-96`}>
           <div className="font-bold text-white text-lg mb-2 text-center ">
             Status Geral
           </div>
@@ -180,13 +186,15 @@ export default function Resume() {
             <div className="font-bold text-white text-base">
               Total Patrimônio Hoje
             </div>
-            <div className="bg-white rounded-lg flex p-1  justify-center">
+            <div
+              className={`${bgColorTotals} rounded-lg flex p-1 px-3 justify-center`}
+            >
               {total}
             </div>
           </div>
         </div>
         {/* Segundo Bloco */}
-        <div className="bg-blue-600 rounded-lg  flex flex-col gap-2 w-96 p-4">
+        <div className={`${bgColor} rounded-lg  flex flex-col gap-2 w-96 p-4`}>
           <div className="flex flex-row  ">
             <div className="flex flex-1 justify-center items-center flex-col">
               <div className="font-bold text-white text-base mb-2 text-center ">
@@ -217,13 +225,15 @@ export default function Resume() {
               <div className="font-bold text-white text-base mb-2 text-center ">
                 Valor Sobrando
               </div>
-              <div className="bg-white p-3 rounded-lg">{formattedValue}</div>
+              <div className={`${bgColorTotals} p-3 rounded-lg`}>
+                {formattedValue}
+              </div>
             </div>
             <div className="flex flex-1 justify-center items-center flex-col">
               <div className="font-bold text-white text-base mb-2 text-center ">
                 Valor por Dia
               </div>
-              <div className="bg-white p-3 rounded-lg">
+              <div className={`${bgColorTotals} p-3 rounded-lg`}>
                 {formattedValuePerDay}
               </div>
             </div>
@@ -242,7 +252,7 @@ export default function Resume() {
       </div>
       {/* Terceiro Bloco */}
       <div className="flex flex-row gap-2 p-2">
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-3 w-80">
+        <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-80`}>
           <div className="font-bold text-white text-lg mb-2 text-center">
             Contas do Mês x Média Anual
           </div>
@@ -426,17 +436,21 @@ export default function Resume() {
               Total
             </div>
             <div className="flex gap-2 flex-row">
-              <div className="bg-white rounded-lg flex p-3 w-30  justify-center">
+              <div
+                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+              >
                 {totalCurrentFormatted}
               </div>
-              <div className="bg-white rounded-lg flex p-3 w-30  justify-center">
+              <div
+                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+              >
                 {totalAverageFormatted}
               </div>
             </div>
           </div>
         </div>
         {/* AQUI */}
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-3 w-96">
+        <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-96`}>
           <div className="font-bold text-white text-lg mb-2 text-center">
             Valor atual x Limite Estabelecido
           </div>
@@ -499,10 +513,14 @@ export default function Resume() {
               Total dos Cartões
             </div>
             <div className="flex gap-2 flex-row">
-              <div className="bg-white rounded-lg flex p-3 w-30  justify-center">
+              <div
+                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+              >
                 {totalCardsCurrentFormatted}
               </div>
-              <div className="bg-white rounded-lg flex p-3 w-30  justify-center">
+              <div
+                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+              >
                 {totalCardsAverageFormatted}
               </div>
             </div>
@@ -526,7 +544,9 @@ export default function Resume() {
               />
             </div>
           </div>
-          <div className="bg-blue-800 rounded-lg p-4 flex flex-col gap-3">
+          <div
+            className={`${bgColor} border-2 rounded-lg p-4 flex flex-col gap-3`}
+          >
             <div className="flex flex-1 justify-center items-center">
               <div className="flex  justify-center items-center flex-col w-1/2">
                 <div className="font-bold text-white text-base text-center">
@@ -542,7 +562,7 @@ export default function Resume() {
                     prefix="R$ "
                     allowNegative={false}
                     value={stocksInvestiment}
-                    className="rounded-lg p-2 text-center w-20  flex justify-center align-middle"
+                    className="rounded-lg p-2 text-center w-20 flex justify-center align-middle"
                     onValueChange={(values) => {
                       setStocksInvestiment(parseFloat(values.floatValue));
                     }}
@@ -589,7 +609,7 @@ export default function Resume() {
           </div>
         </div>
         {/* Quarto Bloco */}
-        <div className="bg-blue-600 rounded-lg p-4 flex flex-col gap-3">
+        <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3`}>
           <ForecastBalance
             month={finalDate}
             currentAccount={currentAccount}
