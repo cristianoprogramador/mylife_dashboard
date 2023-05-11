@@ -1,6 +1,7 @@
 import UserContext from "@/contexts/userContext";
 import Image from "next/image";
 import { useContext, useState } from "react";
+import { useTheme } from "next-themes";
 
 type GoBackProps = {
   onGoBackClick: () => void;
@@ -8,12 +9,13 @@ type GoBackProps = {
 
 export default function LightDarkMode(props: GoBackProps) {
   const { onGoBackClick } = props;
-  const { theme, toggleTheme } = useContext(UserContext);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState("light");
+
+  const { theme, setTheme } = useTheme();
 
   const handleChange = (option: string) => {
     setSelectedOption(option);
-    toggleTheme(option);
+    setTheme(option);
   };
 
   console.log(theme);
@@ -29,10 +31,14 @@ export default function LightDarkMode(props: GoBackProps) {
         </button>
         <h1 className="text-2xl font-bold">Altere o Tema:</h1>
       </div>
-      <div className="flex items-center justify-center  gap-6">
+      <div className="flex items-center justify-between gap-6 m-3 w-fit">
         <label
           htmlFor="darkMode"
-          className="flex flex-col items-center cursor-pointer"
+          className={`flex flex-col items-center cursor-pointer ${
+            selectedOption === "dark"
+              ? "border-4 border-blue-900 p-2 rounded-lg"
+              : "p-3 "
+          }`}
         >
           <Image
             src="/noite.jpg"
@@ -61,7 +67,11 @@ export default function LightDarkMode(props: GoBackProps) {
         </label>
         <label
           htmlFor="lightMode"
-          className="flex flex-col items-center cursor-pointer"
+          className={`flex flex-col items-center cursor-pointer ${
+            selectedOption === "light"
+              ? "border-4 border-blue-300 p-2 rounded-lg"
+              : "p-3 "
+          }`}
         >
           <Image
             src="/dia.jpg"

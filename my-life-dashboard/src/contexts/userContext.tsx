@@ -35,6 +35,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
+  console.log("NO CONTEXT", theme);
+
   return (
     <UserContext.Provider
       value={{
