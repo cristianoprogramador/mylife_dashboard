@@ -225,11 +225,11 @@ export default function History() {
 
   const { theme, setTheme } = useTheme();
 
-  const bgColor = theme === "dark" ? "bg-gray-400" : "bg-white";
-  const bgColorTable = theme === "dark" ? "bg-gray-300" : "bg-blue-200";
+  const bgColor = theme === "dark" ? "bg-gray-600" : "bg-white";
+  const bgColorTable = theme === "dark" ? "bg-gray-100" : "bg-blue-200";
   const bgColorHover =
     theme === "dark"
-      ? "border-b border-gray-200 hover:bg-gray-400"
+      ? "border-b border-gray-200 hover:bg-gray-400 text-white"
       : "border-b border-gray-200 hover:bg-blue-100";
   const bgColorButtonBlue =
     theme === "dark"
@@ -277,14 +277,11 @@ export default function History() {
       <form className="mt-9">
         <div className="grid grid-cols-4 gap-4">
           <div className="col-span-1">
-            <label
-              className="block text-gray-700 font-bold mb-2"
-              htmlFor="Data"
-            >
+            <label className="block  font-bold mb-2" htmlFor="Data">
               Data
             </label>
             <input
-              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              className="w-full px-4 py-2 border rounded-lg shadow-md "
               type="date"
               id="date"
               name="date"
@@ -293,14 +290,11 @@ export default function History() {
             />
           </div>
           <div className="col-span-1">
-            <label
-              className="block text-gray-700 font-bold mb-2"
-              htmlFor="Descrição"
-            >
+            <label className="block  font-bold mb-2" htmlFor="Descrição">
               Descrição
             </label>
             <input
-              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              className="w-full px-4 py-2 border rounded-lg shadow-md "
               id="Descrição"
               name="Descrição"
               type="text"
@@ -310,11 +304,11 @@ export default function History() {
             />
           </div>
           <div className="col-span-1">
-            <label className="block text-gray-700 font-bold mb-2" htmlFor="Obs">
+            <label className="block  font-bold mb-2" htmlFor="Obs">
               Obs
             </label>
             <input
-              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              className="w-full px-4 py-2 border rounded-lg shadow-md "
               id="Obs"
               name="Obs"
               type="text"
@@ -323,14 +317,11 @@ export default function History() {
             />
           </div>
           <div className="col-span-1">
-            <label
-              className="block text-gray-700 font-bold mb-2"
-              htmlFor="Tipo"
-            >
+            <label className="block  font-bold mb-2" htmlFor="Tipo">
               Tipo
             </label>
             <input
-              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              className="w-full px-4 py-2 border rounded-lg shadow-md "
               id="Tipo"
               name="Tipo"
               type="text"
@@ -339,14 +330,11 @@ export default function History() {
             />
           </div>
           <div className="col-span-1">
-            <label
-              className="block text-gray-700 font-bold mb-2"
-              htmlFor="Valor"
-            >
+            <label className="block  font-bold mb-2" htmlFor="Valor">
               Valor
             </label>
             <NumericFormat
-              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              className="w-full px-4 py-2 border rounded-lg shadow-md "
               id="Valor"
               name="Valor"
               value={formValues.Valor}
@@ -365,14 +353,11 @@ export default function History() {
             />
           </div>
           <div className="col-span-1">
-            <label
-              className="block text-gray-700 font-bold mb-2"
-              htmlFor="Cartão"
-            >
+            <label className="block  font-bold mb-2" htmlFor="Cartão">
               Cartão
             </label>
             <input
-              className="w-full px-4 py-2 text-gray-700 bg-white border rounded-lg shadow-md focus:outline-none focus:shadow-outline-gray"
+              className="w-full px-4 py-2 border rounded-lg shadow-md "
               id="Cartão"
               name="Cartão"
               type="text"
@@ -400,7 +385,7 @@ export default function History() {
           </div>
         </div>
       </form>
-      <div className="bg-white shadow-md rounded overflow-x-auto mt-9">
+      <div className=" shadow-md rounded overflow-x-auto mt-9">
         <table className="min-w-max w-full table-auto text-black">
           <thead>
             <tr className={`${bgColorTable} text-xs leading-normal`}>
@@ -430,7 +415,7 @@ export default function History() {
               </th>
             </tr>
           </thead>
-          <tbody className=" text-sm">
+          <tbody className="border text-sm">
             {rowData
               .sort((a, b) => b.Data - a.Data)
               .map((row, index) => {

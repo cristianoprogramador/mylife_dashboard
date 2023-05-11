@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import axios from "axios";
 import UserContext from "@/contexts/userContext";
+import { useTheme } from "next-themes";
 
 type ProfileProps = {
   onGoBackClick: () => void;
@@ -70,13 +71,26 @@ export default function Profile(props: ProfileProps) {
     setNewName(e.target.value);
   };
 
+  const { theme, setTheme } = useTheme();
+
+  const bgColor = theme === "dark" ? "bg-gray-700" : "bg-white";
+  const bgColorInput =
+    theme === "dark"
+      ? "mt-1 block rounded-md  border-transparent focus:border-gray-500  focus:ring-0 text-center"
+      : "mt-1 block rounded-md bg-gray-200 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-center";
+  const bgColorButtonGreen =
+    theme === "dark"
+      ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+  const bgColorButtonBlue =
+    theme === "dark"
+      ? "py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+
   return (
-    <div className="bg-gray-100 p-6 flex flex-col items-center">
+    <div className={`${bgColor}  p-6 flex flex-col items-center rounded-md`}>
       <div className="flex flex-row w-full justify-start gap-3 mb-4">
-        <button
-          onClick={onGoBackClick}
-          className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-        >
+        <button onClick={onGoBackClick} className={`${bgColorButtonBlue}`}>
           Voltar
         </button>
         <h1 className="text-2xl font-bold">Dados da Conta:</h1>
@@ -114,12 +128,12 @@ export default function Profile(props: ProfileProps) {
             {...getRootProps()}
           >
             <input {...getInputProps()} />
-            <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 cursor-pointer flex justify-center">
+            <button className={`${bgColorButtonBlue} mt-4`}>
               Selecionar Foto
             </button>
             {image && (
               <button
-                className="mt-4 bg-green-500 text-white py-2 px-10 rounded-lg hover:bg-green-600"
+                className={`${bgColorButtonGreen}  mt-4`}
                 onClick={handleSubmit}
               >
                 Salvar no Servidor
@@ -130,23 +144,20 @@ export default function Profile(props: ProfileProps) {
       </Dropzone>
 
       <div className="mt-4 flex flex-row justify-around w-full">
-        <label htmlFor="name" className="block font-medium text-gray-700">
+        <label htmlFor="name" className="block font-medium ">
           Nome
         </label>
         <input
           type="text"
           id="name"
           name="name"
-          className="mt-1 block rounded-md bg-gray-200 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-center"
+          className={`${bgColorInput}`}
           value={newName || dataProfile.name}
           onChange={handleNameChange}
         />
       </div>
       <div className="mt-4 flex justify-center">
-        <button
-          className="mt-4 bg-green-500 text-white py-2 px-10 rounded-lg hover:bg-green-600"
-          onClick={handleSubmitName}
-        >
+        <button className={`${bgColorButtonGreen}`} onClick={handleSubmitName}>
           Atualizar Nome
         </button>
       </div>

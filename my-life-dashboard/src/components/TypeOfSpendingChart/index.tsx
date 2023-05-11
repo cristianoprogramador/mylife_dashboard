@@ -174,7 +174,17 @@ export default function MonthlySpendingChart({ expenses }: any) {
         />
       </div>
       <div className=" max-w-screen-md">
-        <Bar data={data} options={options} height={300} width={600} />
+        <Bar
+          data={data}
+          options={options}
+          height={300}
+          width={600}
+          style={{
+            backgroundColor: "rgba(255, 255, 255, 0.815)",
+            color: "white",
+            borderRadius: "5px",
+          }}
+        />
       </div>
     </div>
   );

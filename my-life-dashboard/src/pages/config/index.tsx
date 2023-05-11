@@ -3,6 +3,7 @@ import Profile from "@/components/Profile";
 import UserContext from "@/contexts/userContext";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useState, useContext } from "react";
 import { FaCog, FaBell, FaUser, FaGithub } from "react-icons/fa";
@@ -14,7 +15,6 @@ export default function Config() {
     { label: "Dados da Conta", icon: <FaUser size={25} /> },
     { label: "Código no GitHub", icon: <FaGithub size={25} /> },
   ];
-  const { theme, toggleTheme } = useContext(UserContext);
 
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -26,13 +26,17 @@ export default function Config() {
     setSelectedOption("");
   };
 
+  const { theme, setTheme } = useTheme();
+
+  const bgColor = theme === "dark" ? "bg-gray-700" : "bg-white";
+
   const renderOptionScreen = () => {
     switch (selectedOption) {
       case "Tema":
         return <LightDarkMode onGoBackClick={handleGoBackClick} />;
       case "Notificações":
         return (
-          <div className="bg-gray-100 p-6">
+          <div className={`${bgColor} p-6 rounded-md`}>
             <h1 className="text-2xl font-bold mb-4">Notificações</h1>
             <p className="text-lg mb-4">
               Aqui você pode configurar as notificações.
@@ -49,7 +53,7 @@ export default function Config() {
         return <Profile onGoBackClick={handleGoBackClick} />;
       case "Código no GitHub":
         return (
-          <div className="bg-gray-100 p-6">
+          <div className={`${bgColor} p-6 rounded-md`}>
             <div className="flex flex-row items-center text-center gap-3 mb-4">
               <button
                 onClick={handleGoBackClick}
@@ -81,7 +85,7 @@ export default function Config() {
 
       default:
         return (
-          <div className="bg-gray-100 p-6 rounded-lg">
+          <div className={`${bgColor} p-6 rounded-lg`}>
             <div className="text-2xl mb-8 font-bold">
               Selecione uma das opções abaixo:
             </div>

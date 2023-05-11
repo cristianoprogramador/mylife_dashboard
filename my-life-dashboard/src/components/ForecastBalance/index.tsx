@@ -42,7 +42,8 @@ export function ForecastBalance({
 
   const { theme, setTheme } = useTheme();
 
-  const bgColor = theme === "dark" ? "bg-gray-300" : "bg-blue-200";
+  const bgColor = theme === "dark" ? "bg-gray-300 text-black" : "bg-blue-200";
+  const bgColorTable = theme === "dark" ? "border text-white" : "bg-white";
   const bgColorHover =
     theme === "dark"
       ? "border-b border-gray-200 hover:bg-gray-400"
@@ -53,8 +54,8 @@ export function ForecastBalance({
       <div className="font-bold text-white text-lg text-center">
         Projeção baseado na Média
       </div>
-      <div className="bg-white shadow-md rounded overflow-x-auto">
-        <table className="min-w-max w-full table-auto text-black">
+      <div className={`${bgColorTable} shadow-md rounded overflow-x-auto`}>
+        <table className="min-w-max w-full table-auto">
           <thead>
             <tr className={`${bgColor} text-xs leading-normal`}>
               <th className="py-3 px-3 text-center">Mês</th>

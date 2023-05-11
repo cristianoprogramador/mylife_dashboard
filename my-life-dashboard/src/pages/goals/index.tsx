@@ -1,6 +1,7 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Head from "next/head";
 import React, { useContext, useEffect, useState } from "react";
 
@@ -176,8 +177,13 @@ export default function Goals() {
     });
   }
 
+  const { theme, setTheme } = useTheme();
+
+  const bgColor = theme === "dark" ? "bg-gray-600" : "bg-white";
+  const bgColorTable = theme === "dark" ? "border text-white" : "bg-white";
+
   return (
-    <div className="flex flex-col space-y-4">
+    <div className={`${bgColor} flex flex-col space-y-4 p-8 rounded-md`}>
       <Head>
         <title>Objetivos Mensais</title>
       </Head>
@@ -242,7 +248,9 @@ export default function Goals() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody
+                className={`${bgColorTable} divide-y divide-gray-200 rounded-md`}
+              >
                 {filteredMonths.map((month, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 text-center">

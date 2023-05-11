@@ -134,7 +134,17 @@ export default function StackedBarChart({ expenses }) {
           className="px-2 py-1 border rounded-md"
         />
       </div>
-      <Bar data={data} options={options} height={300} width={600} />
+      <Bar
+        data={data}
+        options={options}
+        height={300}
+        width={600}
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.815)",
+          color: "white",
+          borderRadius: "5px",
+        }}
+      />
     </div>
   );
 }

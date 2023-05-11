@@ -68,7 +68,7 @@ export function Header() {
     <header
       className={`bg-gradient-to-r ${
         theme === "dark"
-          ? "from-gray-700 from-20% via-gray-800 to-black"
+          ? "from-gray-800 from-20% via-gray-900 to-black"
           : "from-blue-500 from-20% via-blue-600 via-30% to-blue-600"
       } flex items-center justify-between p-4 text-white rounded-br-2xl`}
     >

@@ -8,20 +8,19 @@ type GoBackProps = {
 };
 
 export default function LightDarkMode(props: GoBackProps) {
-  const { onGoBackClick } = props;
-  const [selectedOption, setSelectedOption] = useState("light");
-
   const { theme, setTheme } = useTheme();
+  const { onGoBackClick } = props;
+  const [selectedOption, setSelectedOption] = useState(theme);
 
   const handleChange = (option: string) => {
     setSelectedOption(option);
     setTheme(option);
   };
 
-  console.log(theme);
+  const bgColor = theme === "dark" ? "bg-gray-700" : "bg-white";
 
   return (
-    <div className="bg-gray-100 p-6 flex flex-col">
+    <div className={`${bgColor} p-6 flex flex-col rounded-md`}>
       <div className="flex flex-row items-center text-center gap-3 mb-4">
         <button
           onClick={onGoBackClick}
@@ -78,7 +77,7 @@ export default function LightDarkMode(props: GoBackProps) {
             width={0}
             height={0}
             sizes="100vw"
-            alt="DarkMode"
+            alt="LightMode"
             style={{
               width: "195px",
               height: "195px",

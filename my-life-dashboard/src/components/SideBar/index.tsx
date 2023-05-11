@@ -9,7 +9,7 @@ export function SideBar() {
   const { theme, setTheme } = useTheme();
   const bgColor =
     theme === "dark"
-      ? "bg-gradient-to-b from-gray-700 from-10% via-gray-700 via-30% to-black to-100%"
+      ? "bg-gradient-to-b from-gray-800 from-10% via-gray-900 via-30% to-black to-100%"
       : "bg-gradient-to-b from-blue-500 from-10% via-blue-600 via-30% to-blue-600 to-100%";
   const bgColorButton =
     theme === "dark"

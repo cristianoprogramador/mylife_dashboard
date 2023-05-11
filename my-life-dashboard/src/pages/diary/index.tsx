@@ -1,6 +1,7 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -28,6 +29,7 @@ export default function Diary() {
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [edits, setEdits] = useState({});
   const [editing, setEditing] = useState({});
+  const { theme, setTheme } = useTheme();
 
   const handleAddOption = (event) => {
     event.preventDefault();
@@ -175,14 +177,28 @@ export default function Diary() {
     }
   };
 
+  const bgColor = theme === "dark" ? "bg-gray-600" : "bg-white";
+  const bgColorButtonBlue =
+    theme === "dark"
+      ? "py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+  const bgColorButtonRed =
+    theme === "dark"
+      ? "py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+  const bgColorButtonGreen =
+    theme === "dark"
+      ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
+      : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+
   return (
-    <div className="p-4 space-y-4 w-4/5">
+    <div className={`${bgColor} p-4 space-y-4 w-4/5 rounded-md`}>
       <div className="text-center text-2xl font-bold mb-8">
         Escreva o que você fez no dia!
       </div>
       <form onSubmit={handleAddOption}>
         <div className="flex flex-row space-x-4 items-center">
-          <label htmlFor="option" className="text-gray-800 font-medium">
+          <label htmlFor="option" className="font-medium">
             Adicionar Coluna:
           </label>
           <input
@@ -190,10 +206,7 @@ export default function Diary() {
             name="option"
             className="border-gray-400 border-2 p-2 rounded-lg"
           />
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
-          >
+          <button type="submit" className={`${bgColorButtonBlue}`}>
             Adicionar
           </button>
         </div>
@@ -201,11 +214,11 @@ export default function Diary() {
 
       <form
         onSubmit={handleSubmit(handleAddEntry)}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        className=" rounded px-8 pt-6 pb-8 mb-4"
       >
         <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col space-x-4 items-center">
-            <label htmlFor="date" className="text-gray-800 font-medium">
+            <label htmlFor="date" className=" font-medium">
               Data:
             </label>
             <input
@@ -225,10 +238,7 @@ export default function Diary() {
           </div>
           {options.map((option) => (
             <div key={option} className="flex flex-col space-x-4 items-center">
-              <label
-                htmlFor={option.toLowerCase()}
-                className="text-gray-800 font-medium"
-              >
+              <label htmlFor={option.toLowerCase()} className=" font-medium">
                 {option}:
               </label>
               <textarea
@@ -242,10 +252,7 @@ export default function Diary() {
             </div>
           ))}
           <div className="flex justify-center items-center">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg col-span-3 sm:col-span-1 h-12"
-            >
+            <button type="submit" className={`${bgColorButtonBlue}`}>
               Adicionar entrada
             </button>
           </div>
@@ -253,7 +260,7 @@ export default function Diary() {
             <button
               onClick={saveToServer}
               type="button"
-              className=" bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg col-span-3 sm:col-span-1 h-12"
+              className={`${bgColorButtonGreen}`}
             >
               Salvar no Servidor
             </button>
@@ -288,7 +295,7 @@ export default function Diary() {
                 entryDate.getTime() + brazilOffset * 60 * 1000
               );
               return (
-                <tr key={entry.date} className="bg-white">
+                <tr key={entry.date}>
                   <td className="w-1/4 py-2 px-4 border-gray-400 border text-center">
                     {entryDateWithOffset.toLocaleDateString("pt-BR", {
                       weekday: "long",
@@ -315,7 +322,7 @@ export default function Diary() {
                       {edits[entry.date]?.[option] && (
                         <button
                           onClick={() => handleSave(entry.date, option)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                          className={`${bgColorButtonBlue}`}
                         >
                           Salvar
                         </button>
@@ -325,7 +332,7 @@ export default function Diary() {
                   <td className="w-1/4 py-2 px-4 border-gray-400 border text-center ">
                     <button
                       onClick={() => handleDeleteRow(entry)}
-                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                      className={`${bgColorButtonRed}`}
                     >
                       Excluir
                     </button>
