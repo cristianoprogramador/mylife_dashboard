@@ -2,8 +2,25 @@ import React, { useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { subMonths, endOfMonth, startOfMonth } from "date-fns";
 
-export default function PieChart({ expenses }) {
+interface ExpensesProps {
+  card: string;
+  date: string;
+  description: string;
+  email: string;
+  id: number;
+  obs: string;
+  type: string;
+  value: string;
+}
+[];
+
+interface PieProps {
+  expenses: ExpensesProps[];
+}
+
+export default function PieChart({ expenses }: PieProps) {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  // console.log(expenses);
 
   // Filtra as despesas para o mês selecionado
   const filteredExpenses = expenses.filter((item) => {

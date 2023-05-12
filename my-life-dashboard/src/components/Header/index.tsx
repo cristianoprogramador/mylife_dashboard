@@ -100,7 +100,7 @@ export function Header() {
           </div>
         )}
       </div>
-      <Link href="/" className="flex flex-row cursor-pointer">
+      <Link href="/" className="flex flex-row mr-2">
         {theme === "dark" ? (
           <MdOutlineNightlight
             className="mr-8"
