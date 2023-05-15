@@ -139,8 +139,17 @@ export default function Resume() {
   const bgColor = theme === "dark" ? "bg-slate-600" : "bg-blue-600";
   const bgColorTotals = theme === "dark" ? "bg-gray-900" : "bg-white";
 
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <div className="flex flex-col items-center">
+    <div
+      className={`flex flex-col items-center transition-opacity duration-150 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Head>
         <title>Resumo</title>
       </Head>

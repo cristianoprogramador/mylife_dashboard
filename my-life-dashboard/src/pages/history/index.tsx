@@ -244,8 +244,17 @@ export default function History() {
       ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
       : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
 
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <div className={`${bgColor} p-8 rounded-md`}>
+    <div
+      className={`${bgColor} p-8 rounded-md transition-opacity duration-150 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Head>
         <title>Histórico de Gasto</title>
       </Head>

@@ -41,8 +41,17 @@ export default function Analysis() {
 
   // console.log(rowData);
 
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <div className="flex flex-1 flex-col">
+    <div
+      className={`flex flex-1 flex-col transition-opacity duration-200 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Head>
         <title>Análise Grafica dos Gastos</title>
       </Head>

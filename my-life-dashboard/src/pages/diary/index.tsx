@@ -2,17 +2,11 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const today = new Date().toISOString().substr(0, 10);
-
-type FormData = {
-  email: string;
-  date: Date;
-  type: string;
-  information: string;
-};
 
 export default function Diary() {
   const { data: session } = useSession();
@@ -191,8 +185,34 @@ export default function Diary() {
       ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
       : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
 
+  console.log(diaryEntries);
+
+  const handleDeleteColumn = (option: any) => {
+    setOptions((prevOptions) => prevOptions.filter((item) => item !== option));
+    setDiaryEntries((prevEntries: any) =>
+      prevEntries.map((entry: any) => {
+        const { data, ...rest } = entry;
+        const newData = { ...data };
+        delete newData[option];
+        return { ...rest, data: newData };
+      })
+    );
+  };
+
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <div className={`${bgColor} p-4 space-y-4 w-4/5 rounded-md`}>
+    <div
+      className={`${bgColor} p-4 space-y-4 rounded-md  transition-opacity duration-200 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <Head>
+        <title>Diário da Vida</title>
+      </Head>
       <div className="text-center text-2xl font-bold mb-8">
         Escreva o que você fez no dia!
       </div>
@@ -236,21 +256,26 @@ export default function Diary() {
               </span>
             )}
           </div>
-          {options.map((option) => (
-            <div key={option} className="flex flex-col space-x-4 items-center">
-              <label htmlFor={option.toLowerCase()} className=" font-medium">
-                {option}:
-              </label>
-              <textarea
-                className="border-gray-400 border-2 p-2 rounded-lg w-full"
-                {...register(option.toLowerCase(), { required: true })}
-                rows={3}
-              ></textarea>
-              {errors[option.toLowerCase()] && (
-                <span className="text-red-500">Este campo é obrigatório</span>
-              )}
-            </div>
-          ))}
+          {options.map((option) => {
+            return (
+              <div
+                key={option}
+                className="flex flex-col space-x-4 items-center"
+              >
+                <label htmlFor={option.toLowerCase()} className=" font-medium">
+                  {option}:
+                </label>
+                <textarea
+                  className="border-gray-400 border-2 p-2 rounded-lg w-full"
+                  {...register(option.toLowerCase(), { required: true })}
+                  rows={3}
+                ></textarea>
+                {errors[option.toLowerCase()] && (
+                  <span className="text-red-500">Este campo é obrigatório</span>
+                )}
+              </div>
+            );
+          })}
           <div className="flex justify-center items-center">
             <button type="submit" className={`${bgColorButtonBlue}`}>
               Adicionar entrada
@@ -271,18 +296,18 @@ export default function Diary() {
       <table className="table-fixed w-full">
         <thead>
           <tr className="bg-gray-100">
-            <th className="w-1/4 py-2 px-4 text-gray-800 font-medium">Data</th>
+            <th className="py-2 px-4 text-gray-800 font-medium">Data</th>
             {options.map((option) => (
-              <th
-                key={option}
-                className="w-1/4 py-2 px-4 text-gray-800 font-medium"
-              >
+              <th key={option} className=" py-2 px-4 text-gray-800 font-medium">
                 {option}
+                <button
+                  onClick={() => handleDeleteColumn(option)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                >
+                  X
+                </button>
               </th>
             ))}
-            <th className="w-1/4 py-2 px-4 text-gray-800 font-medium">
-              Deletar
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -296,7 +321,7 @@ export default function Diary() {
               );
               return (
                 <tr key={entry.date}>
-                  <td className="w-1/4 py-2 px-4 border-gray-400 border text-center">
+                  <td className="border-gray-400 border text-center">
                     {entryDateWithOffset.toLocaleDateString("pt-BR", {
                       weekday: "long",
                       year: "2-digit",
@@ -307,7 +332,7 @@ export default function Diary() {
                   {options.map((option) => (
                     <td
                       key={option}
-                      className="w-1/4 py-2 px-4 border-gray-400 border"
+                      className=" py-2 px-4 border-gray-400 border"
                     >
                       <span
                         contentEditable={true}
@@ -319,17 +344,17 @@ export default function Diary() {
                       >
                         {entry.data[option]}
                       </span>
-                      {edits[entry.date]?.[option] && (
+                      {/* {edits[entry.date]?.[option] && (
                         <button
                           onClick={() => handleSave(entry.date, option)}
                           className={`${bgColorButtonBlue}`}
                         >
                           Salvar
                         </button>
-                      )}
+                      )} */}
                     </td>
                   ))}
-                  <td className="w-1/4 py-2 px-4 border-gray-400 border text-center ">
+                  <td className=" py-2 px-4 border-gray-400 border text-center ">
                     <button
                       onClick={() => handleDeleteRow(entry)}
                       className={`${bgColorButtonRed}`}

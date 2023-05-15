@@ -182,8 +182,17 @@ export default function Goals() {
   const bgColor = theme === "dark" ? "bg-gray-600" : "bg-white";
   const bgColorTable = theme === "dark" ? "border text-white" : "bg-white";
 
+  const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <div className={`${bgColor} flex flex-col space-y-4 p-8 rounded-md`}>
+    <div
+      className={`${bgColor} flex flex-col space-y-4 p-8 rounded-md  transition-opacity duration-150 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <Head>
         <title>Objetivos Mensais</title>
       </Head>
@@ -253,7 +262,7 @@ export default function Goals() {
               >
                 {filteredMonths.map((month, index) => (
                   <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 text-center">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-center">
                       {month}
                     </td>
                     {objectives.map((obj) => (

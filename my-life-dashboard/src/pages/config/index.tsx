@@ -1,3 +1,4 @@
+import { GitHubCode } from "@/components/GitHubCode";
 import LightDarkMode from "@/components/LightDarkMode";
 import Profile from "@/components/Profile";
 import UserContext from "@/contexts/userContext";
@@ -5,87 +6,82 @@ import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { FaCog, FaBell, FaUser, FaGithub } from "react-icons/fa";
 
 export default function Config() {
   const Options = [
     { label: "Tema", icon: <FaCog size={25} /> },
-    { label: "Notificações", icon: <FaBell size={25} /> },
+    // { label: "Notificações", icon: <FaBell size={25} /> },
     { label: "Dados da Conta", icon: <FaUser size={25} /> },
     { label: "Código no GitHub", icon: <FaGithub size={25} /> },
   ];
 
   const [selectedOption, setSelectedOption] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
 
-  const handleOptionClick = (option) => {
-    setSelectedOption(option);
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const handleOptionClick = (option: any) => {
+    setIsVisible(false);
+    setTimeout(() => {
+      setSelectedOption(option);
+      setIsVisible(true);
+    }, 150);
   };
 
   const handleGoBackClick = () => {
-    setSelectedOption("");
+    setIsVisible(false);
+    setTimeout(() => {
+      setSelectedOption("");
+      setIsVisible(true);
+    }, 150);
   };
 
   const { theme, setTheme } = useTheme();
-
   const bgColor = theme === "dark" ? "bg-gray-700" : "bg-white";
 
   const renderOptionScreen = () => {
     switch (selectedOption) {
       case "Tema":
-        return <LightDarkMode onGoBackClick={handleGoBackClick} />;
-      case "Notificações":
         return (
-          <div className={`${bgColor} p-6 rounded-md`}>
-            <h1 className="text-2xl font-bold mb-4">Notificações</h1>
-            <p className="text-lg mb-4">
-              Aqui você pode configurar as notificações.
-            </p>
-            <button
-              onClick={handleGoBackClick}
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-            >
-              Voltar
-            </button>
+          <div
+            className={`p-6 rounded-md transition-opacity duration-150 ${
+              isVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <LightDarkMode onGoBackClick={handleGoBackClick} />
           </div>
         );
       case "Dados da Conta":
-        return <Profile onGoBackClick={handleGoBackClick} />;
-      case "Código no GitHub":
         return (
-          <div className={`${bgColor} p-6 rounded-md`}>
-            <div className="flex flex-row items-center text-center gap-3 mb-4">
-              <button
-                onClick={handleGoBackClick}
-                className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-              >
-                Voltar
-              </button>
-              <h1 className="text-2xl font-bold">Código no GitHub</h1>
-            </div>
-            <p className="text-lg mb-4">
-              Clique na imagem para visualizar o código do site no GitHub.
-            </p>
-
-            <a
-              href="https://github.com/cristianoprogramador/mylife_dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                src="/github.jpg"
-                width={600}
-                height={600}
-                style={{ objectFit: "contain", borderRadius: "20px" }}
-                alt="github image"
-              />
-            </a>
+          <div
+            className={`p-6 rounded-md transition-opacity duration-150 ${
+              isVisible ? "opacity-100" : "opacity-0"
+            } ${bgColor}`}
+          >
+            <Profile onGoBackClick={handleGoBackClick} />
           </div>
         );
-
+      case "Código no GitHub":
+        return (
+          <div
+            className={`p-6 rounded-md transition-opacity duration-150 ${
+              isVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <GitHubCode onGoBackClick={handleGoBackClick} />
+          </div>
+        );
       default:
         return (
-          <div className={`${bgColor} p-6 rounded-lg`}>
+          <div
+            className={`${bgColor} p-6 rounded-lg transition-opacity duration-150 ${
+              isVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
             <div className="text-2xl mb-8 font-bold">
               Selecione uma das opções abaixo:
             </div>
