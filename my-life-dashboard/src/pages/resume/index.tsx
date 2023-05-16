@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ForecastBalance } from "@/components/ForecastBalance";
 import { useState, useEffect } from "react";
 import { NumericFormat } from "react-number-format";

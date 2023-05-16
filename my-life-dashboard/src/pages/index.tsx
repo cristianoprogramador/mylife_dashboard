@@ -1,23 +1,23 @@
 import Head from "next/head";
 import { AiFillLock } from "react-icons/ai";
 import { useForm } from "react-hook-form";
-import { FormEvent, useContext } from "react";
+import { FormEvent, useContext, useRef } from "react";
 import { GetServerSideProps } from "next";
 import { getSession, signIn } from "next-auth/react";
 import Image from "next/image";
-import { getUsers } from "./api/users";
 import Link from "next/link";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const email = e.currentTarget.email.value;
-    const password = e.currentTarget.password.value;
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
     signIn("credentials", { email, password });
   };
-
   return (
     <div className="flex flex-1 justify-center align-middle">
       <Head>
@@ -45,7 +45,7 @@ export default function Home() {
                 Email address
               </label>
               <input
-                {...register("email")}
+                ref={emailRef}
                 id="email-address"
                 name="email"
                 type="email"
@@ -60,7 +60,7 @@ export default function Home() {
                 Password
               </label>
               <input
-                {...register("password")}
+                ref={passwordRef}
                 id="password"
                 name="password"
                 type="password"

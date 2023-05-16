@@ -1,4 +1,3 @@
-import { AuthContext } from "@/contexts/AuthContext";
 import axios from "axios";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";

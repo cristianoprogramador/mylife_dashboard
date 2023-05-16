@@ -48,7 +48,7 @@ export default function SignUp() {
         const { message } = await response.json();
         setErrorMsg(message);
       }
-    } catch (error) {
+    } catch (error: any) {
       setErrorMsg(error.message);
     }
   };

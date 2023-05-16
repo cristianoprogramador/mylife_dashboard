@@ -1,4 +1,3 @@
-import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -28,8 +27,8 @@ type Goal = {
 };
 
 export default function Goals() {
-  const [objectivesData, setObjectivesData] = useState({});
-  const [objectives, setObjectives] = useState([]);
+  const [objectivesData, setObjectivesData] = useState<any>({});
+  const [objectives, setObjectives] = useState<any[]>([]);
   const [newObjective, setNewObjective] = useState("");
   const [addObjectiveClicked, setAddObjectiveClicked] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2023);
@@ -49,7 +48,7 @@ export default function Goals() {
         })
     : [];
 
-  const handleInputChange = (e, month, objective) => {
+  const handleInputChange = (e: any, month: any, objective: any) => {
     const newObjectivesData = { ...objectivesData };
     console.log(newObjectivesData);
     if (!newObjectivesData[month]) {
@@ -67,11 +66,11 @@ export default function Goals() {
       setNewObjective("");
     }
   };
-  const handleNewObjectiveChange = (e) => {
+  const handleNewObjectiveChange = (e: any) => {
     setNewObjective(e.target.value);
   };
 
-  const handleYearButtonClick = (year) => {
+  const handleYearButtonClick = (year: any) => {
     setSelectedYear(year);
   };
 
@@ -80,7 +79,7 @@ export default function Goals() {
 
     Object.keys(objectivesData).forEach((monthYear) => {
       const [month, year] = monthYear.split("/");
-      const objectives = objectivesData[monthYear] as Objective;
+      const objectives = objectivesData[monthYear] as any;
 
       const nonEmptyObjectives = Object.keys(objectives).filter((goalName) => {
         const value = objectives[goalName];
@@ -102,7 +101,7 @@ export default function Goals() {
 
     const data = new URLSearchParams();
     data.append("goals", JSON.stringify(goals));
-    data.append("email", session?.user?.email);
+    data.append("email", session?.user?.email || "");
     data.append("year", selectedYear.toString());
 
     // console.log(JSON.stringify(goals));
@@ -134,7 +133,7 @@ export default function Goals() {
         const responseData = await response.json();
 
         if (responseData.length > 0) {
-          const formattedData = responseData.reduce((acc, curr) => {
+          const formattedData = responseData.reduce((acc: any, curr: any) => {
             const key = `${curr.mes}/${curr.ano}`;
             if (!acc[key]) {
               acc[key] = {};
@@ -144,7 +143,7 @@ export default function Goals() {
           }, {});
 
           const uniqueObjectives = [
-            ...new Set(responseData.map((item) => item.objetivo)),
+            ...new Set(responseData.map((item: any) => item.objetivo)),
           ];
           setObjectives(uniqueObjectives);
 
@@ -163,10 +162,10 @@ export default function Goals() {
     }
   }, [session, selectedYear]);
 
-  function handleDeleteObjective(obj) {
+  function handleDeleteObjective(obj: any) {
     setObjectives((prevObjectives) => prevObjectives.filter((o) => o !== obj));
 
-    setObjectivesData((prevData) => {
+    setObjectivesData((prevData: any) => {
       const newData = { ...prevData };
       for (const key of Object.keys(newData)) {
         if (newData[key].hasOwnProperty(obj)) {

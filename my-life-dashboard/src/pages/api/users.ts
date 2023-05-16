@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import connection from "../db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
+import { RowDataPacket } from "mysql2";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,7 +24,7 @@ export default async function handler(
     const conn = await connection();
 
     try {
-      const [rows] = await conn.execute(
+      const [rows] = await conn.execute<RowDataPacket[]>(
         "SELECT image, name FROM users WHERE email = ?",
         [email]
       );

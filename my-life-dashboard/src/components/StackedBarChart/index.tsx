@@ -9,51 +9,76 @@ function formatMonthYear(date: any) {
     (c) => c.toUpperCase()
   );
 }
+interface GroupedExpenses {
+  [monthYear: string]: {
+    [type: string]: number;
+  };
+}
+interface ExpensesProps {
+  card: string;
+  date: string;
+  description: string;
+  email: string;
+  id: number;
+  obs: string;
+  type: string;
+  value: string;
+}
+[];
 
-export default function StackedBarChart({ expenses }) {
+interface DataProps {
+  expenses: ExpensesProps[];
+}
+
+export default function StackedBarChart({ expenses }: any) {
   // Define o estado inicial para o mês selecionado
   const [numMonths, setNumMonths] = useState(3);
 
   // Filtra as despesas para os últimos `numMonths` meses
   const minDate = startOfMonth(subMonths(new Date(), numMonths - 1));
   // console.log(minDate);
-  const filteredExpenses = expenses.filter((item) => {
+  const filteredExpenses = expenses.filter((item: any) => {
     const date = new Date(item.date);
     return date >= minDate;
   });
 
   // Agrupa as despesas por mês e por tipo
-  const groupedExpenses = filteredExpenses.reduce((acc, curr) => {
-    const date = new Date(curr.date);
-    const monthYear = formatMonthYear(curr.date);
-    const type = curr.type;
-    const value = parseFloat(curr.value.replace(",", "."));
+  const groupedExpenses: GroupedExpenses = filteredExpenses.reduce(
+    (acc: any, curr: any) => {
+      const date = new Date(curr.date);
+      const monthYear = formatMonthYear(curr.date);
+      const type = curr.type;
+      const value = parseFloat(curr.value.replace(",", "."));
 
-    if (!acc[monthYear]) {
-      acc[monthYear] = {};
-    }
+      if (!acc[monthYear]) {
+        acc[monthYear] = {};
+      }
 
-    if (!acc[monthYear][type]) {
-      acc[monthYear][type] = 0;
-    }
+      if (!acc[monthYear][type]) {
+        acc[monthYear][type] = 0;
+      }
 
-    acc[monthYear][type] += value;
+      acc[monthYear][type] += value;
 
-    return acc;
-  }, {});
+      return acc;
+    },
+    {} as GroupedExpenses
+  );
 
   // Extrai os meses e tipos únicos para criar as labels dos eixos X e legendas
   const months = Object.keys(groupedExpenses);
-  const types = new Set();
+  const typesSet = new Set<string>();
 
   for (let month of months) {
     for (let type in groupedExpenses[month]) {
-      types.add(type);
+      typesSet.add(type);
     }
   }
 
+  const types: string[] = Array.from(typesSet);
+
   // Define as cores para cada tipo de despesa
-  const colors = [
+  const colors: string[] = [
     "rgba(255, 99, 132, 0.6)",
     "rgba(54, 162, 235, 0.6)",
     "rgba(255, 206, 86, 0.6)",
@@ -62,11 +87,10 @@ export default function StackedBarChart({ expenses }) {
     "rgba(255, 159, 64, 0.6)",
   ];
 
-  // Cria os datasets para cada tipo de despesa
-  const datasets = [];
+  const datasets: any[] = [];
 
   for (let type of types) {
-    const data = [];
+    const data: number[] = [];
 
     for (let month of months) {
       data.push(groupedExpenses[month][type] || 0);

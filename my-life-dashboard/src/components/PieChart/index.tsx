@@ -18,12 +18,20 @@ interface PieProps {
   expenses: ExpensesProps[];
 }
 
-export default function PieChart({ expenses }: PieProps) {
+interface GroupedExpenses {
+  [key: string]: number;
+}
+
+interface PercentExpenses {
+  [key: string]: string;
+}
+
+export default function PieChart({ expenses }: any) {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   // console.log(expenses);
 
   // Filtra as despesas para o mês selecionado
-  const filteredExpenses = expenses.filter((item) => {
+  const filteredExpenses = expenses.filter((item: any) => {
     const date = new Date(item.date);
     const start = startOfMonth(selectedMonth);
     const end = endOfMonth(selectedMonth);
@@ -31,25 +39,29 @@ export default function PieChart({ expenses }: PieProps) {
   });
 
   // Agrupa as despesas por tipo
-  const groupedExpenses = filteredExpenses.reduce((acc, curr) => {
-    const type = curr.type;
-    const value = parseFloat(curr.value.replace(",", "."));
 
-    if (!acc[type]) {
-      acc[type] = 0;
-    }
+  const groupedExpenses: GroupedExpenses = filteredExpenses.reduce(
+    (acc: any, curr: any) => {
+      const type = curr.type;
+      const value = parseFloat(curr.value.replace(",", "."));
 
-    acc[type] += value;
+      if (!acc[type]) {
+        acc[type] = 0;
+      }
 
-    return acc;
-  }, {});
+      acc[type] += value;
 
-  const totalExpenses = filteredExpenses.reduce((acc, curr) => {
+      return acc;
+    },
+    {} as GroupedExpenses
+  );
+
+  const totalExpenses = filteredExpenses.reduce((acc: any, curr: any) => {
     const value = parseFloat(curr.value.replace(",", "."));
     return acc + value;
   }, 0);
 
-  const percentExpenses = {};
+  const percentExpenses: PercentExpenses = {};
   Object.entries(groupedExpenses).forEach(([type, value]) => {
     percentExpenses[type] = ((value / totalExpenses) * 100).toFixed(2);
   });

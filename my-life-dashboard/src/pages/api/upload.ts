@@ -5,6 +5,7 @@ import path from "path";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import connection from "../db";
+import { OkPacket } from "mysql2";
 
 export const config = {
   api: {
@@ -48,7 +49,7 @@ const updateUserImage = async (email: string, image: string) => {
       ["/images/" + image, email]
     );
     conn.end();
-    return rows.affectedRows > 0;
+    return (rows as OkPacket).affectedRows > 0;
   } catch (error) {
     console.error(error);
     return false;
@@ -63,7 +64,7 @@ const updateUser = async (email: string, newName: string) => {
       [newName, email]
     );
     conn.end();
-    return rows.affectedRows > 0;
+    return (rows as OkPacket).affectedRows > 0;
   } catch (error) {
     console.error(error);
     return false;
@@ -90,9 +91,9 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(400).json({ message: "Missing name field" });
     }
 
-    const { name } = req.body;
+    const { name } = req.body as { name: string }; // Correção na desestruturação
     try {
-      await updateUser(req.query.email as string, { name });
+      await updateUser(req.query.email as string, name); // Correção no segundo argumento
       res.status(200).json({ message: "Dados salvos com sucesso!" });
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
@@ -109,7 +110,7 @@ const handler: NextApiHandler = async (req, res) => {
   console.log("Nome do arquivo salvo:", fileName);
 
   try {
-    await updateUserImage(req.query.email, fileName);
+    await updateUserImage(req.query.email as string, fileName);
     res.status(200).json({ message: "Dados salvos com sucesso!" });
   } catch (error) {
     console.error("Erro ao salvar dados:", error);

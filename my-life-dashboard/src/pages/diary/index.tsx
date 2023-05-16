@@ -1,4 +1,3 @@
-import { AuthContext } from "@/contexts/AuthContext";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -8,9 +7,14 @@ import { useForm } from "react-hook-form";
 
 const today = new Date().toISOString().substr(0, 10);
 
+type Entry = {
+  date: string;
+  data: Record<string, string>; // Anotação de tipo para o objeto 'data'
+};
+
 export default function Diary() {
   const { data: session } = useSession();
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState<string>(""); // Adicione a anotação de tipo string
   const {
     register,
     handleSubmit,
@@ -18,39 +22,39 @@ export default function Diary() {
     formState: { errors },
   } = useForm();
 
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState<string[]>([]); // Adicione a anotação de tipo string[]
 
-  const [diaryEntries, setDiaryEntries] = useState([]);
-  const [edits, setEdits] = useState({});
-  const [editing, setEditing] = useState({});
+  const [diaryEntries, setDiaryEntries] = useState<any[]>([]); // Adicione a anotação de tipo any[]
+  const [edits, setEdits] = useState<any>({});
+
   const { theme, setTheme } = useTheme();
 
-  const handleAddOption = (event) => {
+  const handleAddOption = (event: any) => {
     event.preventDefault();
     const newOption = event.target.option.value.trim();
     if (newOption !== "") {
-      setOptions((prevOptions) => [...prevOptions, newOption]);
+      setOptions((prevOptions): any => [...prevOptions, newOption]);
       event.target.reset();
     }
   };
 
-  const handleAddEntry = (formData) => {
+  const handleAddEntry = (formData: any) => {
     const date = formData.date;
-    const entry = {
+    const entry: Entry = {
       date,
-      data: {},
+      data: {}, // Inicializa a propriedade 'data' como um objeto vazio
     };
     let entryIsValid = true;
 
     const isDuplicate = diaryEntries.some((entry) => entry.date === date);
 
     if (isDuplicate) {
-      // Exibe mensagem de erro para o usuário
       setErrorMsg("Data já existente. Por favor, escolha outra data.");
       return;
     }
 
-    options.forEach((option) => {
+    options.forEach((option: string) => {
+      // Adicione a anotação de tipo string
       const value = formData[option.toLowerCase()];
       if (value === "") {
         entryIsValid = false;
@@ -58,7 +62,7 @@ export default function Diary() {
       entry.data[option] = value;
     });
     if (entryIsValid) {
-      setDiaryEntries((prevEntries) => [...prevEntries, entry]);
+      setDiaryEntries((prevEntries): any => [...prevEntries, entry]);
       setErrorMsg("");
       reset();
     }
@@ -73,7 +77,7 @@ export default function Diary() {
 
   const saveToServer = async () => {
     const data = new URLSearchParams();
-    data.append("email", session?.user?.email);
+    data.append("email", session?.user?.email || "");
     data.append("diaryEntries", JSON.stringify(diaryEntries));
 
     try {
@@ -102,26 +106,32 @@ export default function Diary() {
         );
         const responseData = await response.json();
 
-        const formattedData = responseData.reduce((acc, item) => {
-          const oldDate = new Date(item.date).toLocaleDateString();
-          const parts = oldDate.split("/");
-          const newDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-          // console.log(newDate);
+        const formattedData: Record<
+          string,
+          Record<string, string>
+        > = responseData.reduce(
+          (acc: Record<string, Record<string, string>>, item: any) => {
+            const oldDate = new Date(item.date).toLocaleDateString();
+            const parts = oldDate.split("/");
+            const newDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            // console.log(newDate);
 
-          const date = newDate;
-          const type = item.type;
-          const information = item.information;
+            const date = newDate;
+            const type = item.type;
+            const information = item.information;
 
-          if (acc[date]) {
-            acc[date][type] = information;
-          } else {
-            acc[date] = {
-              [type]: information,
-            };
-          }
+            if (acc[date]) {
+              acc[date][type] = information;
+            } else {
+              acc[date] = {
+                [type]: information,
+              };
+            }
 
-          return acc;
-        }, {});
+            return acc;
+          },
+          {}
+        );
 
         const rowData = Object.entries(formattedData).map(([date, data]) => ({
           date,
@@ -129,7 +139,7 @@ export default function Diary() {
         }));
 
         setDiaryEntries(rowData);
-        const uniqueOptions = new Set();
+        const uniqueOptions = new Set<string>();
         for (let obj of rowData) {
           for (let key in obj.data) {
             uniqueOptions.add(key);
@@ -144,7 +154,7 @@ export default function Diary() {
     fetchData();
   }, [session]);
 
-  const handleInputChange = (event, date, option) => {
+  const handleInputChange = (event: any, date: any, option: any) => {
     const newEdits = { ...edits };
     if (!newEdits[date]) {
       newEdits[date] = {};
@@ -153,7 +163,7 @@ export default function Diary() {
     setEdits(newEdits);
   };
 
-  const handleSave = (date, option) => {
+  const handleSave = (date: any, option: any) => {
     const entry = diaryEntries.find((e) => e.date === date);
     const newEntry = { ...entry };
     const editedValue = edits[date]?.[option];
@@ -312,7 +322,11 @@ export default function Diary() {
         </thead>
         <tbody>
           {diaryEntries
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .sort((a, b) => {
+              const dateA = new Date(a.date);
+              const dateB = new Date(b.date);
+              return dateB.getTime() - dateA.getTime();
+            })
             .map((entry) => {
               const entryDate = new Date(entry.date);
               const brazilOffset = 3 * 60; // fuso horário do Brasil é UTC-3

@@ -1,5 +1,13 @@
-import { createConnection, Connection } from "mysql2/promise";
+import { createConnection, Connection, RowDataPacket } from "mysql2/promise";
 import bcrypt from "bcrypt";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  image: string;
+}
 
 const connection = async (): Promise<Connection> => {
   const { DB_HOST, DB_USER, DB_PASS, DB_NAME } = process.env;
@@ -21,20 +29,21 @@ export const createUser = async (
   const conn = await connection();
 
   try {
-    const [rows] = await conn.execute("SELECT id FROM users WHERE email = ?", [
-      email,
-    ]);
+    const [rows] = await conn.execute<RowDataPacket[]>(
+      "SELECT id FROM users WHERE email = ?",
+      [email]
+    );
 
     if (rows.length > 0) {
-      return { error: "E-mail já existe, tentar outro!" };
+      return { error: "E-mail já existe, tente outro!" };
     }
 
-    const [result] = await conn.execute(
+    const [result] = await conn.execute<RowDataPacket[]>(
       "INSERT INTO users (name, email, password, image) VALUES (?, ?, ?, ?)",
       [name, email, hashedPassword, "/person.svg"]
     );
 
-    return { userId: result.insertId };
+    return { userId: (result as any).insertId };
   } catch (error) {
     console.error(error);
     throw error;
@@ -46,13 +55,14 @@ export const createUser = async (
 export const loginUser = async (email: string, password: string) => {
   const conn = await connection();
   try {
-    const [rows] = await conn.execute("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
+    const [rows] = await conn.execute<RowDataPacket[]>(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
     if (rows.length === 0) {
       throw new Error("Usuario não encontrado");
     }
-    const user = rows[0];
+    const user = rows[0] as User;
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       throw new Error("Senha incorreta");
@@ -77,20 +87,21 @@ export const createUserProvider = async (
   const conn = await connection();
 
   try {
-    const [rows] = await conn.execute("SELECT id FROM users WHERE email = ?", [
-      email,
-    ]);
+    const [rows] = await conn.execute<RowDataPacket[]>(
+      "SELECT id FROM users WHERE email = ?",
+      [email]
+    );
 
     if (rows.length > 0) {
       return { error: "E-mail já existe, tentar outro!" };
     }
 
-    const [result] = await conn.execute(
+    const [result] = await conn.execute<RowDataPacket[]>(
       "INSERT INTO users (name, email, password, image) VALUES (?, ?, ?, ?)",
       [name, email, hashedPassword, image]
     );
 
-    return { userId: result.insertId };
+    return { userId: (result as any).insertId };
   } catch (error) {
     console.error(error);
     throw error;

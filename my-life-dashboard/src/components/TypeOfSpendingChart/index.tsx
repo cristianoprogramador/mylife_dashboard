@@ -47,7 +47,7 @@ export default function MonthlySpendingChart({ expenses }: any) {
   // Filtra as despesas para os últimos `numMonths` meses
   const minDate = startOfMonth(subMonths(new Date(), numMonths - 1));
   // console.log(minDate);
-  const filteredExpenses = expenses.filter((item) => {
+  const filteredExpenses = expenses.filter((item: any) => {
     const date = new Date(item.date);
     return date >= minDate;
   });
@@ -75,8 +75,10 @@ export default function MonthlySpendingChart({ expenses }: any) {
   );
 
   const labels = expenses
-    .filter((item, index, array) => {
-      return array.findIndex((t) => t.type === item.type) === index;
+    .filter((item: { type: any }, index: any, array: any[]) => {
+      return (
+        array.findIndex((t: { type: any }) => t.type === item.type) === index
+      );
     })
     .map((item: any) => item.type);
 
@@ -84,10 +86,10 @@ export default function MonthlySpendingChart({ expenses }: any) {
   const dataByMonth = Object.keys(groupedExpensesByMonthAndType).reduce(
     (acc: any, monthYear: string) => {
       const typeValues = groupedExpensesByMonthAndType[monthYear];
-      const data = [];
+      const data: any[] = [];
 
       // Percorre todos os tipos de despesa para o mês atual
-      labels.forEach((type) => {
+      labels.forEach((type: string | number) => {
         const value = typeValues[type] || 0;
         data.push(value);
       });

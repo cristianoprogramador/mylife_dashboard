@@ -1,10 +1,16 @@
-import NextAuth from "next-auth/next";
+// @ts-nocheck
+
+import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginUser, createUserFromProvider } from "@/lib/users";
-import { NextAuthOptions } from "next-auth";
 import connection from "@/pages/db";
+
+type Credentials = {
+  email: string;
+  password: string;
+};
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -37,7 +43,13 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.SECRET,
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({
+      user,
+      account,
+      profile,
+      email,
+      credentials,
+    }: any): Promise<any> {
       if (account?.provider === "credentials") {
         // Use existing login logic for credentials provider
         return true;

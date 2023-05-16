@@ -5,6 +5,7 @@ import path from "path";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import connection from "../db";
+import { OkPacket } from "mysql2";
 
 export const config = {
   api: {
@@ -20,7 +21,7 @@ const updateUser = async (email: string, newName: string) => {
       [newName, email]
     );
     conn.end();
-    return rows.affectedRows > 0;
+    return (rows as OkPacket).affectedRows > 0;
   } catch (error) {
     console.error(error);
     return false;
