@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    appDir: true,
+    serverComponentsExternalPackages: ["mysql2"],
+  },
 };
 
 module.exports = {
@@ -11,10 +15,5 @@ module.exports = {
         hostname: "**",
       },
     ],
-  },
-  node: {
-    fs: "empty",
-    net: "empty",
-    tls: "empty",
   },
 };
