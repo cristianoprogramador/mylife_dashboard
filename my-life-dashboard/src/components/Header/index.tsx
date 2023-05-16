@@ -3,7 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { MdOutlineLightMode, MdOutlineNightlight } from "react-icons/md";
 
@@ -18,20 +18,7 @@ export function Header() {
   const [dataProfile, setDataProfile] = useState<ProfileProps | null>(null);
   const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    async function fetchDataProfile() {
-      const dataProfile = await getUserDataProfile();
-      setDataProfile(dataProfile);
-      setIsLoading(false);
-    }
-    fetchDataProfile();
-  }, []);
-
-  const handleChange = (option: string) => {
-    setTheme(option);
-  };
-
-  async function getUserDataProfile() {
+  const getUserDataProfile = useCallback(async () => {
     const dataProfile =
       typeof window !== "undefined"
         ? JSON.parse(localStorage.getItem("userData") || "null")
@@ -52,7 +39,20 @@ export function Header() {
       }
     }
     return null;
-  }
+  }, [session]);
+
+  useEffect(() => {
+    async function fetchDataProfile() {
+      const dataProfile = await getUserDataProfile();
+      setDataProfile(dataProfile);
+      setIsLoading(false);
+    }
+    fetchDataProfile();
+  }, [getUserDataProfile]);
+
+  const handleChange = (option: string) => {
+    setTheme(option);
+  };
 
   function handleLogout() {
     localStorage.removeItem("userData");

@@ -1,6 +1,7 @@
 // @ts-nocheck
+
 import { ForecastBalance } from "@/components/ForecastBalance";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { NumericFormat } from "react-number-format";
 import { format, differenceInDays } from "date-fns";
 import { GetServerSideProps } from "next";
@@ -95,23 +96,23 @@ export default function Resume() {
     return new Date(date.getFullYear(), date.getMonth() + 1, 6);
   }
 
-  function getDaysRemaining() {
-    const today = new Date(format(new Date(), "yyyy-MM-dd"));
-    const final = new Date(finalDate);
-    const diffDays = differenceInDays(final, today);
-    return diffDays;
-  }
-
-  function handleChangeFinalDate(event) {
+  function handleChangeFinalDate(event: any) {
     console.log("UE", event.target.value);
     setFinalDate(event.target.value);
   }
 
-  const [daysRemaining, setDaysRemaining] = useState(getDaysRemaining());
+  const [daysRemaining, setDaysRemaining] = useState(0);
+
+  const getDaysRemaining = useCallback(() => {
+    const today = new Date(format(new Date(), "yyyy-MM-dd"));
+    const final = new Date(finalDate);
+    const diffDays = differenceInDays(final, today);
+    return diffDays;
+  }, [finalDate]);
 
   useEffect(() => {
     setDaysRemaining(getDaysRemaining());
-  }, [finalDate]);
+  }, [getDaysRemaining, finalDate]);
 
   // const valueLeft = paycheck - stocksInvestiment - totalCurrent;
   const valueLeft = totalCardsLimits - totalCardsCurrent;
