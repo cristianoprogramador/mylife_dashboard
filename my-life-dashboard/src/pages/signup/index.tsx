@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import axios from "axios";
 
 type FormData = {
   name: string;
@@ -30,22 +31,24 @@ export default function SignUp() {
     const { name, email, password } = data;
 
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+      console.log(name, email, password);
+      const response = await axios.post(
+        "http://localhost:3030/userCreateWithoutProvider",
+        {
+          email,
+          password,
+          name,
+        }
+      );
 
-      if (response.ok) {
-        const { userId } = await response.json();
-        console.log(`Cadastro efetuado com sucesso, id: ${userId}`);
+      if (response.status === 200) {
+        const user = response.data;
+        console.log(`Cadastro efetuado com sucesso, id: ${user}`);
 
         // redireciona para a página inicial após o cadastro ser efetuado
         router.push("/");
       } else {
-        const { message } = await response.json();
+        const message = response.statusText;
         setErrorMsg(message);
       }
     } catch (error: any) {

@@ -16,7 +16,7 @@ export default async function handler(
   }
 
   if (session.user?.email !== req.query.email) {
-    return res.status(403).json({ message: "Forbidden" });
+    return res.status(403).json({ message: "Forbidden Estranho" });
   }
 
   if (req.method === "GET") {
