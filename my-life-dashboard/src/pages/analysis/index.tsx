@@ -2,6 +2,7 @@ import MonthlySpendingChart from "@/components/MonthlySpendingChart";
 import PieChart from "@/components/PieChart";
 import StackedBarChart from "@/components/StackedBarChart";
 import ExpenseByCategory from "@/components/TypeOfSpendingChart";
+import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
@@ -25,10 +26,10 @@ export default function Analysis() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/spending_history?email=${session?.user?.email}`
+        const response = await axios.get(
+          `http://localhost:3030/spending_history/${session?.user?.email}`
         );
-        const responseData = await response.json();
+        const responseData = response.data;
 
         setRowData(responseData.reverse());
       } catch (error) {

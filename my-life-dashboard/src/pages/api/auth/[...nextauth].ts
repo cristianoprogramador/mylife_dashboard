@@ -31,8 +31,6 @@ export const authOptions: NextAuthOptions = {
             password,
           });
 
-          console.log(response);
-
           if (response.status !== 200) {
             throw new Error("Invalid login");
           }
@@ -63,9 +61,9 @@ export const authOptions: NextAuthOptions = {
           const { name, email, image } = user;
 
           // Check if user already exists in the backend
-          const response = await axios.post("http://localhost:3030/userData", {
-            email,
-          });
+          const response = await axios.get(
+            `http://localhost:3030/userData/${email}`
+          );
 
           if (response.status === 200) {
             const existingUser = response.data;

@@ -6,6 +6,7 @@ import { GetServerSideProps } from "next";
 import { NumericFormat } from "react-number-format";
 import Head from "next/head";
 import { useTheme } from "next-themes";
+import axios from "axios";
 
 type RowData = {
   Data: number;
@@ -52,10 +53,15 @@ export default function History() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/spending_history?email=${session?.user?.email}`
+        // const response = await fetch(
+        //   `/api/spending_history?email=${session?.user?.email}`
+        // );
+        // const responseData = await response.json();
+
+        const response = await axios.get(
+          `http://localhost:3030/spending_history/${session?.user?.email}`
         );
-        const responseData = await response.json();
+        const responseData = response.data;
 
         const formattedData = responseData.map((item: SpendingHistoryData) => {
           const date = new Date(item.date);
@@ -206,17 +212,29 @@ export default function History() {
       rowData: rowData,
     };
     try {
-      const response = await fetch(
-        `/api/spending_history?email=${session?.user?.email}`,
+      //   const response = await fetch(
+      //     `/api/spending_history?email=${session?.user?.email}`,
+      //     {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify(data),
+      //     }
+      //   );
+      //   const responseData = await response.json();
+      //   console.log(responseData);
+
+      const response = await axios.post(
+        `http://localhost:3030/spending_history/${session?.user?.email}`,
+        JSON.stringify(rowData),
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
         }
       );
-      const responseData = await response.json();
+      const responseData = response.data;
       console.log(responseData);
     } catch (error) {
       console.error("Erro ao salvar dados:", error);

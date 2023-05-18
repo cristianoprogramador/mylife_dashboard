@@ -112,10 +112,10 @@ export default function Diary() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responsecerto = await axios.get(
+        const response = await axios.get(
           `http://localhost:3030/users_diary/${session?.user?.email}`
         );
-        const responseData = responsecerto.data;
+        const responseData = response.data;
 
         const formattedData: Record<
           string,

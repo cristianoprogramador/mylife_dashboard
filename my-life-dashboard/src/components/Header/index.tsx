@@ -28,11 +28,14 @@ export function Header() {
       return dataProfile;
     } else if (session) {
       try {
-        const { data } = await axios.get(
-          `/api/users?email=${session?.user?.email}`
+        const response = await axios.get(
+          `http://localhost:3030/userData/${session?.user?.email}`
         );
-        localStorage.setItem("userData", JSON.stringify(data));
-        return data;
+
+        const responseData = response.data;
+
+        localStorage.setItem("userData", JSON.stringify(responseData));
+        return console.log("Conectado");
       } catch (error: any) {
         console.log(error.response?.data);
         return null;

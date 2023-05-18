@@ -10,6 +10,11 @@ interface User {
   image: string;
 }
 
+interface UserResponse {
+  name: string;
+  image: string;
+}
+
 export const loginUser = async (
   email: string,
   password: string
@@ -53,7 +58,7 @@ export const loginUser = async (
   }
 };
 
-export const getUserByEmail = async (email: string): Promise<User> => {
+export const getUserByEmail = async (email: string): Promise<UserResponse> => {
   let connection: PoolConnection | undefined;
 
   try {
@@ -72,10 +77,7 @@ export const getUserByEmail = async (email: string): Promise<User> => {
 
     // Retorna um objeto com as informações do usuário
     return {
-      id: user.id,
       name: user.name,
-      email: user.email,
-      password: user.password,
       image: user.image,
     };
   } catch (error) {

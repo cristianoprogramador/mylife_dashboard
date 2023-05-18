@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
-  const { email } = req.body;
+  const { email } = req.params;
 
   try {
     const user = await getUserByEmail(email);
