@@ -28,6 +28,13 @@ export function Header() {
       return dataProfile;
     } else if (session) {
       try {
+        // const response = await axios.get(
+        //   `http://localhost:3030/userData/${session?.user?.email}`
+        // );
+
+        // const responseData = response.data;
+
+        // localStorage.setItem("userData", JSON.stringify(responseData));
         const { data } = await axios.get(
           `/api/users?email=${session?.user?.email}`
         );
@@ -58,6 +65,8 @@ export function Header() {
     localStorage.removeItem("userData");
     signOut();
   }
+
+  // const ImageHoster = `http://localhost:3030+${dataProfile?.image}`;
 
   if (isLoading) {
     return <div>Loading...</div>;

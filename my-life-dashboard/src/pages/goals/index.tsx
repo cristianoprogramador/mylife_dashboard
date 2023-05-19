@@ -107,6 +107,16 @@ export default function Goals() {
     // console.log(JSON.stringify(goals));
 
     try {
+      // const response = await axios.post(
+      //   `http://localhost:3030/users_goals/${session?.user?.email}/${selectedYear}`,
+      //   JSON.stringify(goals),
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      // const responseData = response.data;
       const response = await fetch(
         `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`,
         {
@@ -127,8 +137,8 @@ export default function Goals() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`
+        const response = await axios.get(
+          `http://localhost:3030/users_goals/${session?.user?.email}/${selectedYear}`
         );
         const responseData = await response.json();
 

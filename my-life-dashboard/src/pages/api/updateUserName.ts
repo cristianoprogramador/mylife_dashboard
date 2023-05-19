@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
-import connection from "../db";
+import connection from "./db";
 import { OkPacket } from "mysql2";
 
 export const config = {

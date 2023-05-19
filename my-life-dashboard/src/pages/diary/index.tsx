@@ -92,6 +92,16 @@ export default function Diary() {
         }
       );
       const responseData = await response.json();
+      // const response = await axios.post(
+      //   `http://localhost:3030/users_diary/${session?.user?.email}`,
+      //   JSON.stringify(diaryEntries),
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      // const responseData = response.data;
       console.log(responseData);
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
@@ -101,8 +111,8 @@ export default function Diary() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/users_diary?email=${session?.user?.email}`
+        const response = await axios.get(
+          `http://localhost:3030/users_diary/${session?.user?.email}`
         );
         const responseData = await response.json();
 

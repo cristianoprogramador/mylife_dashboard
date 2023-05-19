@@ -57,6 +57,11 @@ export default function History() {
         );
         const responseData = await response.json();
 
+        // const response = await axios.get(
+        //   `http://localhost:3030/spending_history/${session?.user?.email}`
+        // );
+        // const responseData = response.data;
+
         const formattedData = responseData.map((item: SpendingHistoryData) => {
           const date = new Date(item.date);
           const excelDate =
@@ -218,6 +223,18 @@ export default function History() {
       );
       const responseData = await response.json();
       console.log(responseData);
+
+      // const response = await axios.post(
+      //   `http://localhost:3030/spending_history/${session?.user?.email}`,
+      //   JSON.stringify(rowData),
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+      // const responseData = response.data;
+      // console.log(responseData);
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }

@@ -40,9 +40,19 @@ export default function Profile(props: ProfileProps) {
       );
 
       console.log("Image uploaded:", data);
-      window.location.reload();
 
-      // fetchUser();
+      // const response = await axios.put(
+      //   `http://localhost:3030/uploadPhoto/${session?.user?.email}`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+
+      // console.log("Image uploaded:", response);
+      window.location.reload();
     } catch (error: any) {
       console.log(error.response?.data);
     }
@@ -57,6 +67,13 @@ export default function Profile(props: ProfileProps) {
       await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
         name: newName,
       });
+
+      // await axios.put(
+      //   `http://localhost:3030/uploadUserName/${session?.user?.email}`,
+      //   {
+      //     name: newName,
+      //   }
+      // );
 
       console.log("Name updated:", newName);
       window.location.reload();
@@ -87,6 +104,8 @@ export default function Profile(props: ProfileProps) {
       ? "py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
       : "py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
 
+  // const ImageHoster = `http://localhost:3030+${dataProfile?.image}`;
+
   return (
     <div className={`${bgColor}  p-6 flex flex-col items-center rounded-md`}>
       <div className="flex flex-row w-full justify-start gap-3 mb-4">
@@ -102,7 +121,7 @@ export default function Profile(props: ProfileProps) {
       {showDefaultImage && (
         <div className="flex justify-center h-40 w-40">
           <Image
-            src={dataProfile.image}
+            src={dataProfile?.image}
             height={160}
             width={160}
             alt="Imagem"

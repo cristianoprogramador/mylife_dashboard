@@ -30,6 +30,19 @@ export default function SignUp() {
     const { name, email, password } = data;
 
     try {
+      // console.log(name, email, password);
+      // const response = await axios.post(
+      //   "http://localhost:3030/userCreateWithoutProvider",
+      //   {
+      //     email,
+      //     password,
+      //     name,
+      //   }
+      // );
+
+      // if (response.status === 200) {
+      //   const user = response.data;
+      //   console.log(`Cadastro efetuado com sucesso, id: ${user}`);
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: {

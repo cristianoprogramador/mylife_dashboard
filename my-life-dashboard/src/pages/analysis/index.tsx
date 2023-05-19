@@ -29,6 +29,10 @@ export default function Analysis() {
           `/api/spending_history?email=${session?.user?.email}`
         );
         const responseData = await response.json();
+        // const response = await axios.get(
+        //   `http://localhost:3030/spending_history/${session?.user?.email}`
+        // );
+        // const responseData = response.data;
 
         setRowData(responseData.reverse());
       } catch (error) {
