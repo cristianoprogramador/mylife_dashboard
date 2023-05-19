@@ -111,8 +111,13 @@ export default function Diary() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3030/users_diary/${session?.user?.email}`
+        // const response = await axios.get(
+        //   `http://localhost:3030/users_diary/${session?.user?.email}`
+        // );
+        // const responseData = await response.json();
+
+        const response = await fetch(
+          `/api/users_diary?email=${session?.user?.email}`
         );
         const responseData = await response.json();
 
