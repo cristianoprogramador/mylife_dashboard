@@ -168,19 +168,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
+        // console.log("TEM ALGO AQUI", credentials);
         try {
           const { email, password } = credentials;
-          console.log(email);
-          const response = await axios.post("http://localhost:3030/login", {
-            email,
-            password,
-          });
-
-          if (response.status !== 200) {
-            throw new Error("Invalid login");
-          }
-
-          const user = response.data;
+          const user = await loginUser(email, password);
           return user;
         } catch (error) {
           console.error(error);
@@ -202,51 +193,49 @@ export const authOptions: NextAuthOptions = {
         // Use existing login logic for credentials provider
         return true;
       } else {
-        try {
-          const { name, email, image } = user;
+        const conn = await connection();
 
-          // Check if user already exists in the backend
-          const response = await axios.get(
-            `http://localhost:3030/userData/${email}`
+        try {
+          // Check if user already exists in database
+          const [rows] = await conn.execute(
+            "SELECT * FROM users WHERE email = ?",
+            [user.email]
           );
 
-          if (response.status === 200) {
-            const existingUser = response.data;
-            // User already exists, allow sign in
+          if (rows.length > 0) {
+            const userData = rows[0];
+            // console.log("COMO DEVERIA SER", userData);
             return {
               session: {
-                name: existingUser.name,
-                email: existingUser.email,
-                image: existingUser.image,
+                name: userData.name,
+                email: userData.email,
+                image: userData.image,
               },
             };
           }
 
-          // If user doesn't exist, create a new user in the backend
-          const newUserResponse = await axios.post(
-            "http://localhost:3030/userCreate",
-            {
-              name,
-              email,
-              password: "", // You should handle the password on the backend side
-              image,
-            }
-          );
+          // If user doesn't exist, create a new user
+          const newUser = await createUserFromProvider({
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          });
 
-          if (newUserResponse.status === 200) {
-            const newUser = newUserResponse.data;
+          if (newUser) {
             // New user created, allow sign in
             return {
               session: {
-                name,
-                email,
-                image,
+                name: user.name,
+                email: user.email,
+                image: user.image,
               },
             };
           }
         } catch (error) {
           console.error(error);
           return false; // Something went wrong, prevent sign in
+        } finally {
+          conn.end();
         }
       }
 

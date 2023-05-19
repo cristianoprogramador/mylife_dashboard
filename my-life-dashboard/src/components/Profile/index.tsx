@@ -15,7 +15,6 @@ export default function Profile(props: ProfileProps) {
   const { data: session } = useSession();
   const [showDefaultImage, setShowDefaultImage] = useState(true);
   const [newName, setNewName] = useState("");
-  const ImageHoster = "http://localhost:3030";
 
   const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
   // console.log(dataProfile);
@@ -60,9 +59,9 @@ export default function Profile(props: ProfileProps) {
         return;
       }
       console.log(newName);
-      // await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
-      //   name: newName,
-      // });
+      await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
+        name: newName,
+      });
 
       console.log("Name updated:", newName);
       window.location.reload();

@@ -53,20 +53,15 @@ export default function History() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const response = await fetch(
-        //   `/api/spending_history?email=${session?.user?.email}`
-        // );
-        // const responseData = await response.json();
-
-        const response = await axios.get(
-          `http://localhost:3030/spending_history/${session?.user?.email}`
-        );
-        const responseData = response.data;
-
         // const response = await axios.get(
         //   `http://localhost:3030/spending_history/${session?.user?.email}`
         // );
         // const responseData = response.data;
+
+        const response = await fetch(
+          `/api/spending_history?email=${session?.user?.email}`
+        );
+        const responseData = await response.json();
 
         const formattedData = responseData.map((item: SpendingHistoryData) => {
           const date = new Date(item.date);

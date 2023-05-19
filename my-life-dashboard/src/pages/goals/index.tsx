@@ -138,10 +138,15 @@ export default function Goals() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3030/users_goals/${session?.user?.email}/${selectedYear}`
+        // const response = await axios.get(
+        //   `http://localhost:3030/users_goals/${session?.user?.email}/${selectedYear}`
+        // );
+        // const responseData = response.data;
+
+        const response = await fetch(
+          `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`
         );
-        const responseData = response.data;
+        const responseData = await response.json();
 
         if (responseData.length > 0) {
           const formattedData = responseData.reduce((acc: any, curr: any) => {

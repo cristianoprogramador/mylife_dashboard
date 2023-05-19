@@ -26,14 +26,14 @@ export default function Analysis() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3030/spending_history/${session?.user?.email}`
-        );
-        const responseData = await response.json();
         // const response = await axios.get(
         //   `http://localhost:3030/spending_history/${session?.user?.email}`
         // );
         // const responseData = response.data;
+        const response = await fetch(
+          `/api/spending_history?email=${session?.user?.email}`
+        );
+        const responseData = await response.json();
 
         setRowData(responseData.reverse());
       } catch (error) {
@@ -43,8 +43,6 @@ export default function Analysis() {
 
     fetchData();
   }, [session]);
-
-  // console.log(rowData);
 
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
