@@ -52,14 +52,14 @@ export default function SignUp() {
         body: JSON.stringify({ name, email, password }),
       });
 
-      if (response.status === 200) {
-        const user = response.data;
-        console.log(`Cadastro efetuado com sucesso, id: ${user}`);
+      if (response.ok) {
+        const { userId } = await response.json();
+        console.log(`Cadastro efetuado com sucesso, id: ${userId}`);
 
         // redireciona para a página inicial após o cadastro ser efetuado
         router.push("/");
       } else {
-        const message = response.statusText;
+        const { message } = await response.json();
         setErrorMsg(message);
       }
     } catch (error: any) {

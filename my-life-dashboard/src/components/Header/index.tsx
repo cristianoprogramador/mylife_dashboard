@@ -40,11 +40,8 @@ export function Header() {
         const { data } = await axios.get(
           `/api/users?email=${session?.user?.email}`
         );
-
-        const responseData = response.data;
-
-        localStorage.setItem("userData", JSON.stringify(responseData));
-        return console.log("Conectado");
+        localStorage.setItem("userData", JSON.stringify(data));
+        return data;
       } catch (error: any) {
         console.log(error.response?.data);
         return null;

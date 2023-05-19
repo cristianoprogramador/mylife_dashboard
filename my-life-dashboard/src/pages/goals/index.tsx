@@ -121,12 +121,14 @@ export default function Goals() {
       const response = await fetch(
         `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`,
         {
+          method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
+          body: data.toString(),
         }
       );
-      const responseData = response.data;
+      const responseData = await response.json();
       console.log(responseData);
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
