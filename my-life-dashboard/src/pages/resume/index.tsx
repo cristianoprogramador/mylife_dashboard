@@ -146,6 +146,8 @@ export default function Resume() {
     setIsVisible(true);
   }, []);
 
+  console.log("Bem vindo");
+
   return (
     <div
       className={`flex flex-col items-center transition-opacity duration-150 ${
