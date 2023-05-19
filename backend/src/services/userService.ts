@@ -153,3 +153,53 @@ export const createUserWithoutProvider = async (
     }
   }
 };
+
+export const updateUserName = async (
+  name: string,
+  email: string
+): Promise<{ userId: number }> => {
+  let connection: PoolConnection | undefined;
+
+  try {
+    connection = await pool.getConnection();
+
+    const [result] = await connection.execute<RowDataPacket[]>(
+      `UPDATE users SET name = ? WHERE email = ?`,
+      [name, email]
+    );
+
+    return { userId: (result as any).insertId };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};
+
+export const updateUserAvatar = async (
+  photoUrl: any,
+  email: string
+): Promise<{ userId: number }> => {
+  let connection: PoolConnection | undefined;
+
+  try {
+    connection = await pool.getConnection();
+
+    const [result] = await connection.execute<RowDataPacket[]>(
+      `UPDATE users SET image = ? WHERE email = ?`,
+      [photoUrl, email]
+    );
+
+    return { userId: (result as any).insertId };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
+  }
+};

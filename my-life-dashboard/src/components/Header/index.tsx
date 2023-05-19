@@ -12,6 +12,8 @@ interface ProfileProps {
   image: string;
 }
 
+const ImageHoster = "http://localhost:3030";
+
 export function Header() {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
@@ -66,6 +68,8 @@ export function Header() {
     return <div>Loading...</div>;
   }
 
+  // console.log(ImageHoster + dataProfile?.image);
+
   return (
     <header
       className={`bg-gradient-to-r ${
@@ -79,7 +83,7 @@ export function Header() {
           <>
             <div className="flex justify-center h-14 w-14">
               <Image
-                src={dataProfile?.image}
+                src={ImageHoster + dataProfile?.image}
                 width={0}
                 height={0}
                 sizes="100vw"

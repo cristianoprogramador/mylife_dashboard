@@ -6,6 +6,8 @@ import {
   createUserWithProvider,
   getUser,
   login,
+  updateProfileAvatar,
+  updateProfileName,
 } from "./controllers/userController";
 import { getGoals, insertGoals } from "./controllers/goalsController";
 import { getDiary, insertDiary } from "./controllers/diaryController";
@@ -15,7 +17,7 @@ export const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "../public/images");
+    cb(null, "../backend/public/images");
   },
   filename: (req, file, cb) => {
     console.log(file);
@@ -43,3 +45,11 @@ router.post("/users_diary/:email", insertDiary);
 router.get("/spending_history/:email", getHistory);
 
 router.post("/spending_history/:email", insertHistory);
+
+router.put("/uploadUserName/:email", updateProfileName);
+
+router.put(
+  "/uploadPhoto/:email",
+  uploadPhoto.single("myImage"),
+  updateProfileAvatar
+);
