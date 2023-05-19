@@ -1,3 +1,4 @@
+import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -104,20 +105,19 @@ export default function Goals() {
     data.append("email", session?.user?.email || "");
     data.append("year", selectedYear.toString());
 
-    // console.log(JSON.stringify(goals));
+    console.log(JSON.stringify(goals));
 
     try {
-      const response = await fetch(
-        `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`,
+      const response = await axios.post(
+        `http://localhost:3030/users_goals/${session?.user?.email}/${selectedYear}`,
+        JSON.stringify(goals),
         {
-          method: "POST",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
-          body: data.toString(),
         }
       );
-      const responseData = await response.json();
+      const responseData = response.data;
       console.log(responseData);
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
@@ -127,10 +127,10 @@ export default function Goals() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/users_goals?email=${session?.user?.email}&year=${selectedYear}`
+        const response = await axios.get(
+          `http://localhost:3030/users_goals/${session?.user?.email}/${selectedYear}`
         );
-        const responseData = await response.json();
+        const responseData = response.data;
 
         if (responseData.length > 0) {
           const formattedData = responseData.reduce((acc: any, curr: any) => {

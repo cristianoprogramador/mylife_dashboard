@@ -15,6 +15,7 @@ export default function Profile(props: ProfileProps) {
   const { data: session } = useSession();
   const [showDefaultImage, setShowDefaultImage] = useState(true);
   const [newName, setNewName] = useState("");
+  const ImageHoster = "http://localhost:3030";
 
   const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
   // console.log(dataProfile);
@@ -34,12 +35,22 @@ export default function Profile(props: ProfileProps) {
       const formData = new FormData();
       formData.append("myImage", image);
 
-      const { data } = await axios.post(
-        `/api/upload?email=${session?.user?.email}`,
-        formData
+      // const { data } = await axios.post(
+      //   `/api/upload?email=${session?.user?.email}`,
+      //   formData
+      // );
+
+      const response = await axios.put(
+        `http://localhost:3030/uploadPhoto/${session?.user?.email}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
-      console.log("Image uploaded:", data);
+      console.log("Image uploaded:", response);
       window.location.reload();
 
       // fetchUser();
@@ -54,9 +65,16 @@ export default function Profile(props: ProfileProps) {
         return;
       }
       console.log(newName);
-      await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
-        name: newName,
-      });
+      // await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
+      //   name: newName,
+      // });
+
+      await axios.put(
+        `http://localhost:3030/uploadUserName/${session?.user?.email}`,
+        {
+          name: newName,
+        }
+      );
 
       console.log("Name updated:", newName);
       window.location.reload();
@@ -102,7 +120,7 @@ export default function Profile(props: ProfileProps) {
       {showDefaultImage && (
         <div className="flex justify-center h-40 w-40">
           <Image
-            src={dataProfile.image}
+            src={ImageHoster + dataProfile?.image}
             height={160}
             width={160}
             alt="Imagem"
