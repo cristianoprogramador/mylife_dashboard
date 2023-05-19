@@ -31,39 +31,24 @@ export default function Profile(props: ProfileProps) {
 
   const handleSubmit = async () => {
     try {
-      if (!image) return;
-      const formData = new FormData();
-      formData.append("myImage", image);
-
       // const { data } = await axios.post(
       //   `/api/upload?email=${session?.user?.email}`,
       //   formData
       // );
 
-      const response = await axios.put(
-        `http://localhost:3030/uploadPhoto/${session?.user?.email}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+      if (!image) return;
+      const formData = new FormData();
+      formData.append("myImage", image);
+
+      const { data } = await axios.post(
+        `/api/upload?email=${session?.user?.email}`,
+        formData
       );
 
       console.log("Image uploaded:", data);
-
-      // const response = await axios.put(
-      //   `http://localhost:3030/uploadPhoto/${session?.user?.email}`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
-
-      // console.log("Image uploaded:", response);
       window.location.reload();
+
+      // fetchUser();
     } catch (error: any) {
       console.log(error.response?.data);
     }
@@ -79,19 +64,6 @@ export default function Profile(props: ProfileProps) {
       //   name: newName,
       // });
 
-      await axios.put(
-        `http://localhost:3030/uploadUserName/${session?.user?.email}`,
-        {
-          name: newName,
-        }
-      );
-
-      // await axios.put(
-      //   `http://localhost:3030/uploadUserName/${session?.user?.email}`,
-      //   {
-      //     name: newName,
-      //   }
-      // );
       console.log("Name updated:", newName);
       window.location.reload();
 
