@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import axios from "axios";
 
 type FormData = {
   name: string;
@@ -51,14 +52,14 @@ export default function SignUp() {
         body: JSON.stringify({ name, email, password }),
       });
 
-      if (response.ok) {
-        const { userId } = await response.json();
-        console.log(`Cadastro efetuado com sucesso, id: ${userId}`);
+      if (response.status === 200) {
+        const user = response.data;
+        console.log(`Cadastro efetuado com sucesso, id: ${user}`);
 
         // redireciona para a página inicial após o cadastro ser efetuado
         router.push("/");
       } else {
-        const { message } = await response.json();
+        const message = response.statusText;
         setErrorMsg(message);
       }
     } catch (error: any) {

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -81,14 +82,24 @@ export default function Diary() {
     data.append("diaryEntries", JSON.stringify(diaryEntries));
 
     try {
-      const response = await fetch(
-        `/api/users_diary?email=${session?.user?.email}`,
+      // const response = await fetch(
+      //   `/api/users_diary?email=${session?.user?.email}`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/x-www-form-urlencoded",
+      //     },
+      //     body: data,
+      //   }
+      // );
+      // const responseData = await response.json();
+      const response = await axios.post(
+        `http://localhost:3030/users_diary/${session?.user?.email}`,
+        JSON.stringify(diaryEntries),
         {
-          method: "POST",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
-          body: data,
         }
       );
       const responseData = await response.json();
@@ -114,7 +125,7 @@ export default function Diary() {
         const response = await axios.get(
           `http://localhost:3030/users_diary/${session?.user?.email}`
         );
-        const responseData = await response.json();
+        const responseData = response.data;
 
         const formattedData: Record<
           string,
@@ -205,7 +216,7 @@ export default function Diary() {
       ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
       : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
 
-  console.log(diaryEntries);
+  // console.log(diaryEntries);
 
   const handleDeleteColumn = (option: any) => {
     setOptions((prevOptions) => prevOptions.filter((item) => item !== option));
