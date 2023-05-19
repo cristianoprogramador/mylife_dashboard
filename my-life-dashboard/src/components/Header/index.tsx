@@ -12,7 +12,7 @@ interface ProfileProps {
   image: string;
 }
 
-const ImageHoster = "http://localhost:3030";
+// const ImageHoster = "http://localhost:3030";
 
 export function Header() {
   const { data: session } = useSession();
@@ -89,7 +89,7 @@ export function Header() {
           <>
             <div className="flex justify-center h-14 w-14">
               <Image
-                src={ImageHoster + dataProfile?.image}
+                src={dataProfile?.image}
                 width={0}
                 height={0}
                 sizes="100vw"
