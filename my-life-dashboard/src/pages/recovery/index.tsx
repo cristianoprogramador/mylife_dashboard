@@ -1,10 +1,6 @@
-import Head from "next/head";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import axios from "axios";
 import { nanoid } from "nanoid";
+import Link from "next/link";
+import { useState } from "react";
 
 const initValues = { name: "", email: "", subject: "", message: "" };
 
@@ -160,6 +156,12 @@ export default function Recovery() {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </form>
       )}
+      <Link
+        href="/"
+        className="font-medium text-indigo-600 hover:text-indigo-500 ml-2 mt-4 cursor-pointer"
+      >
+        <button>Voltar</button>
+      </Link>
     </div>
   );
 }

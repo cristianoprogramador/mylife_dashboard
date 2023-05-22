@@ -1,5 +1,6 @@
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { AiOutlineHome, AiOutlineSetting } from "react-icons/ai";
 import { GiPayMoney, GiStairsGoal } from "react-icons/gi";
 import { SiSimpleanalytics } from "react-icons/si";
@@ -19,6 +20,25 @@ export function SideBar() {
     theme === "dark"
       ? "p-4 hover:bg-gray-700 hover:shadow-sm focus:outline-none text-white rounded-full w-full flex items-center m-3 transition-colors duration-300"
       : "p-4 hover:bg-blue-700 hover:shadow-sm focus:outline-none text-white rounded-full w-full flex items-center m-3 transition-colors duration-300";
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640); // Define 640 como o limite para considerar uma tela pequena
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Verifica o tamanho inicial da tela
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  if (isMobile) {
+    return null; // Retorna null para ocultar o sidebar em telas pequenas
+  }
 
   return (
     <nav className={`w-60 h-full ${bgColor} flex flex-col gap-7`}>
