@@ -46,13 +46,13 @@ export default function Profile(props: ProfileProps) {
 
       console.log("Image uploaded:", data);
 
-      // const userData = JSON.parse(localStorage.getItem("userData") ?? "null"); // Obtém os dados do localStorage
+      const userData = JSON.parse(localStorage.getItem("userData") ?? "null"); // Obtém os dados do localStorage
 
-      // userData.image = `/images/${data.filename}`; // Atualiza o campo 'name' em userData
+      userData.image = `/images/${data.filename}`; // Atualiza o campo 'name' em userData
 
-      // localStorage.setItem("userData", JSON.stringify(userData)); // Atualiza os dados no localStorage
+      localStorage.setItem("userData", JSON.stringify(userData)); // Atualiza os dados no localStorage
 
-      // window.location.reload();
+      window.location.reload();
 
       // fetchUser();
     } catch (error: any) {

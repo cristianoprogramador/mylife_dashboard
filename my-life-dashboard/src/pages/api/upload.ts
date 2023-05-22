@@ -101,22 +101,26 @@ const handler: NextApiHandler = async (req, res) => {
     }
   }
 
-  try {
-    await fs.readdir(path.join(process.cwd() + "/public", "/images"));
-  } catch (error) {
-    await fs.mkdir(path.join(process.cwd() + "/public", "/images"));
-  }
-  const { files, fileName } = await readFile(req, true);
-  console.log("Nome do arquivo salvo:", fileName);
+  if (req.method === "POST") {
+    try {
+      await fs.readdir(path.join(process.cwd() + "/public", "/images"));
+    } catch (error) {
+      await fs.mkdir(path.join(process.cwd() + "/public", "/images"));
+    }
+    const { files, fileName } = await readFile(req, true);
+    console.log("Nome do arquivo salvo:", fileName);
 
-  try {
-    await updateUserImage(req.query.email as string, fileName);
-    res
-      .status(200)
-      .json({ message: "Dados salvos com sucesso!", fileName: fileName });
-  } catch (error) {
-    console.error("Erro ao salvar dados:", error);
-    res.status(500).json({ message: "Erro ao salvar dados" });
+    try {
+      await updateUserImage(req.query.email as string, fileName);
+      res
+        .status(200)
+        .json({ message: "Dados salvos com sucesso!", fileName: fileName });
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+      res.status(500).json({ message: "Erro ao salvar dados" });
+    }
+  } else {
+    res.status(405).json({ message: "Method Not Allowed" });
   }
 };
 
