@@ -85,22 +85,6 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(403).json({ message: "Forbidden" });
   }
 
-  if (req.method === "PUT") {
-    console.log(req.body);
-    if (!req.body || !req.body.name) {
-      return res.status(400).json({ message: "Missing name field" });
-    }
-
-    const { name } = req.body as { name: string }; // Correção na desestruturação
-    try {
-      await updateUser(req.query.email as string, name); // Correção no segundo argumento
-      res.status(200).json({ message: "Dados salvos com sucesso!" });
-    } catch (error) {
-      console.error("Erro ao salvar dados:", error);
-      res.status(500).json({ message: "Erro ao salvar dados" });
-    }
-  }
-
   if (req.method === "POST") {
     try {
       await fs.readdir(path.join(process.cwd() + "/public", "/images"));
