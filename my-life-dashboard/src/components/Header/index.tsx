@@ -65,6 +65,7 @@ export function Header() {
 
   function handleLogout() {
     localStorage.removeItem("userData");
+    localStorage.removeItem("theme");
     signOut();
   }
 
@@ -112,7 +113,7 @@ export function Header() {
           </div>
         )}
       </div>
-      <Link href="/" className="flex flex-row mr-2">
+      <div className="flex flex-row mr-2">
         {theme === "dark" ? (
           <MdOutlineNightlight
             className="mr-8"
@@ -127,8 +128,10 @@ export function Header() {
           />
         )}
         <RiLogoutBoxRLine className="mr-1" size={25} />
-        <button onClick={handleLogout}>Logout</button>
-      </Link>
+        <Link href="/">
+          <button onClick={handleLogout}>Logout</button>
+        </Link>
+      </div>
     </header>
   );
 }

@@ -81,7 +81,7 @@ export default function SignUp() {
             src="/signup.svg"
             alt="Workflow"
           />
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold">
             Crie sua conta abaixo
           </h2>
         </div>
@@ -95,7 +95,7 @@ export default function SignUp() {
                 Name
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
                 id="name"
                 type="text"
                 placeholder="Cristiano"
@@ -123,7 +123,7 @@ export default function SignUp() {
                 Email
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 type="email"
                 placeholder="cristiano@exemplo.com"
@@ -148,7 +148,7 @@ export default function SignUp() {
                 Password
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 type="password"
                 placeholder="********"
