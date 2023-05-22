@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Pie } from "react-chartjs-2";
-import { subMonths, endOfMonth, startOfMonth } from "date-fns";
+import {
+  subMonths,
+  endOfMonth,
+  startOfMonth,
+  endOfDay,
+  addMonths,
+} from "date-fns";
 
 interface ExpensesProps {
   card: string;
@@ -27,17 +33,20 @@ interface PercentExpenses {
 }
 
 export default function PieChart({ expenses }: any) {
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
-  // console.log(expenses);
+  const [selectedMonth, setSelectedMonth] = useState(
+    endOfMonth(subMonths(new Date(), 1))
+  );
+  // console.log(selectedMonth);
 
   // Filtra as despesas para o mês selecionado
+
   const filteredExpenses = expenses.filter((item: any) => {
     const date = new Date(item.date);
-    const start = startOfMonth(selectedMonth);
-    const end = endOfMonth(selectedMonth);
+    const start = startOfMonth(addMonths(selectedMonth, 1));
+    const end = endOfMonth(addMonths(selectedMonth, 1));
+
     return date >= start && date <= end;
   });
-
   // Agrupa as despesas por tipo
 
   const groupedExpenses: GroupedExpenses = filteredExpenses.reduce(

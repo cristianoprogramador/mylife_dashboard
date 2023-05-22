@@ -45,6 +45,13 @@ export default function Profile(props: ProfileProps) {
       );
 
       console.log("Image uploaded:", data);
+
+      const userData = JSON.parse(localStorage.getItem("userData") ?? "null"); // Obtém os dados do localStorage
+
+      userData.image = `/images/${data.filename}`; // Atualiza o campo 'name' em userData
+
+      localStorage.setItem("userData", JSON.stringify(userData)); // Atualiza os dados no localStorage
+
       window.location.reload();
 
       // fetchUser();
@@ -58,12 +65,21 @@ export default function Profile(props: ProfileProps) {
       if (!newName || newName === dataProfile.name) {
         return;
       }
+
       console.log(newName);
+
+      const userData = JSON.parse(localStorage.getItem("userData") ?? "null"); // Obtém os dados do localStorage
+
       await axios.put(`/api/updateUserName?email=${session?.user?.email}`, {
         name: newName,
       });
 
       console.log("Name updated:", newName);
+
+      userData.name = newName; // Atualiza o campo 'name' em userData
+
+      localStorage.setItem("userData", JSON.stringify(userData)); // Atualiza os dados no localStorage
+
       window.location.reload();
 
       // fetchUser();

@@ -111,7 +111,9 @@ const handler: NextApiHandler = async (req, res) => {
 
   try {
     await updateUserImage(req.query.email as string, fileName);
-    res.status(200).json({ message: "Dados salvos com sucesso!" });
+    res
+      .status(200)
+      .json({ message: "Dados salvos com sucesso!", fileName: fileName });
   } catch (error) {
     console.error("Erro ao salvar dados:", error);
     res.status(500).json({ message: "Erro ao salvar dados" });

@@ -212,29 +212,17 @@ export default function History() {
       rowData: rowData,
     };
     try {
-      //   const response = await fetch(
-      //     `/api/spending_history?email=${session?.user?.email}`,
-      //     {
-      //       method: "POST",
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //       },
-      //       body: JSON.stringify(data),
-      //     }
-      //   );
-      //   const responseData = await response.json();
-      //   console.log(responseData);
-
-      const response = await axios.post(
-        `http://localhost:3030/spending_history/${session?.user?.email}`,
-        JSON.stringify(rowData),
+      const response = await fetch(
+        `/api/spending_history?email=${session?.user?.email}`,
         {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(data),
         }
       );
-      const responseData = response.data;
+      const responseData = await response.json();
       console.log(responseData);
 
       // const response = await axios.post(
