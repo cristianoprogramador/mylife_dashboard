@@ -24,7 +24,7 @@ const readFile = (
   const options: formidable.Options = {};
   let fileName: string = "";
   if (saveLocally) {
-    options.uploadDir = path.join(process.cwd(), "/public/images");
+    options.uploadDir = "/tmp"; // Altera o diretório para '/tmp'
     options.filename = (name, ext, path, form) => {
       fileName = Date.now().toString() + "_" + path.originalFilename;
 
@@ -87,21 +87,21 @@ const handler: NextApiHandler = async (req, res) => {
 
   if (req.method === "POST") {
     try {
-      await fs.readdir(path.join(process.cwd() + "/public", "/images"));
-    } catch (error) {
-      await fs.mkdir(path.join(process.cwd() + "/public", "/images"));
-    }
-    const { files, fileName } = await readFile(req, true);
-    console.log("Nome do arquivo salvo:", fileName);
+      const { files, fileName } = await readFile(req, true);
+      console.log("Nome do arquivo salvo:", fileName);
 
-    try {
-      await updateUserImage(req.query.email as string, fileName);
-      res
-        .status(200)
-        .json({ message: "Dados salvos com sucesso!", fileName: fileName });
+      try {
+        await updateUserImage(req.query.email as string, fileName);
+        res
+          .status(200)
+          .json({ message: "Dados salvos com sucesso!", fileName: fileName });
+      } catch (error) {
+        console.error("Erro ao salvar dados:", error);
+        res.status(500).json({ message: "Erro ao salvar dados" });
+      }
     } catch (error) {
-      console.error("Erro ao salvar dados:", error);
-      res.status(500).json({ message: "Erro ao salvar dados" });
+      console.error("Erro ao ler o arquivo:", error);
+      res.status(500).json({ message: "Erro ao ler o arquivo" });
     }
   } else {
     res.status(405).json({ message: "Method Not Allowed" });
