@@ -261,7 +261,7 @@ export default function Diary() {
         onSubmit={handleSubmit(handleAddEntry)}
         className=" rounded px-8 pt-6 pb-8 mb-4"
       >
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col space-x-4 items-center">
             <label htmlFor="date" className=" font-medium">
               Data:
@@ -302,7 +302,10 @@ export default function Diary() {
             );
           })}
           <div className="flex justify-center items-center">
-            <button type="submit" className={`${bgColorButtonBlue}`}>
+            <button
+              type="submit"
+              className={`${bgColorButtonBlue} w-full md:w-auto`}
+            >
               Adicionar entrada
             </button>
           </div>
@@ -310,7 +313,7 @@ export default function Diary() {
             <button
               onClick={saveToServer}
               type="button"
-              className={`${bgColorButtonGreen}`}
+              className={`${bgColorButtonGreen} w-full md:w-auto`}
             >
               Salvar no Servidor
             </button>

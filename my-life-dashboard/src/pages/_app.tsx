@@ -12,10 +12,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <SessionProvider session={session}>
         <UserProvider>
           <ThemeProvider>
-            <Header />
-            <main className="flex flex-row flex-1">
-              <SideBar />
-              <div className="flex-1 p-4 flex justify-center">
+            <main className="flex flex-col flex-1">
+              <Header />
+              <div className="flex-1 gap-4 flex">
+                <SideBar />
                 <Component {...pageProps} />
               </div>
             </main>

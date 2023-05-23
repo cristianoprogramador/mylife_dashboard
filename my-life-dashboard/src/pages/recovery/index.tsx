@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid";
+import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -91,6 +92,9 @@ export default function Recovery() {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      <Head>
+        <title>Recuperação de Senha</title>
+      </Head>
       {sent ? (
         <div className="text-center">
           <p className="mb-4">

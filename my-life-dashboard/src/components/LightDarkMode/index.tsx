@@ -30,7 +30,7 @@ export default function LightDarkMode(props: GoBackProps) {
         </button>
         <h1 className="text-2xl font-bold">Altere o Tema:</h1>
       </div>
-      <div className="flex items-center justify-between gap-6 m-3 w-fit">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 m-3 w-fit">
         <label
           htmlFor="darkMode"
           className={`flex flex-col items-center cursor-pointer ${
@@ -45,12 +45,7 @@ export default function LightDarkMode(props: GoBackProps) {
             height={0}
             sizes="100vw"
             alt="DarkMode"
-            style={{
-              width: "195px",
-              height: "195px",
-              objectFit: "fill",
-              borderRadius: "30%",
-            }}
+            className="w-52 h-52 md:w-64 md:h-64 object-cover rounded-full"
             onClick={() => handleChange("dark")}
           />
           <span className="text-lg mt-2">Dark Mode</span>
@@ -78,12 +73,7 @@ export default function LightDarkMode(props: GoBackProps) {
             height={0}
             sizes="100vw"
             alt="LightMode"
-            style={{
-              width: "195px",
-              height: "195px",
-              objectFit: "fill",
-              borderRadius: "30%",
-            }}
+            className="w-52 h-52 md:w-64 md:h-64 object-cover rounded-full"
             onClick={() => handleChange("light")}
           />
           <span className="text-lg mt-2">Light Mode</span>

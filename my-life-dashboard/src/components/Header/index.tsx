@@ -78,8 +78,8 @@ export function Header() {
   // console.log(ImageHoster + dataProfile?.image);
 
   return (
-    <header
-      className={`bg-gradient-to-r ${
+    <div
+      className={` bg-gradient-to-r  ${
         theme === "dark"
           ? "from-gray-800 from-20% via-gray-900 to-black"
           : "from-blue-500 from-20% via-blue-600 via-30% to-blue-600"
@@ -127,11 +127,15 @@ export function Header() {
             onClick={() => handleChange("dark")}
           />
         )}
-        <RiLogoutBoxRLine className="mr-1" size={25} />
-        <Link href="/">
-          <button onClick={handleLogout}>Logout</button>
-        </Link>
+        {session && (
+          <>
+            <RiLogoutBoxRLine className="mr-1" size={25} />
+            <Link href="/">
+              <button onClick={handleLogout}>Logout</button>
+            </Link>
+          </>
+        )}
       </div>
-    </header>
+    </div>
   );
 }

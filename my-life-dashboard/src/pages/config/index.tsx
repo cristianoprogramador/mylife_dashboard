@@ -5,6 +5,7 @@ import UserContext from "@/contexts/userContext";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import Head from "next/head";
 import Image from "next/image";
 import { useState, useContext, useEffect } from "react";
 import { FaCog, FaBell, FaUser, FaGithub } from "react-icons/fa";
@@ -102,7 +103,14 @@ export default function Config() {
     }
   };
 
-  return <div>{renderOptionScreen()}</div>;
+  return (
+    <div className="flex flex-1 justify-center items-center">
+      <Head>
+        <title>Configurações</title>
+      </Head>
+      {renderOptionScreen()}
+    </div>
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

@@ -267,220 +267,251 @@ export default function History() {
     setIsVisible(true);
   }, []);
 
-  return (
-    <div
-      className={`${bgColor} p-8 rounded-md transition-opacity duration-150 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <Head>
-        <title>Histórico de Gasto</title>
-      </Head>
-      <div className="flex flex-row justify-between ">
-        <div className="flex gap-3">
-          <label className={`${bgColorButtonBlue}`}>
-            <span>Selecionar arquivo</span>
-            <input
-              type="file"
-              accept=".xlsx"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-          </label>
-          <button
-            className={`${bgColorButtonRed}`}
-            onClick={() => setRowData([])}
-          >
-            Limpar dados
-          </button>
-        </div>
-        <div>
-          <button onClick={downloadFile} className={`${bgColorButtonGreen}`}>
-            Download da Tabela Exemplo
-          </button>
-        </div>
-      </div>
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-      <form className="mt-9">
-        <div className="grid grid-cols-4 gap-4">
-          <div className="col-span-1">
-            <label className="block  font-bold mb-2" htmlFor="Data">
-              Data
-            </label>
-            <input
-              className="w-full px-4 py-2 border rounded-lg shadow-md "
-              type="date"
-              id="date"
-              name="date"
-              onChange={handleDateChange}
-              required
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block  font-bold mb-2" htmlFor="Descrição">
-              Descrição
-            </label>
-            <input
-              className="w-full px-4 py-2 border rounded-lg shadow-md "
-              id="Descrição"
-              name="Descrição"
-              type="text"
-              value={formValues.Descrição}
-              onChange={handleFormChange}
-              required
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block  font-bold mb-2" htmlFor="Obs">
-              Obs
-            </label>
-            <input
-              className="w-full px-4 py-2 border rounded-lg shadow-md "
-              id="Obs"
-              name="Obs"
-              type="text"
-              value={formValues.Obs}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block  font-bold mb-2" htmlFor="Tipo">
-              Tipo
-            </label>
-            <input
-              className="w-full px-4 py-2 border rounded-lg shadow-md "
-              id="Tipo"
-              name="Tipo"
-              type="text"
-              value={formValues.Tipo}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block  font-bold mb-2" htmlFor="Valor">
-              Valor
-            </label>
-            <NumericFormat
-              className="w-full px-4 py-2 border rounded-lg shadow-md "
-              id="Valor"
-              name="Valor"
-              value={formValues.Valor}
-              onValueChange={(values) =>
-                handleFormChange({
-                  target: {
-                    name: "Valor",
-                    value: values.formattedValue,
-                  },
-                } as FormChangeEvent)
-              }
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              allowNegative={false}
-            />
-          </div>
-          <div className="col-span-1">
-            <label className="block  font-bold mb-2" htmlFor="Cartão">
-              Cartão
-            </label>
-            <input
-              className="w-full px-4 py-2 border rounded-lg shadow-md "
-              id="Cartão"
-              name="Cartão"
-              type="text"
-              value={formValues.Cartão}
-              onChange={handleFormChange}
-            />
-          </div>
-          <div className="flex justify-center align-middle items-end">
-            <button
-              type="button"
-              onClick={handleAddRow}
-              className={`${bgColorButtonBlue}`}
-            >
-              Adicionar na Lista
-            </button>
-          </div>
-          <div className="flex justify-center align-middle items-end">
-            <button
-              type="button"
-              onClick={saveToServer}
-              className={`${bgColorButtonGreen}`}
-            >
-              Salvar no Servidor
-            </button>
-          </div>
-        </div>
-      </form>
-      <div className=" shadow-md rounded overflow-x-auto mt-9">
-        <table className="min-w-max w-full table-auto text-black">
-          <thead>
-            <tr className={`${bgColorTable} text-xs leading-normal`}>
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Data
-              </th>
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Descrição
-              </th>
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Obs
-              </th>
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Tipo
-              </th>
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Valor
-              </th>
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Cartão
-              </th>
-              {/* <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Editar Info.
-              </th> */}
-              <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                Deletar Info.
-              </th>
-            </tr>
-          </thead>
-          <tbody className="border text-sm">
-            {rowData
-              .sort((a, b) => b.Data - a.Data)
-              .map((row, index) => {
-                const excelDate: number = row.Data;
-                const jsDate = toDate((excelDate - (25567 + 1)) * 86400 * 1000);
-                // converte para data do JavaScript
-                const formattedDate = format(jsDate, "dd/MM/yyyy");
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-                return (
-                  <tr className={` ${bgColorHover}`} key={index}>
-                    <td className="py-3 px-3 text-center ">{formattedDate}</td>
-                    <td className="py-3 px-3 text-center ">{row.Descrição}</td>
-                    <td className="py-3 px-3 text-center ">{row.Obs}</td>
-                    <td className="py-3 px-3 text-center ">{row.Tipo}</td>
-                    <td className="py-3 px-3 text-center ">
-                      R$:{" "}
-                      {Number(row.Valor).toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </td>
-                    <td className="py-3 px-3 text-center ">{row.Cartão}</td>
-                    {/* <td className="py-3 px-3 text-center">
-                      <ModalUpdate title="Abrir Modal" state={row} />
-                    </td> */}
-                    <td className="py-3 px-3 text-center">
-                      <button
-                        className={`${bgColorButtonRed}`}
-                        onClick={() => handleDeleteRow(index)}
-                      >
-                        Excluir
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 768); // Define a largura limite para considerar como tela pequena
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Verifica o tamanho da tela quando o componente é montado
+    handleResize();
+
+    // Remove o evento de redimensionamento quando o componente é desmontado
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-1 justify-center items-center">
+      <div
+        className={`${bgColor} p-8 rounded-md transition-opacity duration-150 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <Head>
+          <title>Histórico de Gasto</title>
+        </Head>
+        <div className="flex flex-row md:flex-row md:justify-between ">
+          <div className="flex gap-3">
+            <label className={`${bgColorButtonBlue}`}>
+              <span>Selecionar arquivo</span>
+              <input
+                type="file"
+                accept=".xlsx"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </label>
+            <button
+              className={`${bgColorButtonRed}`}
+              onClick={() => setRowData([])}
+            >
+              Limpar dados
+            </button>
+          </div>
+          <div>
+            <button onClick={downloadFile} className={`${bgColorButtonGreen}`}>
+              Download da Tabela Exemplo
+            </button>
+          </div>
+        </div>
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        <form className="mt-9">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div>
+              <label className="block font-bold mb-2" htmlFor="Data">
+                Data
+              </label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg shadow-md"
+                type="date"
+                id="date"
+                name="date"
+                onChange={handleDateChange}
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-2" htmlFor="Descrição">
+                Descrição
+              </label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg shadow-md"
+                id="Descrição"
+                name="Descrição"
+                type="text"
+                value={formValues.Descrição}
+                onChange={handleFormChange}
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-2" htmlFor="Obs">
+                Obs
+              </label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg shadow-md"
+                id="Obs"
+                name="Obs"
+                type="text"
+                value={formValues.Obs}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-2" htmlFor="Tipo">
+                Tipo
+              </label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg shadow-md"
+                id="Tipo"
+                name="Tipo"
+                type="text"
+                value={formValues.Tipo}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-2" htmlFor="Valor">
+                Valor
+              </label>
+              <NumericFormat
+                className="w-full px-4 py-2 border rounded-lg shadow-md"
+                id="Valor"
+                name="Valor"
+                value={formValues.Valor}
+                onValueChange={(values) =>
+                  handleFormChange({
+                    target: {
+                      name: "Valor",
+                      value: values.formattedValue,
+                    },
+                  } as FormChangeEvent)
+                }
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+              />
+            </div>
+            <div>
+              <label className="block font-bold mb-2" htmlFor="Cartão">
+                Cartão
+              </label>
+              <input
+                className="w-full px-4 py-2 border rounded-lg shadow-md"
+                id="Cartão"
+                name="Cartão"
+                type="text"
+                value={formValues.Cartão}
+                onChange={handleFormChange}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <button
+                type="button"
+                onClick={handleAddRow}
+                className={`${bgColorButtonBlue}`}
+              >
+                Adicionar na Lista
+              </button>
+            </div>
+            <div className="flex justify-center items-center">
+              <button
+                type="button"
+                onClick={saveToServer}
+                className={`${bgColorButtonGreen}`}
+              >
+                Salvar no Servidor
+              </button>
+            </div>
+          </div>
+        </form>
+        <div className="shadow-md rounded overflow-x-auto mt-9">
+          <div className="table-responsive">
+            <table className="min-w-max w-full table-auto text-black">
+              <thead>
+                <tr className={`${bgColorTable} text-xs leading-normal`}>
+                  <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                    Data
+                  </th>
+                  {!isSmallScreen && (
+                    <>
+                      <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                        Descrição
+                      </th>
+                      <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                        Cartão
+                      </th>
+                    </>
+                  )}
+                  <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                    Obs
+                  </th>
+                  <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                    Tipo
+                  </th>
+                  <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                    Valor
+                  </th>
+                  <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
+                    Deletar Info.
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="border text-sm">
+                {rowData
+                  .sort((a, b) => b.Data - a.Data)
+                  .map((row, index) => {
+                    const excelDate: number = row.Data;
+                    const jsDate = toDate(
+                      (excelDate - (25567 + 1)) * 86400 * 1000
+                    );
+                    const formattedDate = format(jsDate, "dd/MM/yyyy");
+
+                    return (
+                      <tr className={` ${bgColorHover}`} key={index}>
+                        <td className="py-2 px-2 text-center">
+                          {formattedDate}
+                        </td>
+                        {!isSmallScreen && (
+                          <>
+                            <td className="py-2 px-2 text-center">
+                              {row.Descrição}
+                            </td>
+                            <td className="py-2 px-2 text-center">
+                              {row.Cartão}
+                            </td>
+                          </>
+                        )}
+                        <td className="py-2 px-2 text-center">{row.Obs}</td>
+                        <td className="py-2 px-2 text-center">{row.Tipo}</td>
+                        <td className="py-2 px-2 text-center">
+                          R$:{" "}
+                          {Number(row.Valor).toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </td>
+                        <td className="py-2 px-2 text-center">
+                          <button
+                            className={`${bgColorButtonRed}`}
+                            onClick={() => handleDeleteRow(index)}
+                          >
+                            Excluir
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );

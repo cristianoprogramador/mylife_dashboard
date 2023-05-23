@@ -25,7 +25,7 @@ export function SideBar() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 640); // Define 640 como o limite para considerar uma tela pequena
+      setIsMobile(window.innerWidth < 700); // Define 640 como o limite para considerar uma tela pequena
     };
 
     window.addEventListener("resize", handleResize);
@@ -36,12 +36,14 @@ export function SideBar() {
     };
   }, []);
 
+  // console.log(window.innerWidth);
+
   if (isMobile) {
     return null; // Retorna null para ocultar o sidebar em telas pequenas
   }
 
   return (
-    <nav className={`w-60 h-full ${bgColor} flex flex-col gap-7`}>
+    <nav className={`h-full ${bgColor} flex flex-col gap-7 `}>
       <Link href="/resume" className="mt-10">
         <button className={`${bgColorButton}`}>
           <AiOutlineHome className="mr-3" size={25} />
