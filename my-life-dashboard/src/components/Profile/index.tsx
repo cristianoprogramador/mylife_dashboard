@@ -1,10 +1,12 @@
 import Dropzone from "react-dropzone";
-import { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import axios from "axios";
 import UserContext from "@/contexts/userContext";
 import { useTheme } from "next-themes";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "../../../firebaseConfig";
 
 type ProfileProps = {
   onGoBackClick: () => void;
@@ -16,25 +18,74 @@ export default function Profile(props: ProfileProps) {
   const [showDefaultImage, setShowDefaultImage] = useState(true);
   const [newName, setNewName] = useState("");
 
+  const [image, setImage] = useState<File | null>(null);
+  const [downloadURL, setDownloadURL] = useState("");
+
+  const handleUploadFile = async () => {
+    if (image) {
+      const name = Date.now().toString() + "-" + image.name;
+      const storageRef = ref(storage, `image/${name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          alert(error.message);
+        },
+        async () => {
+          try {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            setDownloadURL(url);
+            console.log(url);
+
+            const { data } = await axios.put(
+              `/api/upload?email=${session?.user?.email}`,
+              { url }
+            );
+
+            console.log("Image uploaded:", data);
+
+            const userData = JSON.parse(
+              localStorage.getItem("userData") ?? "null"
+            );
+            userData.image = url;
+            localStorage.setItem("userData", JSON.stringify(userData));
+            window.location.reload();
+          } catch (error) {
+            console.error("Error uploading image:", error);
+            // Lida com o erro ao obter a URL de download
+          }
+        }
+      );
+    } else {
+      alert("File not found");
+    }
+  };
+
   const dataProfile = JSON.parse(localStorage.getItem("userData") || "null");
   // console.log(dataProfile);
 
-  const [image, setImage] = useState<File | null>(null);
   const handleDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setImage(acceptedFiles[0]);
       setShowDefaultImage(false);
-      console.log(acceptedFiles[0]);
+    } else {
+      console.log("limite");
     }
   };
 
   const handleSubmit = async () => {
     try {
-      // const { data } = await axios.post(
-      //   `/api/upload?email=${session?.user?.email}`,
-      //   formData
-      // );
-
       if (!image) return;
       const formData = new FormData();
       formData.append("myImage", image);
@@ -47,14 +98,9 @@ export default function Profile(props: ProfileProps) {
       console.log("Image uploaded:", data);
 
       const userData = JSON.parse(localStorage.getItem("userData") ?? "null"); // Obtém os dados do localStorage
-
       userData.image = `/images/${data.filename}`; // Atualiza o campo 'name' em userData
-
       localStorage.setItem("userData", JSON.stringify(userData)); // Atualiza os dados no localStorage
-
       window.location.reload();
-
-      // fetchUser();
     } catch (error: any) {
       console.log(error.response?.data);
     }
@@ -154,17 +200,17 @@ export default function Profile(props: ProfileProps) {
             <button className={`${bgColorButtonBlue} mt-4`}>
               Selecionar Foto
             </button>
-            {image && (
-              <button
-                className={`${bgColorButtonGreen}  mt-4`}
-                onClick={handleSubmit}
-              >
-                Salvar no Servidor
-              </button>
-            )}
           </div>
         )}
       </Dropzone>
+      {image && (
+        <button
+          className={`${bgColorButtonGreen}  mt-4`}
+          onClick={handleUploadFile}
+        >
+          Salvar no Servidor
+        </button>
+      )}
 
       <div className="mt-4 flex flex-row justify-around w-full">
         <label htmlFor="name" className="block font-medium ">

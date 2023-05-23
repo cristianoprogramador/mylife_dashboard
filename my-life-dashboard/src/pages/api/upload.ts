@@ -7,11 +7,11 @@ import { authOptions } from "./auth/[...nextauth]";
 import connection from "./db";
 import { OkPacket } from "mysql2";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
 
 const readFile = (
   req: NextApiRequest,
@@ -41,27 +41,12 @@ const readFile = (
   });
 };
 
-const updateUserImage = async (email: string, image: string) => {
+const updateUserImage = async (email: string, url: string) => {
   try {
     const conn = await connection();
     const [rows] = await conn.execute(
       `UPDATE users SET image = ? WHERE email = ?`,
-      ["/images/" + image, email]
-    );
-    conn.end();
-    return (rows as OkPacket).affectedRows > 0;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-
-const updateUser = async (email: string, newName: string) => {
-  try {
-    const conn = await connection();
-    const [rows] = await conn.execute(
-      `UPDATE users SET name = ? WHERE email = ?`,
-      [newName, email]
+      [url, email]
     );
     conn.end();
     return (rows as OkPacket).affectedRows > 0;
@@ -85,23 +70,16 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(403).json({ message: "Forbidden" });
   }
 
-  if (req.method === "POST") {
-    try {
-      const { files, fileName } = await readFile(req, true);
-      console.log("Nome do arquivo salvo:", fileName);
+  if (req.method === "PUT") {
+    const { url } = req.body;
+    console.log(url);
 
-      try {
-        await updateUserImage(req.query.email as string, fileName);
-        res
-          .status(200)
-          .json({ message: "Dados salvos com sucesso!", fileName: fileName });
-      } catch (error) {
-        console.error("Erro ao salvar dados:", error);
-        res.status(500).json({ message: "Erro ao salvar dados" });
-      }
+    try {
+      await updateUserImage(req.query.email as string, url);
+      res.status(200).json({ message: "Dados salvos com sucesso!" });
     } catch (error) {
-      console.error("Erro ao ler o arquivo:", error);
-      res.status(500).json({ message: "Erro ao ler o arquivo" });
+      console.error("Erro ao salvar dados:", error);
+      res.status(500).json({ message: "Erro ao salvar dados" });
     }
   } else {
     res.status(405).json({ message: "Method Not Allowed" });
