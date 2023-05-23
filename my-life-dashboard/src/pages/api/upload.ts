@@ -72,7 +72,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   if (req.method === "PUT") {
     const { url } = req.body;
-    console.log(url);
+    // console.log(url);
 
     try {
       await updateUserImage(req.query.email as string, url);
