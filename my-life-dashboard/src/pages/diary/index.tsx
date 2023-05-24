@@ -103,6 +103,7 @@ export default function Diary() {
       //   }
       // );
       console.log(responseData);
+      alert("Salvo no Servidor");
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }

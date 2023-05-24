@@ -130,6 +130,7 @@ export default function Goals() {
       );
       const responseData = await response.json();
       console.log(responseData);
+      alert("Salvo no Servidor");
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }

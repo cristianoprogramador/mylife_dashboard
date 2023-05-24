@@ -10,8 +10,24 @@ import Head from "next/head";
 import { useTheme } from "next-themes";
 
 export default function Resume() {
-  const [today, setToday] = useState(2500);
-  const [investments, setInvestments] = useState(20000);
+  const [formData, setFormData] = useState({
+    today: 2500,
+    investments: 20000,
+  });
+
+  const handleChange = (fieldName, value) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [fieldName]: parseFloat(value),
+    }));
+  };
+
+  const [expensesData, setExpensesData] = useState({
+    energy: 150,
+    energyAvg: 125,
+    water: 150,
+    waterAvg: 125,
+  });
 
   const [creditCardNubank, setCreditCardNubank] = useState(650);
   const [creditCardNubankLimit, setCreditCardNubankLimit] = useState(1000);
@@ -25,36 +41,17 @@ export default function Resume() {
   const [stocksInvestiment, setStocksInvestiment] = useState(500);
   const [stocksInvestimentAvg, setStocksInvestimentAvg] = useState(300);
 
-  const totalBalance = parseFloat(today) + parseFloat(investments);
+  const totalBalance =
+    parseFloat(formData.today) + parseFloat(formData.investments);
 
   const [energy, setEnergy] = useState(150);
   const [water, setWater] = useState(125);
-  const [condom, setCondom] = useState(450);
-  const [cleaning, setCleaning] = useState(130);
-  const [internet, setInternet] = useState(80);
-  const [phone, setPhone] = useState(100);
 
   const [energyAvg, setEnergyAvg] = useState(150);
   const [waterAvg, setWaterAvg] = useState(100);
-  const [condomAvg, setCondomAvg] = useState(450);
-  const [cleaningAvg, setCleaningAvg] = useState(130);
-  const [internetAvg, setInternetAvg] = useState(80);
-  const [phoneAvg, setPhoneAvg] = useState(100);
 
-  const totalCurrent =
-    parseFloat(energy) +
-    parseFloat(water) +
-    parseFloat(condom) +
-    parseFloat(cleaning) +
-    parseFloat(internet) +
-    parseFloat(phone);
-  const totalAverage =
-    parseFloat(energyAvg) +
-    parseFloat(waterAvg) +
-    parseFloat(condomAvg) +
-    parseFloat(cleaningAvg) +
-    parseFloat(internetAvg) +
-    parseFloat(phoneAvg);
+  const totalCurrent = parseFloat(energy) + parseFloat(water);
+  const totalAverage = parseFloat(energyAvg) + parseFloat(waterAvg);
 
   const totalCardsCurrent =
     parseFloat(creditCardNubank) + parseFloat(creditCardSantander);
@@ -130,11 +127,15 @@ export default function Resume() {
   /// Passado para o componente:
 
   const currentAccount =
-    today - totalCurrent - totalCardsLimits + paycheck - stocksInvestiment;
+    formData.today -
+    totalCurrent -
+    totalCardsLimits +
+    paycheck -
+    stocksInvestiment;
 
   const currentAccountAvg = totalAverage + stocksInvestimentAvg + creditCardAvg;
 
-  const investmentsOfMonth = stocksInvestiment + investments;
+  const investmentsOfMonth = stocksInvestiment + formData.investments;
 
   const { theme, setTheme } = useTheme();
 
@@ -171,10 +172,10 @@ export default function Resume() {
                 decimalSeparator=","
                 prefix="R$ "
                 allowNegative={false}
-                value={today}
+                value={formData.today}
                 className="rounded-lg p-1 text-center w-28"
                 onValueChange={(values) => {
-                  setToday(parseFloat(values.floatValue));
+                  handleChange("today", values.floatValue);
                 }}
               />
             </div>
@@ -187,10 +188,10 @@ export default function Resume() {
                 decimalSeparator=","
                 prefix="R$ "
                 allowNegative={false}
-                value={investments}
+                value={formData.investments}
                 className="rounded-lg p-1 text-center w-28"
                 onValueChange={(values) => {
-                  setInvestments(parseFloat(values.floatValue));
+                  handleChange("investments", values.floatValue);
                 }}
               />
             </div>
@@ -324,122 +325,6 @@ export default function Resume() {
                   className="rounded-lg p-2 text-sm w-20 text-center"
                   onValueChange={(values) => {
                     setWaterAvg(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-                Condominio
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={condom}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setCondom(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={condomAvg}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setCondomAvg(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-                Faxineira
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={cleaning}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setCleaning(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={cleaningAvg}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setCleaningAvg(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-                Internet
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={internet}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setInternet(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={internetAvg}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setInternetAvg(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-                Telefone
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={phone}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setPhone(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={phoneAvg}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setPhoneAvg(parseFloat(values.floatValue));
                   }}
                 />
               </div>
