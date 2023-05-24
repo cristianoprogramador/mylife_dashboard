@@ -12,7 +12,7 @@ function formatMonthYear(date: any) {
     (c) => c.toUpperCase()
   );
 }
-export default function MonthlySpendingChart({ expenses }: any) {
+export default function MonthlySpendingChart({ expenses, isSmallScreen }: any) {
   const [numMonths, setNumMonths] = useState(8);
 
   const filteredExpenses = expenses.filter((item: any) => {
@@ -94,19 +94,19 @@ export default function MonthlySpendingChart({ expenses }: any) {
           className="px-2 py-1 border rounded-md"
         />
       </div>
-      <div className=" max-w-screen-md">
-        <Line
-          data={data}
-          options={options}
-          height={300}
-          width={600}
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.815)",
-            color: "white",
-            borderRadius: "5px",
-          }}
-        />
-      </div>
+      <Line
+        data={data}
+        options={options}
+        height={0}
+        width={0}
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.815)",
+          color: "white",
+          borderRadius: "5px",
+          height: isSmallScreen ? "150px" : "300px",
+          width: isSmallScreen ? "300px" : "600px",
+        }}
+      />
     </div>
   );
 }

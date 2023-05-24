@@ -25,7 +25,7 @@ export function SideBar() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 700); // Define 640 como o limite para considerar uma tela pequena
+      setIsMobile(window.innerWidth < 768); // Define 640 como o limite para considerar uma tela pequena
     };
 
     window.addEventListener("resize", handleResize);

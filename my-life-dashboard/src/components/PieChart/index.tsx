@@ -32,7 +32,7 @@ interface PercentExpenses {
   [key: string]: string;
 }
 
-export default function PieChart({ expenses }: any) {
+export default function PieChart({ expenses, isSmallScreen }: any) {
   const [selectedMonth, setSelectedMonth] = useState(
     endOfMonth(subMonths(new Date(), 1))
   );
@@ -114,7 +114,13 @@ export default function PieChart({ expenses }: any) {
           onChange={(event) => setSelectedMonth(new Date(event.target.value))}
         />
       </div>
-      <Pie data={data} width={350} />
+      <Pie
+        data={data}
+        width={0}
+        style={{
+          width: isSmallScreen ? "180px" : "350px",
+        }}
+      />
     </div>
   );
 }

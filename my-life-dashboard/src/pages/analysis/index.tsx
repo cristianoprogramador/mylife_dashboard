@@ -23,6 +23,24 @@ export default function Analysis() {
   const { data: session } = useSession();
   const [rowData, setRowData] = useState<SpendingHistoryData[]>([]);
 
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 768); // Define a largura limite para considerar como tela pequena
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Verifica o tamanho da tela quando o componente é montado
+    handleResize();
+
+    // Remove o evento de redimensionamento quando o componente é desmontado
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,21 +68,26 @@ export default function Analysis() {
   }, []);
 
   return (
-    <div
-      className={`flex flex-1 flex-col transition-opacity duration-200 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <Head>
-        <title>Análise Grafica dos Gastos</title>
-      </Head>
-      <div className="flex flex-row justify-around align-middle w-full">
-        <MonthlySpendingChart expenses={rowData} />
-        <ExpenseByCategory expenses={rowData} />
-      </div>
-      <div className="flex flex-row justify-around align-middle w-full">
-        <PieChart expenses={rowData} />
-        <StackedBarChart expenses={rowData} />
+    <div className="flex flex-col items-center justify-center">
+      <div
+        className={`flex flex-1 flex-col transition-opacity duration-200 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <Head>
+          <title>Análise Gráfica dos Gastos</title>
+        </Head>
+        <div className="flex flex-col lg:flex-row justify-around align-middle w-full">
+          <MonthlySpendingChart
+            expenses={rowData}
+            isSmallScreen={isSmallScreen}
+          />
+          <ExpenseByCategory expenses={rowData} isSmallScreen={isSmallScreen} />
+        </div>
+        <div className="flex flex-col lg:flex-row justify-around align-middle w-full">
+          <PieChart expenses={rowData} isSmallScreen={isSmallScreen} />
+          <StackedBarChart expenses={rowData} isSmallScreen={isSmallScreen} />
+        </div>
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ interface DataProps {
   expenses: ExpensesProps[];
 }
 
-export default function StackedBarChart({ expenses }: any) {
+export default function StackedBarChart({ expenses, isSmallScreen }: any) {
   // Define o estado inicial para o mês selecionado
   const [numMonths, setNumMonths] = useState(3);
 
@@ -161,12 +161,14 @@ export default function StackedBarChart({ expenses }: any) {
       <Bar
         data={data}
         options={options}
-        height={300}
-        width={600}
+        height={0}
+        width={0}
         style={{
           backgroundColor: "rgba(255, 255, 255, 0.815)",
           color: "white",
           borderRadius: "5px",
+          height: isSmallScreen ? "150px" : "300px",
+          width: isSmallScreen ? "300px" : "600px",
         }}
       />
     </div>

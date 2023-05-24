@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useContext, useState, useEffect, useCallback } from "react";
 import { RiLogoutBoxRLine } from "react-icons/ri";
 import { MdOutlineLightMode, MdOutlineNightlight } from "react-icons/md";
+import { DropdownMenu } from "../DropdownMenu";
 
 interface ProfileProps {
   name: string;
@@ -69,13 +70,27 @@ export function Header() {
     signOut();
   }
 
-  // const ImageHoster = `http://localhost:3030+${dataProfile?.image}`;
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 768); // Define a largura limite para considerar como tela pequena
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Verifica o tamanho da tela quando o componente é montado
+    handleResize();
+
+    // Remove o evento de redimensionamento quando o componente é desmontado
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  // console.log(ImageHoster + dataProfile?.image);
 
   return (
     <div
@@ -83,7 +98,9 @@ export function Header() {
         theme === "dark"
           ? "from-gray-800 from-20% via-gray-900 to-black"
           : "from-blue-500 from-20% via-blue-600 via-30% to-blue-600"
-      } flex items-center justify-between p-4 text-white rounded-br-2xl`}
+      } flex items-center justify-between p-4 text-white rounded-br-2xl ${
+        isSmallScreen ? "w-full" : "w-auto"
+      }`}
     >
       <div className="flex items-center">
         {dataProfile ? (
@@ -103,9 +120,17 @@ export function Header() {
                 alt="thumbnail"
               />
             </div>
-            <div>
-              <h1 className="ml-4">Olá {dataProfile?.name}, seja bem vindo!</h1>
-            </div>
+            {isSmallScreen ? (
+              <div>
+                <h1 className="ml-4">Olá {dataProfile?.name}</h1>
+              </div>
+            ) : (
+              <div>
+                <h1 className="ml-4">
+                  Olá {dataProfile?.name}, seja bem vindo!
+                </h1>
+              </div>
+            )}
           </>
         ) : (
           <div>
@@ -113,6 +138,9 @@ export function Header() {
           </div>
         )}
       </div>
+      {isSmallScreen && <DropdownMenu />}
+
+      {/* Colocar um modal pequeno para o usuario selecionar a opção */}
       <div className="flex flex-row mr-2">
         {theme === "dark" ? (
           <MdOutlineNightlight
@@ -129,10 +157,20 @@ export function Header() {
         )}
         {session && (
           <>
-            <RiLogoutBoxRLine className="mr-1" size={25} />
-            <Link href="/">
-              <button onClick={handleLogout}>Logout</button>
-            </Link>
+            {isSmallScreen ? (
+              <RiLogoutBoxRLine
+                className="mr-1"
+                size={25}
+                onClick={handleLogout}
+              />
+            ) : (
+              <>
+                <RiLogoutBoxRLine className="mr-1" size={25} />
+                <Link href="/">
+                  <button onClick={handleLogout}>Logout</button>
+                </Link>
+              </>
+            )}
           </>
         )}
       </div>

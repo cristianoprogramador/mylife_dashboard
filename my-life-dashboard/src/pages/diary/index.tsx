@@ -230,175 +230,177 @@ export default function Diary() {
   }, []);
 
   return (
-    <div
-      className={`${bgColor} p-4 space-y-4 rounded-md  transition-opacity duration-200 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <Head>
-        <title>Diário da Vida</title>
-      </Head>
-      <div className="text-center text-2xl font-bold mb-8">
-        Escreva o que você fez no dia!
-      </div>
-      <form onSubmit={handleAddOption}>
-        <div className="flex flex-row space-x-4 items-center">
-          <label htmlFor="option" className="font-medium">
-            Adicionar Coluna:
-          </label>
-          <input
-            type="text"
-            name="option"
-            className="border-gray-400 border-2 p-2 rounded-lg"
-          />
-          <button type="submit" className={`${bgColorButtonBlue}`}>
-            Adicionar
-          </button>
-        </div>
-      </form>
-
-      <form
-        onSubmit={handleSubmit(handleAddEntry)}
-        className=" rounded px-8 pt-6 pb-8 mb-4"
+    <div className="flex flex-1 justify-center items-center">
+      <div
+        className={`${bgColor} p-2 space-y-4 rounded-md transition-opacity duration-200 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex flex-col space-x-4 items-center">
-            <label htmlFor="date" className=" font-medium">
-              Data:
+        <Head>
+          <title>Diário da Vida</title>
+        </Head>
+        <div className="text-center text-2xl font-bold mb-8">
+          Escreva o que você fez no dia!
+        </div>
+        <form onSubmit={handleAddOption}>
+          <div className="flex flex-col space-x-4 items-center gap-2 md:flex-row">
+            <label htmlFor="option" className="font-medium">
+              Adicionar Coluna:
             </label>
             <input
-              type="date"
-              defaultValue={today}
-              {...register("date", { required: true })}
-              className="border-gray-400 border-2 p-2 rounded-lg text-center"
+              type="text"
+              name="option"
+              className="border-gray-400 border-2 p-2 rounded-lg"
             />
-            {errors.date && (
-              <span className="text-red-500">Este campo é obrigatório</span>
-            )}
-            {errorMsg && (
-              <span className="text-red-500">
-                Essa data já tem no Formulario
-              </span>
-            )}
-          </div>
-          {options.map((option) => {
-            return (
-              <div
-                key={option}
-                className="flex flex-col space-x-4 items-center"
-              >
-                <label htmlFor={option.toLowerCase()} className=" font-medium">
-                  {option}:
-                </label>
-                <textarea
-                  className="border-gray-400 border-2 p-2 rounded-lg w-full"
-                  {...register(option.toLowerCase(), { required: true })}
-                  rows={3}
-                ></textarea>
-                {errors[option.toLowerCase()] && (
-                  <span className="text-red-500">Este campo é obrigatório</span>
-                )}
-              </div>
-            );
-          })}
-          <div className="flex justify-center items-center">
-            <button
-              type="submit"
-              className={`${bgColorButtonBlue} w-full md:w-auto`}
-            >
-              Adicionar entrada
+            <button type="submit" className={`${bgColorButtonBlue}`}>
+              Adicionar
             </button>
           </div>
-          <div className="flex justify-center items-center">
-            <button
-              onClick={saveToServer}
-              type="button"
-              className={`${bgColorButtonGreen} w-full md:w-auto`}
-            >
-              Salvar no Servidor
-            </button>
-          </div>
-        </div>
-      </form>
+        </form>
 
-      <table className="table-fixed w-full">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="py-2 px-4 text-gray-800 font-medium">Data</th>
-            {options.map((option) => (
-              <th key={option} className=" py-2 px-4 text-gray-800 font-medium">
-                {option}
-                <button
-                  onClick={() => handleDeleteColumn(option)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
-                >
-                  X
-                </button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {diaryEntries
-            .sort((a, b) => {
-              const dateA = new Date(a.date);
-              const dateB = new Date(b.date);
-              return dateB.getTime() - dateA.getTime();
-            })
-            .map((entry) => {
-              const entryDate = new Date(entry.date);
-              const brazilOffset = 3 * 60; // fuso horário do Brasil é UTC-3
-              const entryDateWithOffset = new Date(
-                entryDate.getTime() + brazilOffset * 60 * 1000
-              );
+        <form
+          onSubmit={handleSubmit(handleAddEntry)}
+          className=" rounded px-8 pt-6 pb-8 mb-4"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col space-x-4 items-center">
+              <label htmlFor="date" className=" font-medium">
+                Data:
+              </label>
+              <input
+                type="date"
+                defaultValue={today}
+                {...register("date", { required: true })}
+                className="border-gray-400 border-2 p-2 rounded-lg text-center"
+              />
+              {errors.date && (
+                <span className="text-red-500">Este campo é obrigatório</span>
+              )}
+              {errorMsg && (
+                <span className="text-red-500">
+                  Essa data já tem no Formulario
+                </span>
+              )}
+            </div>
+            {options.map((option) => {
               return (
-                <tr key={entry.date}>
-                  <td className="border-gray-400 border text-center">
-                    {entryDateWithOffset.toLocaleDateString("pt-BR", {
-                      weekday: "long",
-                      year: "2-digit",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </td>
-                  {options.map((option) => (
-                    <td
-                      key={option}
-                      className=" py-2 px-4 border-gray-400 border"
-                    >
-                      <span
-                        contentEditable={true}
-                        suppressContentEditableWarning={true}
-                        onBlur={() => handleSave(entry.date, option)}
-                        onInput={(event) =>
-                          handleInputChange(event, entry.date, option)
-                        }
-                      >
-                        {entry.data[option]}
-                      </span>
-                      {/* {edits[entry.date]?.[option] && (
-                        <button
-                          onClick={() => handleSave(entry.date, option)}
-                          className={`${bgColorButtonBlue}`}
-                        >
-                          Salvar
-                        </button>
-                      )} */}
-                    </td>
-                  ))}
-                  <td className=" py-2 px-4 border-gray-400 border text-center ">
-                    <button
-                      onClick={() => handleDeleteRow(entry)}
-                      className={`${bgColorButtonRed}`}
-                    >
-                      Excluir
-                    </button>
-                  </td>
-                </tr>
+                <div
+                  key={option}
+                  className="flex flex-col space-x-4 items-center"
+                >
+                  <label
+                    htmlFor={option.toLowerCase()}
+                    className=" font-medium"
+                  >
+                    {option}:
+                  </label>
+                  <textarea
+                    className="border-gray-400 border-2 p-2 rounded-lg w-full"
+                    {...register(option.toLowerCase(), { required: true })}
+                    rows={3}
+                  ></textarea>
+                  {errors[option.toLowerCase()] && (
+                    <span className="text-red-500">
+                      Este campo é obrigatório
+                    </span>
+                  )}
+                </div>
               );
             })}
-        </tbody>
-      </table>
+            <div className="flex justify-center items-center">
+              <button
+                type="submit"
+                className={`${bgColorButtonBlue} w-full md:w-auto`}
+              >
+                Adicionar entrada
+              </button>
+            </div>
+            <div className="flex justify-center items-center">
+              <button
+                onClick={saveToServer}
+                type="button"
+                className={`${bgColorButtonGreen} w-full md:w-auto`}
+              >
+                Salvar no Servidor
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <table className=" w-full table-auto text-black">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-2 px-4 text-gray-800 font-medium">Data</th>
+              {options.map((option) => (
+                <th
+                  key={option}
+                  className=" py-2 px-4 text-gray-800 font-medium"
+                >
+                  {option}
+                  <button
+                    onClick={() => handleDeleteColumn(option)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                  >
+                    X
+                  </button>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {diaryEntries
+              .sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateB.getTime() - dateA.getTime();
+              })
+              .map((entry) => {
+                const entryDate = new Date(entry.date);
+                const brazilOffset = 3 * 60; // fuso horário do Brasil é UTC-3
+                const entryDateWithOffset = new Date(
+                  entryDate.getTime() + brazilOffset * 60 * 1000
+                );
+                return (
+                  <tr key={entry.date}>
+                    <td className="border-gray-400 border text-center">
+                      {entryDateWithOffset.toLocaleDateString("pt-BR", {
+                        weekday: "long",
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
+                    </td>
+                    {options.map((option) => (
+                      <td
+                        key={option}
+                        className=" py-2 px-4 border-gray-400 border"
+                      >
+                        <span
+                          contentEditable={true}
+                          suppressContentEditableWarning={true}
+                          onBlur={() => handleSave(entry.date, option)}
+                          onInput={(event) =>
+                            handleInputChange(event, entry.date, option)
+                          }
+                        >
+                          {entry.data[option]}
+                        </span>
+                      </td>
+                    ))}
+                    <td className=" py-2 px-4 border-gray-400 border text-center ">
+                      <button
+                        onClick={() => handleDeleteRow(entry)}
+                        className={`${bgColorButtonRed}`}
+                      >
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

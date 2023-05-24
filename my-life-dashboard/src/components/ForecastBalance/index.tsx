@@ -58,31 +58,34 @@ export function ForecastBalance({
         <table className="min-w-max w-full table-auto">
           <thead>
             <tr className={`${bgColor} text-xs leading-normal`}>
-              <th className="py-3 px-3 text-center">Mês</th>
-              <th className="py-3 px-3 text-center">Conta Corrente</th>
-              <th className="py-3 px-3 text-center">Total Investido</th>
-              <th className="py-3 px-3 text-center">Total Patrimônio</th>
+              <th className="py-2 px-2 text-center">Mês</th>
+              <th className="py-2 px-2 text-center">Conta Corrente</th>
+              <th className="py-2 px-2 text-center">Total Investido</th>
+              <th className="py-2 px-2 text-center">Total Patrimônio</th>
             </tr>
           </thead>
           <tbody className=" text-sm">
             {tableData.map((data) => (
-              <tr className={` ${bgColorHover}`} key={data.month}>
-                <td className="py-3 px-3 text-center ">{data.month}</td>
-                <td className="py-3 px-3 text-center ">
+              <tr
+                className={` ${bgColorHover} md:text-sm text-xs`}
+                key={data.month}
+              >
+                <td className="py-2 px-2 text-center ">{data.month}</td>
+                <td className="py-2 px-2 text-center ">
                   R$:{" "}
                   {Number(data.currentAccount).toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </td>
-                <td className="py-3 px-3 text-center ">
+                <td className="py-2 px-2 text-center ">
                   R$:{" "}
                   {Number(data.investments).toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </td>
-                <td className="py-3 px-3 text-center ">
+                <td className="py-2 px-2 text-center ">
                   R$:{" "}
                   {Number(data.totalBalance).toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,

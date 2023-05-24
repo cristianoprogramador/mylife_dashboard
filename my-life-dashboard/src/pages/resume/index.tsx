@@ -147,461 +147,132 @@ export default function Resume() {
   }, []);
 
   return (
-    <div
-      className={`flex flex-col items-center transition-opacity duration-150 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <Head>
-        <title>Resumo</title>
-      </Head>
-      <div className="flex flex-row gap-2 p-2">
-        {/* Primeiro Bloco */}
-        <div className={`${bgColor} rounded-lg p-4 flex flex-col w-96`}>
-          <div className="font-bold text-white text-lg mb-2 text-center ">
-            Status Geral
-          </div>
-          <div className="flex flex-1 justify-between items-center ">
-            <div className="font-bold text-white text-base ">
-              Conta Corrente
+    <div className="flex flex-1 justify-center items-center">
+      <div
+        className={`flex flex-col items-center transition-opacity duration-150 ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <Head>
+          <title>Resumo</title>
+        </Head>
+        <div className="flex md:flex-row gap-2 p-2 flex-col">
+          {/* Primeiro Bloco */}
+          <div className={`${bgColor} rounded-lg p-4 flex flex-col w-96 gap-2`}>
+            <div className="font-bold text-white text-lg mb-2 text-center ">
+              Status Geral
             </div>
-            <NumericFormat
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              allowNegative={false}
-              value={today}
-              className="rounded-lg p-1 text-center w-28"
-              onValueChange={(values) => {
-                setToday(parseFloat(values.floatValue));
-              }}
-            />
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-base">
-              Investimentos / Cripto
-            </div>
-            <NumericFormat
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              allowNegative={false}
-              value={investments}
-              className="rounded-lg p-1 text-center w-28"
-              onValueChange={(values) => {
-                setInvestments(parseFloat(values.floatValue));
-              }}
-            />
-          </div>
-          <div className="flex flex-1 justify-evenly items-center">
-            <div className="font-bold text-white text-base">
-              Total Patrimônio Hoje
-            </div>
-            <div
-              className={`${bgColorTotals} rounded-lg flex p-1 px-3 justify-center`}
-            >
-              {total}
-            </div>
-          </div>
-        </div>
-        {/* Segundo Bloco */}
-        <div className={`${bgColor} rounded-lg  flex flex-col gap-2 w-96 p-4`}>
-          <div className="flex flex-row  ">
-            <div className="flex flex-1 justify-center items-center flex-col">
-              <div className="font-bold text-white text-base mb-2 text-center ">
-                Data Hoje
+            <div className="flex flex-1 justify-between items-center ">
+              <div className="font-bold text-white text-base ">
+                Conta Corrente
               </div>
-              <input
-                type="date"
-                className="p-2 rounded-lg text-center"
-                value={todayDate}
-                disabled
-                readOnly
-              />
-            </div>
-            <div className="flex flex-1 justify-center items-center flex-col">
-              <div className="font-bold text-white text-base mb-2 text-center ">
-                Data Vencimento
-              </div>
-              <input
-                type="date"
-                className="p-2 rounded-lg text-center"
-                value={finalDate}
-                onChange={handleChangeFinalDate}
-              />
-            </div>
-          </div>
-          <div className="flex flex-row ">
-            <div className="flex flex-1 justify-center items-center flex-col">
-              <div className="font-bold text-white text-base mb-2 text-center ">
-                Valor Sobrando
-              </div>
-              <div className={`${bgColorTotals} p-3 rounded-lg`}>
-                {formattedValue}
-              </div>
-            </div>
-            <div className="flex flex-1 justify-center items-center flex-col">
-              <div className="font-bold text-white text-base mb-2 text-center ">
-                Valor por Dia
-              </div>
-              <div className={`${bgColorTotals} p-3 rounded-lg`}>
-                {formattedValuePerDay}
-              </div>
-            </div>
-            <div className="flex flex-1 justify-center items-center flex-col">
-              <div className="font-bold text-white text-base mb-2 text-center ">
-                Dias Restantes
-              </div>
-              <input
-                value={daysRemaining}
-                className="p-2 rounded-lg text-center w-20"
-                readOnly
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Terceiro Bloco */}
-      <div className="flex flex-row gap-2 p-2">
-        <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-80`}>
-          <div className="font-bold text-white text-lg mb-2 text-center">
-            Contas do Mês x Média Anual
-          </div>
-          <div className="flex flex-1 items-center">
-            <div className="font-bold text-white text-sm justify-center flex flex-1">
-              Conta de Luz
-            </div>
-            <div>
               <NumericFormat
                 thousandSeparator="."
                 decimalSeparator=","
                 prefix="R$ "
                 allowNegative={false}
-                value={energy}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                value={today}
+                className="rounded-lg p-1 text-center w-28"
                 onValueChange={(values) => {
-                  setEnergy(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={energyAvg}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setEnergyAvg(parseFloat(values.floatValue));
+                  setToday(parseFloat(values.floatValue));
                 }}
               />
             </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-              Conta de Água
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={water}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setWater(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={waterAvg}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setWaterAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-              Condominio
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={condom}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setCondom(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={condomAvg}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setCondomAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-              Faxineira
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={cleaning}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setCleaning(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={cleaningAvg}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setCleaningAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-              Internet
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={internet}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setInternet(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={internetAvg}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setInternetAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-              Telefone
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={phone}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setPhone(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={phoneAvg}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setPhoneAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-lg justify-center flex flex-1">
-              Total
-            </div>
-            <div className="flex gap-2 flex-row">
-              <div
-                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
-              >
-                {totalCurrentFormatted}
-              </div>
-              <div
-                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
-              >
-                {totalAverageFormatted}
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* AQUI */}
-        <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-96`}>
-          <div className="font-bold text-white text-lg mb-2 text-center">
-            Valor atual x Limite Estabelecido
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="font-bold text-white text-base">NuBank</div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={creditCardNubank}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setCreditCardNubank(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={creditCardNubankLimit}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setCreditCardNubankLimit(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="font-bold text-white text-base mb-2">Santander</div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={creditCardSantander}
-                className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                onValueChange={(values) => {
-                  setCreditCardSantander(parseFloat(values.floatValue));
-                }}
-              />
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={creditCardSantanderLimit}
-                className="rounded-lg p-2 text-sm w-20 text-center"
-                onValueChange={(values) => {
-                  setCreditCardSantanderLimit(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-base justify-center flex flex-1">
-              Total dos Cartões
-            </div>
-            <div className="flex gap-2 flex-row">
-              <div
-                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
-              >
-                {totalCardsCurrentFormatted}
-              </div>
-              <div
-                className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
-              >
-                {totalCardsAverageFormatted}
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-1 justify-between items-center">
-            <div className="font-bold text-white text-base justify-center flex flex-1 flex-col text-center">
-              Média de Gasto Variável
-              <div className="text-center">(Soma dos Cartões)</div>
-            </div>
-            <div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={creditCardAvg}
-                className="rounded-lg p-2 text-center w-20 mr-6"
-                onValueChange={(values) => {
-                  setCreditCardAvg(parseFloat(values.floatValue));
-                }}
-              />
-            </div>
-          </div>
-          <div
-            className={`${bgColor} border-2 rounded-lg p-4 flex flex-col gap-3`}
-          >
-            <div className="flex flex-1 justify-center items-center">
-              <div className="flex  justify-center items-center flex-col w-1/2">
-                <div className="font-bold text-white text-base text-center">
-                  Investimento
-                </div>
-                <div className="font-bold text-white text-base text-center">
-                  no Mês Atual
-                </div>
-                <div>
-                  <NumericFormat
-                    thousandSeparator="."
-                    decimalSeparator=","
-                    prefix="R$ "
-                    allowNegative={false}
-                    value={stocksInvestiment}
-                    className="rounded-lg p-2 text-center w-20 flex justify-center align-middle"
-                    onValueChange={(values) => {
-                      setStocksInvestiment(parseFloat(values.floatValue));
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="flex  justify-center items-center flex-col  w-1/2">
-                <div className="font-bold text-white text-base text-center">
-                  Média Anual de Investimento
-                </div>
-                <div>
-                  <NumericFormat
-                    thousandSeparator="."
-                    decimalSeparator=","
-                    prefix="R$ "
-                    allowNegative={false}
-                    value={stocksInvestimentAvg}
-                    className="rounded-lg p-2 text-center w-20  flex justify-center align-middle"
-                    onValueChange={(values) => {
-                      setStocksInvestimentAvg(parseFloat(values.floatValue));
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-1 justify-center gap-10 items-center">
+            <div className="flex flex-1 justify-between items-center">
               <div className="font-bold text-white text-base">
-                Salário Liquido
+                Investimentos / Cripto
+              </div>
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={investments}
+                className="rounded-lg p-1 text-center w-28"
+                onValueChange={(values) => {
+                  setInvestments(parseFloat(values.floatValue));
+                }}
+              />
+            </div>
+            <div className="flex flex-1 justify-evenly items-center">
+              <div className="font-bold text-white text-base">
+                Total Patrimônio Hoje
+              </div>
+              <div
+                className={`${bgColorTotals} rounded-lg flex p-1 px-3 justify-center`}
+              >
+                {total}
+              </div>
+            </div>
+          </div>
+          {/* Segundo Bloco */}
+          <div
+            className={`${bgColor} rounded-lg  flex flex-col gap-2 w-96 p-4`}
+          >
+            <div className="flex flex-row  ">
+              <div className="flex flex-1 justify-center items-center flex-col">
+                <div className="font-bold text-white text-base mb-2 text-center ">
+                  Data Hoje
+                </div>
+                <input
+                  type="date"
+                  className="p-2 rounded-lg text-center"
+                  value={todayDate}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="flex flex-1 justify-center items-center flex-col">
+                <div className="font-bold text-white text-base mb-2 text-center ">
+                  Data Vencimento
+                </div>
+                <input
+                  type="date"
+                  className="p-2 rounded-lg text-center"
+                  value={finalDate}
+                  onChange={handleChangeFinalDate}
+                />
+              </div>
+            </div>
+            <div className="flex flex-row ">
+              <div className="flex flex-1 justify-center items-center flex-col">
+                <div className="font-bold text-white text-base mb-2 text-center ">
+                  Valor Sobrando
+                </div>
+                <div className={`${bgColorTotals} p-3 rounded-lg`}>
+                  {formattedValue}
+                </div>
+              </div>
+              <div className="flex flex-1 justify-center items-center flex-col">
+                <div className="font-bold text-white text-base mb-2 text-center ">
+                  Valor por Dia
+                </div>
+                <div className={`${bgColorTotals} p-3 rounded-lg`}>
+                  {formattedValuePerDay}
+                </div>
+              </div>
+              <div className="flex flex-1 justify-center items-center flex-col">
+                <div className="font-bold text-white text-base mb-2 text-center ">
+                  Dias Restantes
+                </div>
+                <input
+                  value={daysRemaining}
+                  className="p-2 rounded-lg text-center w-20"
+                  readOnly
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Terceiro Bloco */}
+        <div className="flex md:flex-row flex-col gap-2 p-2 justify-center align-middle items-center">
+          <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-80`}>
+            <div className="font-bold text-white text-lg mb-2 text-center">
+              Contas do Mês x Média Anual
+            </div>
+            <div className="flex flex-1 items-center">
+              <div className="font-bold text-white text-sm justify-center flex flex-1">
+                Conta de Luz
               </div>
               <div>
                 <NumericFormat
@@ -609,26 +280,363 @@ export default function Resume() {
                   decimalSeparator=","
                   prefix="R$ "
                   allowNegative={false}
-                  value={paycheck}
-                  className="rounded-lg p-2 text-center w-20 mr-6"
+                  value={energy}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
                   onValueChange={(values) => {
-                    setPaycheck(parseFloat(values.floatValue));
+                    setEnergy(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={energyAvg}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setEnergyAvg(parseFloat(values.floatValue));
                   }}
                 />
               </div>
             </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
+                Conta de Água
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={water}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setWater(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={waterAvg}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setWaterAvg(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
+                Condominio
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={condom}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setCondom(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={condomAvg}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setCondomAvg(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
+                Faxineira
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={cleaning}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setCleaning(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={cleaningAvg}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setCleaningAvg(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
+                Internet
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={internet}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setInternet(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={internetAvg}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setInternetAvg(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
+                Telefone
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={phone}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setPhone(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={phoneAvg}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setPhoneAvg(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-lg justify-center flex flex-1">
+                Total
+              </div>
+              <div className="flex gap-2 flex-row">
+                <div
+                  className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+                >
+                  {totalCurrentFormatted}
+                </div>
+                <div
+                  className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+                >
+                  {totalAverageFormatted}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        {/* Quarto Bloco */}
-        <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3`}>
-          <ForecastBalance
-            month={finalDate}
-            currentAccount={currentAccount}
-            currentAccountAvg={currentAccountAvg}
-            investments={investmentsOfMonth}
-            investmentsAvg={stocksInvestimentAvg}
-            paycheck={paycheck}
-          />
+          {/* AQUI */}
+          <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-96`}>
+            <div className="font-bold text-white text-lg mb-2 text-center">
+              Valor atual x Limite Estabelecido
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="font-bold text-white text-base">NuBank</div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={creditCardNubank}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setCreditCardNubank(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={creditCardNubankLimit}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setCreditCardNubankLimit(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="font-bold text-white text-base mb-2">
+                Santander
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={creditCardSantander}
+                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
+                  onValueChange={(values) => {
+                    setCreditCardSantander(parseFloat(values.floatValue));
+                  }}
+                />
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={creditCardSantanderLimit}
+                  className="rounded-lg p-2 text-sm w-20 text-center"
+                  onValueChange={(values) => {
+                    setCreditCardSantanderLimit(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-base justify-center flex flex-1">
+                Total dos Cartões
+              </div>
+              <div className="flex gap-2 flex-row">
+                <div
+                  className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+                >
+                  {totalCardsCurrentFormatted}
+                </div>
+                <div
+                  className={`${bgColorTotals} rounded-lg flex p-3 w-30  justify-center`}
+                >
+                  {totalCardsAverageFormatted}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-1 justify-between items-center">
+              <div className="font-bold text-white text-base justify-center flex flex-1 flex-col text-center">
+                Média de Gasto Variável
+                <div className="text-center">(Soma dos Cartões)</div>
+              </div>
+              <div>
+                <NumericFormat
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="R$ "
+                  allowNegative={false}
+                  value={creditCardAvg}
+                  className="rounded-lg p-2 text-center w-20 mr-6"
+                  onValueChange={(values) => {
+                    setCreditCardAvg(parseFloat(values.floatValue));
+                  }}
+                />
+              </div>
+            </div>
+            <div
+              className={`${bgColor} border-2 rounded-lg p-4 flex flex-col gap-3`}
+            >
+              <div className="flex flex-1 justify-center items-center">
+                <div className="flex  justify-center items-center flex-col w-1/2">
+                  <div className="font-bold text-white text-base text-center">
+                    Investimento
+                  </div>
+                  <div className="font-bold text-white text-base text-center">
+                    no Mês Atual
+                  </div>
+                  <div>
+                    <NumericFormat
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      prefix="R$ "
+                      allowNegative={false}
+                      value={stocksInvestiment}
+                      className="rounded-lg p-2 text-center w-20 flex justify-center align-middle"
+                      onValueChange={(values) => {
+                        setStocksInvestiment(parseFloat(values.floatValue));
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="flex  justify-center items-center flex-col  w-1/2">
+                  <div className="font-bold text-white text-base text-center">
+                    Média Anual de Investimento
+                  </div>
+                  <div>
+                    <NumericFormat
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      prefix="R$ "
+                      allowNegative={false}
+                      value={stocksInvestimentAvg}
+                      className="rounded-lg p-2 text-center w-20  flex justify-center align-middle"
+                      onValueChange={(values) => {
+                        setStocksInvestimentAvg(parseFloat(values.floatValue));
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-1 justify-center gap-10 items-center">
+                <div className="font-bold text-white text-base">
+                  Salário Liquido
+                </div>
+                <div>
+                  <NumericFormat
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    prefix="R$ "
+                    allowNegative={false}
+                    value={paycheck}
+                    className="rounded-lg p-2 text-center w-20 mr-6"
+                    onValueChange={(values) => {
+                      setPaycheck(parseFloat(values.floatValue));
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Quarto Bloco */}
+          <div
+            className={`${bgColor} rounded-lg md:p-4 p-1 flex flex-col gap-3`}
+          >
+            <ForecastBalance
+              month={finalDate}
+              currentAccount={currentAccount}
+              currentAccountAvg={currentAccountAvg}
+              investments={investmentsOfMonth}
+              investmentsAvg={stocksInvestimentAvg}
+              paycheck={paycheck}
+            />
+          </div>
         </div>
       </div>
     </div>

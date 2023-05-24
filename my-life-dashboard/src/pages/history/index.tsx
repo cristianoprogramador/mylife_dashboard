@@ -251,16 +251,16 @@ export default function History() {
       : "border-b border-gray-200 hover:bg-blue-100";
   const bgColorButtonBlue =
     theme === "dark"
-      ? "py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
-      : "py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+      ? "py-1 px-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-75 transition duration-100 ease-in-out text-center"
+      : "py-1 px-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-100 ease-in-out text-center text-center";
   const bgColorButtonRed =
     theme === "dark"
-      ? "py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
-      : "py-2 px-4 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+      ? "py-1 px-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-opacity-75 transition duration-100 ease-in-out text-center"
+      : "py-1 px-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-100 ease-in-out text-center";
   const bgColorButtonGreen =
     theme === "dark"
-      ? "py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out"
-      : "py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out";
+      ? "py-1 px-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out text-center"
+      : "py-1 px-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out text-center";
 
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
@@ -288,7 +288,7 @@ export default function History() {
   return (
     <div className="flex flex-1 justify-center items-center">
       <div
-        className={`${bgColor} p-8 rounded-md transition-opacity duration-150 ${
+        className={`${bgColor} p-4 rounded-md transition-opacity duration-150 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -296,7 +296,7 @@ export default function History() {
           <title>Histórico de Gasto</title>
         </Head>
         <div className="flex flex-row md:flex-row md:justify-between ">
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-center align-middle items-center">
             <label className={`${bgColorButtonBlue}`}>
               <span>Selecionar arquivo</span>
               <input
@@ -314,7 +314,10 @@ export default function History() {
             </button>
           </div>
           <div>
-            <button onClick={downloadFile} className={`${bgColorButtonGreen}`}>
+            <button
+              onClick={downloadFile}
+              className={`${bgColorButtonGreen} m-2`}
+            >
               Download da Tabela Exemplo
             </button>
           </div>
@@ -411,7 +414,7 @@ export default function History() {
                 onChange={handleFormChange}
               />
             </div>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-end">
               <button
                 type="button"
                 onClick={handleAddRow}
@@ -420,7 +423,7 @@ export default function History() {
                 Adicionar na Lista
               </button>
             </div>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-end">
               <button
                 type="button"
                 onClick={saveToServer}
@@ -459,11 +462,11 @@ export default function History() {
                     Valor
                   </th>
                   <th className="py-2 px-2 text-sm shadow-md hover:bg-blue-100">
-                    Deletar Info.
+                    Deletar
                   </th>
                 </tr>
               </thead>
-              <tbody className="border text-sm">
+              <tbody className="border text-xs">
                 {rowData
                   .sort((a, b) => b.Data - a.Data)
                   .map((row, index) => {
@@ -471,7 +474,7 @@ export default function History() {
                     const jsDate = toDate(
                       (excelDate - (25567 + 1)) * 86400 * 1000
                     );
-                    const formattedDate = format(jsDate, "dd/MM/yyyy");
+                    const formattedDate = format(jsDate, "dd/MM/yy");
 
                     return (
                       <tr className={` ${bgColorHover}`} key={index}>

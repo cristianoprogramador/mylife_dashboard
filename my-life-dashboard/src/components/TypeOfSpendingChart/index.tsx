@@ -41,7 +41,7 @@ function formatMonthYear(date: any) {
   );
 }
 
-export default function MonthlySpendingChart({ expenses }: any) {
+export default function MonthlySpendingChart({ expenses, isSmallScreen }: any) {
   const [numMonths, setNumMonths] = useState(3);
 
   // Filtra as despesas para os últimos `numMonths` meses
@@ -175,19 +175,19 @@ export default function MonthlySpendingChart({ expenses }: any) {
           className="px-2 py-1 border rounded-md"
         />
       </div>
-      <div className=" max-w-screen-md">
-        <Bar
-          data={data}
-          options={options}
-          height={300}
-          width={600}
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.815)",
-            color: "white",
-            borderRadius: "5px",
-          }}
-        />
-      </div>
+      <Bar
+        data={data}
+        options={options}
+        height={0}
+        width={0}
+        style={{
+          backgroundColor: "rgba(255, 255, 255, 0.815)",
+          color: "white",
+          borderRadius: "5px",
+          height: isSmallScreen ? "150px" : "300px",
+          width: isSmallScreen ? "300px" : "600px",
+        }}
+      />
     </div>
   );
 }
