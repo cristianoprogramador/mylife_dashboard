@@ -68,26 +68,24 @@ export default function Analysis() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div
-        className={`flex flex-1 flex-col transition-opacity duration-200 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <Head>
-          <title>Análise Gráfica dos Gastos</title>
-        </Head>
-        <div className="flex flex-col lg:flex-row justify-around align-middle w-full">
-          <MonthlySpendingChart
-            expenses={rowData}
-            isSmallScreen={isSmallScreen}
-          />
-          <ExpenseByCategory expenses={rowData} isSmallScreen={isSmallScreen} />
-        </div>
-        <div className="flex flex-col lg:flex-row justify-around align-middle w-full">
-          <PieChart expenses={rowData} isSmallScreen={isSmallScreen} />
-          <StackedBarChart expenses={rowData} isSmallScreen={isSmallScreen} />
-        </div>
+    <div
+      className={`flex flex-1 flex-col transition-opacity duration-200 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <Head>
+        <title>Análise Gráfica dos Gastos</title>
+      </Head>
+      <div className="flex flex-col lg:flex-row justify-around align-middle w-full">
+        <MonthlySpendingChart
+          expenses={rowData}
+          isSmallScreen={isSmallScreen}
+        />
+        <ExpenseByCategory expenses={rowData} isSmallScreen={isSmallScreen} />
+      </div>
+      <div className="flex flex-col lg:flex-row justify-around align-middle w-full">
+        <PieChart expenses={rowData} isSmallScreen={isSmallScreen} />
+        <StackedBarChart expenses={rowData} isSmallScreen={isSmallScreen} />
       </div>
     </div>
   );
