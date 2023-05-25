@@ -22,18 +22,211 @@ export default function Resume() {
     }));
   };
 
+  // Formulas para Contas Mensais
+
   const [expensesData, setExpensesData] = useState({
-    energy: 150,
-    energyAvg: 125,
-    water: 150,
-    waterAvg: 125,
+    Energia: 150,
+    EnergiaAvg: 170,
+    Agua: 115,
+    AguaAvg: 125,
   });
 
-  const [creditCardNubank, setCreditCardNubank] = useState(650);
-  const [creditCardNubankLimit, setCreditCardNubankLimit] = useState(1000);
+  const [newExpense, setNewExpense] = useState("");
 
-  const [creditCardSantander, setCreditCardSantander] = useState(250);
-  const [creditCardSantanderLimit, setCreditCardSantanderLimit] = useState(280);
+  const handleChangeExpenses = (fieldName, value) => {
+    setExpensesData((prevExpensesData) => ({
+      ...prevExpensesData,
+      [fieldName]: parseFloat(value),
+    }));
+  };
+
+  const handleInputChange = (e) => {
+    const { value } = e.target;
+    setNewExpense(value);
+  };
+
+  const handleAddExpense = () => {
+    if (newExpense) {
+      const newFieldName = newExpense.trim();
+      const newFieldAvgName = `${newFieldName}Avg`;
+
+      setExpensesData((prevExpensesData) => ({
+        ...prevExpensesData,
+        [newFieldName]: 0,
+        [newFieldAvgName]: 0,
+      }));
+
+      setNewExpense("");
+    }
+  };
+
+  const handleDeleteExpense = (index) => {
+    const fieldName = Object.keys(expensesData)[index];
+    const avgFieldName = Object.keys(expensesData)[index + 1];
+
+    setExpensesData((prevExpensesData) => {
+      const updatedExpensesData = { ...prevExpensesData };
+      delete updatedExpensesData[fieldName];
+      delete updatedExpensesData[avgFieldName];
+      return updatedExpensesData;
+    });
+  };
+
+  const renderExpenseFields = () => {
+    return Object.entries(expensesData).map(([field, value], index) => {
+      if (index % 2 === 0) {
+        const nextField = Object.entries(expensesData)[index + 1][0];
+        const nextValue = Object.entries(expensesData)[index + 1][1];
+
+        return (
+          <div
+            key={field}
+            className="flex flex-1 justify-between items-center gap-2"
+          >
+            <div className="font-bold text-white text-sm text-end justify-around flex flex-1">
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                onClick={() => handleDeleteExpense(index)}
+              >
+                X
+              </button>{" "}
+              {field}
+            </div>
+            <div>
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={value}
+                onValueChange={(values) =>
+                  handleChangeExpenses(field, values.floatValue)
+                }
+                className="rounded-lg p-2 text-sm w-20 text-center"
+              />
+            </div>
+            <div>
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={nextValue}
+                onValueChange={(values) =>
+                  handleChangeExpenses(nextField, values.floatValue)
+                }
+                className="rounded-lg p-2 text-sm w-20 text-center"
+              />
+            </div>
+          </div>
+        );
+      }
+
+      return null;
+    });
+  };
+
+  // Formulas para Cartões de Créditos
+
+  const [creditCardsData, setCreditCardsData] = useState({
+    Nubank: 650,
+    NubankLimit: 1000,
+  });
+
+  const [newCreditCard, setNewCreditCard] = useState("");
+
+  const handleChangeCreditCard = (fieldName, value) => {
+    setCreditCardsData((prevExpensesData) => ({
+      ...prevExpensesData,
+      [fieldName]: parseFloat(value),
+    }));
+  };
+
+  const handleInputChangeCreditCard = (e) => {
+    const { value } = e.target;
+    setNewCreditCard(value);
+  };
+
+  const handleAddCreditCard = () => {
+    if (newCreditCard) {
+      const newFieldName = newCreditCard.trim();
+      const newFieldAvgName = `${newFieldName}Avg`;
+
+      setCreditCardsData((prevExpensesData) => ({
+        ...prevExpensesData,
+        [newFieldName]: 0,
+        [newFieldAvgName]: 0,
+      }));
+
+      setNewCreditCard("");
+    }
+  };
+
+  const handleDeleteExpenseCreditCard = (index) => {
+    const fieldName = Object.keys(creditCardsData)[index];
+    const avgFieldName = Object.keys(creditCardsData)[index + 1];
+
+    setCreditCardsData((prevExpensesData) => {
+      const updatedExpensesData = { ...prevExpensesData };
+      delete updatedExpensesData[fieldName];
+      delete updatedExpensesData[avgFieldName];
+      return updatedExpensesData;
+    });
+  };
+
+  const renderExpenseFieldsCreditCard = () => {
+    return Object.entries(creditCardsData).map(([field, value], index) => {
+      if (index % 2 === 0) {
+        const nextField = Object.entries(creditCardsData)[index + 1][0];
+        const nextValue = Object.entries(creditCardsData)[index + 1][1];
+
+        return (
+          <div
+            key={field}
+            className="flex flex-1 justify-between items-center gap-2"
+          >
+            <div className="font-bold text-white text-sm text-end justify-around flex flex-1">
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-3"
+                onClick={() => handleDeleteExpenseCreditCard(index)}
+              >
+                X
+              </button>{" "}
+              {field}
+            </div>
+            <div>
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={value}
+                onValueChange={(values) =>
+                  handleChangeCreditCard(field, values.floatValue)
+                }
+                className="rounded-lg p-2 text-sm w-20 text-center"
+              />
+            </div>
+            <div>
+              <NumericFormat
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                allowNegative={false}
+                value={nextValue}
+                onValueChange={(values) =>
+                  handleChangeCreditCard(nextField, values.floatValue)
+                }
+                className="rounded-lg p-2 text-sm w-20 text-center"
+              />
+            </div>
+          </div>
+        );
+      }
+
+      return null;
+    });
+  };
 
   const [creditCardAvg, setCreditCardAvg] = useState(1100);
 
@@ -44,19 +237,45 @@ export default function Resume() {
   const totalBalance =
     parseFloat(formData.today) + parseFloat(formData.investments);
 
-  const [energy, setEnergy] = useState(150);
-  const [water, setWater] = useState(125);
+  const totalCurrent = Object.entries(expensesData).reduce(
+    (total, [field, value], index) => {
+      if (index % 2 === 0) {
+        return total + parseFloat(value);
+      }
+      return total;
+    },
+    0
+  );
 
-  const [energyAvg, setEnergyAvg] = useState(150);
-  const [waterAvg, setWaterAvg] = useState(100);
+  const totalAverage = Object.entries(expensesData).reduce(
+    (total, [field, value], index) => {
+      if (index % 2 !== 0) {
+        return total + parseFloat(value);
+      }
+      return total;
+    },
+    0
+  );
 
-  const totalCurrent = parseFloat(energy) + parseFloat(water);
-  const totalAverage = parseFloat(energyAvg) + parseFloat(waterAvg);
+  const totalCardsCurrent = Object.entries(creditCardsData).reduce(
+    (total, [field, value], index) => {
+      if (index % 2 === 0) {
+        return total + parseFloat(value);
+      }
+      return total;
+    },
+    0
+  );
 
-  const totalCardsCurrent =
-    parseFloat(creditCardNubank) + parseFloat(creditCardSantander);
-  const totalCardsLimits =
-    parseFloat(creditCardNubankLimit) + parseFloat(creditCardSantanderLimit);
+  const totalCardsLimits = Object.entries(creditCardsData).reduce(
+    (total, [field, value], index) => {
+      if (index % 2 !== 0) {
+        return total + parseFloat(value);
+      }
+      return total;
+    },
+    0
+  );
 
   const total = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -141,6 +360,10 @@ export default function Resume() {
 
   const bgColor = theme === "dark" ? "bg-slate-600" : "bg-blue-600";
   const bgColorTotals = theme === "dark" ? "bg-gray-900" : "bg-white";
+  const bgColorButtonGreen =
+    theme === "dark"
+      ? "py-1 px-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-75 transition duration-100 ease-in-out text-center"
+      : "py-1 px-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-100 ease-in-out text-center";
 
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
@@ -271,63 +494,22 @@ export default function Resume() {
             <div className="font-bold text-white text-lg mb-2 text-center">
               Contas do Mês x Média Anual
             </div>
-            <div className="flex flex-1 items-center">
-              <div className="font-bold text-white text-sm justify-center flex flex-1">
-                Conta de Luz
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={energy}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setEnergy(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={energyAvg}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setEnergyAvg(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="font-bold text-white text-sm text-end justify-center flex flex-1">
-                Conta de Água
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={water}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setWater(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={waterAvg}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setWaterAvg(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
+            {renderExpenseFields()}
+            <div className="flex flex-row justify-around gap-2">
+              <button
+                onClick={handleAddExpense}
+                className={`${bgColorButtonGreen}`}
+              >
+                Adicionar
+              </button>
+
+              <input
+                type="text"
+                value={newExpense}
+                onChange={handleInputChange}
+                placeholder="Nome da Despesa"
+                className="rounded-lg p-1 text-center w-full"
+              />
             </div>
 
             <div className="flex flex-1 justify-between items-center">
@@ -353,62 +535,24 @@ export default function Resume() {
             <div className="font-bold text-white text-lg mb-2 text-center">
               Valor atual x Limite Estabelecido
             </div>
-            <div className="flex justify-between items-center">
-              <div className="font-bold text-white text-base">NuBank</div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={creditCardNubank}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setCreditCardNubank(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={creditCardNubankLimit}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setCreditCardNubankLimit(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
+            {renderExpenseFieldsCreditCard()}
+            <div className="flex flex-row justify-around gap-2">
+              <button
+                onClick={handleAddCreditCard}
+                className={`${bgColorButtonGreen}`}
+              >
+                Adicionar
+              </button>
+
+              <input
+                type="text"
+                value={newExpense}
+                onChange={handleInputChangeCreditCard}
+                placeholder="Nome do Cartão"
+                className="rounded-lg p-1 text-center w-full"
+              />
             </div>
-            <div className="flex justify-between items-center">
-              <div className="font-bold text-white text-base mb-2">
-                Santander
-              </div>
-              <div>
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={creditCardSantander}
-                  className="rounded-lg p-2 text-sm w-20 mr-6 text-center"
-                  onValueChange={(values) => {
-                    setCreditCardSantander(parseFloat(values.floatValue));
-                  }}
-                />
-                <NumericFormat
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  prefix="R$ "
-                  allowNegative={false}
-                  value={creditCardSantanderLimit}
-                  className="rounded-lg p-2 text-sm w-20 text-center"
-                  onValueChange={(values) => {
-                    setCreditCardSantanderLimit(parseFloat(values.floatValue));
-                  }}
-                />
-              </div>
-            </div>
+
             <div className="flex flex-1 justify-between items-center">
               <div className="font-bold text-white text-base justify-center flex flex-1">
                 Total dos Cartões

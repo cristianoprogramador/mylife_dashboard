@@ -1,133 +1,57 @@
-import { createConnection, Connection, RowDataPacket } from "mysql2/promise";
-import bcrypt from "bcrypt";
+import { NextApiHandler, NextApiRequest } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]";
+import connection from "./db";
 
-interface User {
-  id: number;
+type UserResume = {
   name: string;
+  age: number;
   email: string;
-  password: string;
-  image: string;
-}
-
-const connection = async (): Promise<Connection> => {
-  const { DB_HOST, DB_USER, DB_PASS, DB_NAME } = process.env;
-
-  return createConnection({
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASS,
-    database: DB_NAME,
-  });
+  occupation: string;
 };
 
-export const createUser = async (
-  name: string,
-  email: string,
-  password: string
-) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
+const handler: NextApiHandler = async (req, res) => {
+  const session = await getServerSession(req, res, authOptions);
   const conn = await connection();
 
-  try {
-    const [rows] = await conn.execute<RowDataPacket[]>(
-      "SELECT id FROM users WHERE email = ?",
-      [email]
-    );
+  if (!session) {
+    res.status(401).json({ message: "You must be logged in." });
+    return;
+  }
 
-    if (rows.length > 0) {
-      return { error: "E-mail já existe, tente outro!" };
+  if (session.user?.email !== req.query.email) {
+    console.log("EMAIL DA SESSAO", session.user?.email);
+    console.log(req.query.email);
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  if (req.method === "POST") {
+    const { conta_corrente, investimentos, data_vencimento } = req.body;
+
+    try {
+      await conn.execute(
+        "INSERT INTO users_resume (email, conta_corrente, investimentos, data_vencimento) VALUES (?, ?, ?, ?)",
+        [req.query.email, conta_corrente, investimentos, data_vencimento]
+      );
+      conn.end();
+      res.status(200).json({ message: "Dados salvos com sucesso!" });
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+      res.status(500).json({ message: "Erro ao salvar dados" });
     }
+  } else if (req.method === "PUT") {
+    const { conta_corrente, investimentos, data_vencimento } = req.body;
 
-    const [result] = await conn.execute<RowDataPacket[]>(
-      "INSERT INTO users (name, email, password, image) VALUES (?, ?, ?, ?)",
-      [name, email, hashedPassword, "/person.svg"]
+    await conn.execute(
+      "UPDATE users_resume SET conta_corrente = ?, investimentos = ?, data_vencimento = ? WHERE email = ?",
+      [conta_corrente, investimentos, data_vencimento, req.query.email]
     );
-
-    return { userId: (result as any).insertId };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } finally {
     conn.end();
+    res.status(405).json({ message: "Método não permitido" });
+  } else {
+    // Se o método da requisição não for POST, retorna um erro de método não permitido
+    res.status(405).json({ message: "Método não permitido" });
   }
 };
 
-export const loginUser = async (email: string, password: string) => {
-  const conn = await connection();
-  try {
-    const [rows] = await conn.execute<RowDataPacket[]>(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
-    if (rows.length === 0) {
-      throw new Error("Usuario não encontrado");
-    }
-    const user = rows[0] as User;
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      throw new Error("Senha incorreta");
-    }
-    // Retorna um objeto com as informações do usuário
-    return { name: user.name, email: user.email, image: user.image };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } finally {
-    conn.end();
-  }
-};
-
-export const createUserProvider = async (
-  name: string,
-  email: string,
-  password: string,
-  image: string
-) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const conn = await connection();
-
-  try {
-    const [rows] = await conn.execute<RowDataPacket[]>(
-      "SELECT id FROM users WHERE email = ?",
-      [email]
-    );
-
-    if (rows.length > 0) {
-      return { error: "E-mail já existe, tentar outro!" };
-    }
-
-    const [result] = await conn.execute<RowDataPacket[]>(
-      "INSERT INTO users (name, email, password, image) VALUES (?, ?, ?, ?)",
-      [name, email, hashedPassword, image]
-    );
-
-    return { userId: (result as any).insertId };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } finally {
-    conn.end();
-  }
-};
-
-export const createUserFromProvider = async (user: any) => {
-  const { name, email, image } = user;
-  // Use a default password for new users
-  const password = "defaultPassword";
-
-  try {
-    const result = await createUserProvider(name, email, password, image);
-    // If a new user was successfully created, return their user object
-    if (result.userId) {
-      return {
-        name,
-        email,
-        image,
-      };
-    }
-  } catch (error) {
-    console.error(error);
-    // If an error occurred, throw it to be caught by the signIn callback
-    throw new Error("Failed to create new user");
-  }
-};
+export default handler;
