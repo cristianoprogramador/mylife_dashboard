@@ -5,20 +5,53 @@ import { useState, useEffect, useCallback } from "react";
 import { NumericFormat } from "react-number-format";
 import { format, differenceInDays } from "date-fns";
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useTheme } from "next-themes";
 
 export default function Resume() {
+  const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const [thereIsData, setThereIsData] = useState(false);
+
   const [formData, setFormData] = useState({
-    today: 2500,
+    today: 2250,
     investments: 20000,
   });
+
+  console.log(thereIsData);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/users_resume?email=${session?.user?.email}`
+        );
+        const responseData = await response.json();
+        const data = responseData[0];
+
+        console.log("OQ VEM DO SERVIDOR", data.conta_corrente);
+        console.log("OQ VEM DO SERVIDOR", data.investimentos);
+
+        setFormData({
+          today: data.conta_corrente,
+          investments: data.investimentos,
+        });
+
+        setThereIsData(true);
+        setIsLoading(false);
+      } catch (error) {
+        alert("Cadastre dados abaixo e Salve no Servidor");
+      }
+    };
+
+    fetchData();
+  }, [session]);
 
   const handleChange = (fieldName, value) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [fieldName]: parseFloat(value),
+      [fieldName]: parseFloat(value.replace(/[^\d,-]/g, "").replace(",", ".")),
     }));
   };
 
@@ -234,9 +267,6 @@ export default function Resume() {
   const [stocksInvestiment, setStocksInvestiment] = useState(500);
   const [stocksInvestimentAvg, setStocksInvestimentAvg] = useState(300);
 
-  const totalBalance =
-    parseFloat(formData.today) + parseFloat(formData.investments);
-
   const totalCurrent = Object.entries(expensesData).reduce(
     (total, [field, value], index) => {
       if (index % 2 === 0) {
@@ -277,10 +307,29 @@ export default function Resume() {
     0
   );
 
-  const total = new Intl.NumberFormat("pt-BR", {
+  const formattedToday = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(formData.today);
+
+  const formattedInvestments = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(formData.investments);
+
+  const totalBalance =
+    parseFloat(formData.today) + parseFloat(formData.investments);
+
+  console.log("QUE ISSO", totalBalance);
+
+  const formattedTotalBalance = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   }).format(totalBalance);
+
+  console.log("Today:", formattedToday);
+  console.log("Investments:", formattedInvestments);
+  console.log("Total Balance:", formattedTotalBalance);
 
   const totalCurrentFormatted = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -354,7 +403,59 @@ export default function Resume() {
 
   const currentAccountAvg = totalAverage + stocksInvestimentAvg + creditCardAvg;
 
-  const investmentsOfMonth = stocksInvestiment + formData.investments;
+  const investmentsOfMonth =
+    parseFloat(formData.investments) + stocksInvestiment;
+
+  console.log("INDO PRA LA", currentAccount);
+
+  console.log(parseInt(finalDate.split("-")[2]));
+
+  const saveToServer = async () => {
+    const data = {
+      conta_corrente: formData.today,
+      investimentos: formData.investments,
+      data_vencimento: parseInt(finalDate.split("-")[2]),
+    };
+
+    if (!thereIsData) {
+      console.log("ENTROU");
+      try {
+        const response = await fetch(
+          `/api/users_resume?email=${session?.user?.email}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+        const responseData = await response.json();
+        console.log(responseData);
+      } catch (error) {
+        console.error("Erro ao salvar dados:", error);
+      }
+    } else {
+      console.log("ATUALIZAR");
+
+      try {
+        const response = await fetch(
+          `/api/users_resume?email=${session?.user?.email}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+        const responseData = await response.json();
+        console.log(responseData);
+      } catch (error) {
+        console.error("Erro ao salvar dados:", error);
+      }
+    }
+  };
 
   const { theme, setTheme } = useTheme();
 
@@ -369,6 +470,10 @@ export default function Resume() {
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-1 justify-center items-center">
@@ -397,9 +502,12 @@ export default function Resume() {
                 allowNegative={false}
                 value={formData.today}
                 className="rounded-lg p-1 text-center w-28"
-                onValueChange={(values) => {
-                  handleChange("today", values.floatValue);
-                }}
+                // onValueChange={(values) => {
+                //   handleChange("today", values.formattedValue);
+                // }}
+                onValueChange={(value) =>
+                  setFormData("today", value.floatValue || "")
+                }
               />
             </div>
             <div className="flex flex-1 justify-between items-center">
@@ -413,9 +521,12 @@ export default function Resume() {
                 allowNegative={false}
                 value={formData.investments}
                 className="rounded-lg p-1 text-center w-28"
-                onValueChange={(values) => {
-                  handleChange("investments", values.floatValue);
-                }}
+                // onValueChange={(values) => {
+                //   handleChange("investments", values.formattedValue);
+                // }}
+                onValueChange={(value) =>
+                  setFormData("investments", value.floatValue || "")
+                }
               />
             </div>
             <div className="flex flex-1 justify-evenly items-center">
@@ -425,7 +536,7 @@ export default function Resume() {
               <div
                 className={`${bgColorTotals} rounded-lg flex p-1 px-3 justify-center`}
               >
-                {total}
+                {formattedTotalBalance}
               </div>
             </div>
           </div>
@@ -488,6 +599,7 @@ export default function Resume() {
             </div>
           </div>
         </div>
+
         {/* Terceiro Bloco */}
         <div className="flex md:flex-row flex-col gap-2 p-2 justify-center align-middle items-center">
           <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-80`}>
@@ -667,6 +779,12 @@ export default function Resume() {
             />
           </div>
         </div>
+        <button
+          onClick={saveToServer}
+          className={`${bgColorButtonGreen} h-10 justify-center items-center align-middle`}
+        >
+          Salvar dados no Servidor
+        </button>
       </div>
     </div>
   );

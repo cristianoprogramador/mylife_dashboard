@@ -30,7 +30,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     try {
       await conn.execute(
-        "INSERT INTO users_resume (email, conta_corrente, investimentos, data_vencimento) VALUES (?, ?, ?, ?)",
+        "INSERT INTO user_resume (email, conta_corrente, investimentos, data_vencimento) VALUES (?, ?, ?, ?)",
         [req.query.email, conta_corrente, investimentos, data_vencimento]
       );
       conn.end();
@@ -43,13 +43,28 @@ const handler: NextApiHandler = async (req, res) => {
     const { conta_corrente, investimentos, data_vencimento } = req.body;
 
     await conn.execute(
-      "UPDATE users_resume SET conta_corrente = ?, investimentos = ?, data_vencimento = ? WHERE email = ?",
+      "UPDATE user_resume SET conta_corrente = ?, investimentos = ?, data_vencimento = ? WHERE email = ?",
       [conta_corrente, investimentos, data_vencimento, req.query.email]
     );
     conn.end();
     res.status(405).json({ message: "Método não permitido" });
+  } else if (req.method === "GET") {
+    const email = req.query.email as string;
+    const conn = await connection();
+
+    try {
+      const [rows] = await conn.execute(
+        "SELECT * FROM user_resume WHERE email = ?",
+        [email]
+      );
+      res.status(200).json(rows);
+    } catch (error) {
+      console.error("Erro ao buscar objetivos:", error);
+      res.status(500).json({ message: "Erro ao buscar objetivos" });
+    } finally {
+      conn.end();
+    }
   } else {
-    // Se o método da requisição não for POST, retorna um erro de método não permitido
     res.status(405).json({ message: "Método não permitido" });
   }
 };
