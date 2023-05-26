@@ -11,8 +11,11 @@ type UserResume = {
 };
 
 const handler: NextApiHandler = async (req, res) => {
-  const session = await getServerSession(req, res, authOptions);
+  // const session = await getServerSession(req, res, authOptions);
+  const { session } = req.body;
   const conn = await connection();
+
+  // console.log("OQ TA CHEGANDO DA SESSION", session);
 
   if (!session) {
     res.status(401).json({ message: "You must be logged in." });

@@ -3,7 +3,7 @@ import LightDarkMode from "@/components/LightDarkMode";
 import Profile from "@/components/Profile";
 import UserContext from "@/contexts/userContext";
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Head from "next/head";
 import Image from "next/image";
@@ -11,6 +11,10 @@ import { useState, useContext, useEffect } from "react";
 import { FaCog, FaBell, FaUser, FaGithub } from "react-icons/fa";
 
 export default function Config() {
+  // const { data: session } = useSession();
+
+  // console.log("TEM ALGO", session);
+
   const Options = [
     { label: "Tema", icon: <FaCog size={25} /> },
     // { label: "Notificações", icon: <FaBell size={25} /> },

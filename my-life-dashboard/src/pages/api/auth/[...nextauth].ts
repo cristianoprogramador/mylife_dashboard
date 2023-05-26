@@ -5,153 +5,20 @@ import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { createUserFromProvider, loginUser } from "../usersCreate";
-// import axios from "axios";
+import jwt from "jsonwebtoken";
 import connection from "../db";
-
-// export const authOptions: NextAuthOptions = {
-//   providers: [
-//     GithubProvider({
-//       clientId: process.env.GITHUB_ID as string,
-//       clientSecret: process.env.GITHUB_SECRET as string,
-//     }),
-//     GoogleProvider({
-//       clientId: process.env.GOOGLE_ID as string,
-//       clientSecret: process.env.GOOGLE_SECRET as string,
-//     }),
-//     CredentialsProvider({
-//       name: "NextAuthCredentials",
-//       credentials: {
-//         email: { label: "Email", type: "text", placeholder: "Email" },
-//         password: { label: "Password", type: "password" },
-//       },
-//       async authorize(credentials, req) {
-//         try {
-//           const { email, password } = credentials;
-//           const user = await loginUser(email, password);
-
-//           // const { email, password } = credentials;
-//           // console.log(email);
-//           // const response = await axios.post("http://localhost:3030/login", {
-//           //   email,
-//           //   password,
-//           // });
-
-//           // if (response.status !== 200) {
-//           //   throw new Error("Invalid login");
-//           // }
-
-//           const user = response.data;
-//           return user;
-//         } catch (error) {
-//           console.error(error);
-//           throw new Error("Invalid login");
-//         }
-//       },
-//     }),
-//   ],
-//   secret: process.env.SECRET,
-//   callbacks: {
-//     async signIn({
-//       user,
-//       account,
-//       profile,
-//       email,
-//       credentials,
-//     }: any): Promise<any> {
-//       if (account?.provider === "credentials") {
-//         // Use existing login logic for credentials provider
-//         return true;
-//       } else {
-//         // try {
-//         //   const { name, email, image } = user;
-//         //   const response = await axios.get(
-//         //     `http://localhost:3030/userData/${email}`
-//         //   );
-//         //   if (response.status === 200) {
-//         //     const existingUser = response.data;
-//         //     return {
-//         //       session: {
-//         //         name: existingUser.name,
-//         //         email: existingUser.email,
-//         //         image: existingUser.image,
-//         //       },
-//         //     };
-//         //   }
-//         //   const newUserResponse = await axios.post(
-//         //     "http://localhost:3030/userCreate",
-//         //     {
-//         //       name,
-//         //       email,
-//         //       password: "",
-//         //       image,
-//         //     }
-//         //   );
-//         //   if (newUserResponse.status === 200) {
-//         //     const newUser = newUserResponse.data;
-//         //     return {
-//         //       session: {
-//         //         name,
-//         //         email,
-//         //         image,
-//         //       },
-//         //     };
-//         //   }
-//         // } catch (error) {
-//         //   console.error(error);
-//         //   return false; // Something went wrong, prevent sign in
-//         // }
-//         const conn = await connection();
-
-//         try {
-//           // Check if user already exists in database
-//           const [rows] = await conn.execute(
-//             "SELECT * FROM users WHERE email = ?",
-//             [user.email]
-//           );
-
-//           if (rows.length > 0) {
-//             const userData = rows[0];
-//             // console.log("COMO DEVERIA SER", userData);
-//             return {
-//               session: {
-//                 name: userData.name,
-//                 email: userData.email,
-//                 image: userData.image,
-//               },
-//             };
-//           }
-
-//           // If user doesn't exist, create a new user
-//           const newUser = await createUserFromProvider({
-//             name: user.name,
-//             email: user.email,
-//             image: user.image,
-//           });
-
-//           if (newUser) {
-//             // New user created, allow sign in
-//             return {
-//               session: {
-//                 name: user.name,
-//                 email: user.email,
-//                 image: user.image,
-//               },
-//             };
-//           }
-//         } catch (error) {
-//           console.error(error);
-//           return false; // Something went wrong, prevent sign in
-//         } finally {
-//           conn.end();
-//         }
-//       }
-
-//       return false; // Default error message if provider is not recognized
-//     },
-//   },
-// };
+import bcrypt from "bcrypt";
+import { serialize } from "cookie";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.SECRET,
+  session: {
+    strategy: "jwt",
+  },
+  jwt: {
+    secret: "SEGRED12312wOasd3sdas",
+    maxAge: 60 * 60 * 24 * 7,
+  },
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -167,12 +34,31 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text", placeholder: "Email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        // console.log("TEM ALGO AQUI", credentials);
+      async authorize(credentials) {
         try {
           const { email, password } = credentials;
-          const user = await loginUser(email, password);
-          return user;
+          const conn = await connection(); // Conecte ao banco de dados
+
+          try {
+            const [rows] = await conn.execute(
+              "SELECT * FROM users WHERE email = ?",
+              [email]
+            );
+            if (rows.length === 0) {
+              throw new Error("Usuario não encontrado");
+            }
+            const user = rows[0] as User;
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if (!passwordMatch) {
+              throw new Error("Senha incorreta");
+            }
+            return { name: user.name, email: user.email, image: user.image };
+          } catch (error) {
+            console.error(error);
+            throw error;
+          } finally {
+            conn.end();
+          }
         } catch (error) {
           console.error(error);
           throw new Error("Invalid login");
@@ -180,23 +66,31 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  secret: process.env.SECRET,
   callbacks: {
-    async signIn({
-      user,
-      account,
-      profile,
-      email,
-      credentials,
-    }: any): Promise<any> {
+    async jwt({ token, account, profile }) {
+      // console.log("jwt callback", token, account, profile);
+      if (account) {
+        token.accessToken = jwt.sign({ sub: account.id }, "seu_secreto");
+      }
+      // console.log("DENTRO DO NEXTAUTH", token);
+      return token;
+    },
+
+    session({ session, token, user }) {
+      // console.log("session callback", session, token, user);
+      if (session.user) {
+        session.user.id = user?.id || token?.sub;
+      }
+      return session;
+    },
+    async signIn({ user, account, email, credentials }) {
       if (account?.provider === "credentials") {
-        // Use existing login logic for credentials provider
+        // console.log("Vai passar", credentials);
         return true;
       } else {
         const conn = await connection();
 
         try {
-          // Check if user already exists in database
           const [rows] = await conn.execute(
             "SELECT * FROM users WHERE email = ?",
             [user.email]
@@ -204,17 +98,20 @@ export const authOptions: NextAuthOptions = {
 
           if (rows.length > 0) {
             const userData = rows[0];
-            // console.log("COMO DEVERIA SER", userData);
+            const token = jwt.sign({ email: userData.email }, "seu_secreto");
             return {
               session: {
-                name: userData.name,
-                email: userData.email,
-                image: userData.image,
+                user: {
+                  name: userData.name,
+                  email: userData.email,
+                  image: userData.image,
+                },
+                expires: session.expires,
               },
+              token: token,
             };
           }
 
-          // If user doesn't exist, create a new user
           const newUser = await createUserFromProvider({
             name: user.name,
             email: user.email,
@@ -222,24 +119,28 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (newUser) {
-            // New user created, allow sign in
+            const token = jwt.sign({ email: newUser.email }, "seu_secreto");
             return {
               session: {
-                name: user.name,
-                email: user.email,
-                image: user.image,
+                user: {
+                  name: user.name,
+                  email: user.email,
+                  image: user.image,
+                },
+                expires: session.expires,
               },
+              token: token,
             };
           }
         } catch (error) {
           console.error(error);
-          return false; // Something went wrong, prevent sign in
+          return false;
         } finally {
           conn.end();
         }
       }
 
-      return false; // Default error message if provider is not recognized
+      return false;
     },
   },
 };

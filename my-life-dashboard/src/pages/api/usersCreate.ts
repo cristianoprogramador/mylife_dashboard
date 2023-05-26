@@ -1,5 +1,6 @@
 import { createConnection, Connection, RowDataPacket } from "mysql2/promise";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 interface User {
   id: number;
@@ -67,8 +68,9 @@ export const loginUser = async (email: string, password: string) => {
     if (!passwordMatch) {
       throw new Error("Senha incorreta");
     }
-    // Retorna um objeto com as informações do usuário
-    return { name: user.name, email: user.email, image: user.image };
+    const token = jwt.sign({ email }, "seu_secreto"); // Gera o token JWT
+    // Retorna um objeto com as informações do usuário e o token
+    return { name: user.name, email: user.email, image: user.image, token };
   } catch (error) {
     console.error(error);
     throw error;

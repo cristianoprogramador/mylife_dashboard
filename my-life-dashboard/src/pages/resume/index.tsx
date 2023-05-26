@@ -8,45 +8,48 @@ import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useTheme } from "next-themes";
+import cookies from "next-cookies";
 
-export default function Resume() {
+export default function Resume({ initialFormData }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [thereIsData, setThereIsData] = useState(false);
 
+  console.log(initialFormData);
+
   const [formData, setFormData] = useState({
-    today: 2250,
-    investments: 20000,
+    today: initialFormData.today,
+    investments: initialFormData.investments,
   });
 
-  console.log(thereIsData);
+  // console.log(thereIsData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `/api/users_resume?email=${session?.user?.email}`
-        );
-        const responseData = await response.json();
-        const data = responseData[0];
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         `/api/users_resume?email=${session?.user?.email}`
+  //       );
+  //       const responseData = await response.json();
+  //       const data = responseData[0];
 
-        console.log("OQ VEM DO SERVIDOR", data.conta_corrente);
-        console.log("OQ VEM DO SERVIDOR", data.investimentos);
+  //       console.log("OQ VEM DO SERVIDOR", data.conta_corrente);
+  //       console.log("OQ VEM DO SERVIDOR", data.investimentos);
 
-        setFormData({
-          today: data.conta_corrente,
-          investments: data.investimentos,
-        });
+  //       setFormData({
+  //         today: data.conta_corrente,
+  //         investments: data.investimentos,
+  //       });
 
-        setThereIsData(true);
-        setIsLoading(false);
-      } catch (error) {
-        alert("Cadastre dados abaixo e Salve no Servidor");
-      }
-    };
+  //       setThereIsData(true);
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       alert("Cadastre dados abaixo e Salve no Servidor");
+  //     }
+  //   };
 
-    fetchData();
-  }, [session]);
+  //   fetchData();
+  // }, [session]);
 
   const handleChange = (fieldName, value) => {
     setFormData((prevFormData) => ({
@@ -327,9 +330,9 @@ export default function Resume() {
     currency: "BRL",
   }).format(totalBalance);
 
-  console.log("Today:", formattedToday);
-  console.log("Investments:", formattedInvestments);
-  console.log("Total Balance:", formattedTotalBalance);
+  // console.log("Today:", formattedToday);
+  // console.log("Investments:", formattedInvestments);
+  // console.log("Total Balance:", formattedTotalBalance);
 
   const totalCurrentFormatted = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -406,9 +409,9 @@ export default function Resume() {
   const investmentsOfMonth =
     parseFloat(formData.investments) + stocksInvestiment;
 
-  console.log("INDO PRA LA", currentAccount);
+  // console.log("INDO PRA LA", currentAccount);
 
-  console.log(parseInt(finalDate.split("-")[2]));
+  // console.log(parseInt(finalDate.split("-")[2]));
 
   const saveToServer = async () => {
     const data = {
@@ -491,44 +494,51 @@ export default function Resume() {
             <div className="font-bold text-white text-lg mb-2 text-center ">
               Status Geral
             </div>
-            <div className="flex flex-1 justify-between items-center ">
-              <div className="font-bold text-white text-base ">
-                Conta Corrente
-              </div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={formData.today}
-                className="rounded-lg p-1 text-center w-28"
-                // onValueChange={(values) => {
-                //   handleChange("today", values.formattedValue);
-                // }}
-                onValueChange={(value) =>
-                  setFormData("today", value.floatValue || "")
-                }
-              />
-            </div>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="font-bold text-white text-base">
-                Investimentos / Cripto
-              </div>
-              <NumericFormat
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                allowNegative={false}
-                value={formData.investments}
-                className="rounded-lg p-1 text-center w-28"
-                // onValueChange={(values) => {
-                //   handleChange("investments", values.formattedValue);
-                // }}
-                onValueChange={(value) =>
-                  setFormData("investments", value.floatValue || "")
-                }
-              />
-            </div>
+            {isLoading ? (
+              <div>Carregando...</div>
+            ) : (
+              <>
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="font-bold text-white text-base">
+                    Conta Corrente
+                  </div>
+                  <NumericFormat
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    prefix="R$ "
+                    allowNegative={false}
+                    value={formData.today}
+                    className="rounded-lg p-1 text-center w-28"
+                    onValueChange={(value) =>
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        today: value.floatValue || "",
+                      }))
+                    }
+                  />
+                </div>
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="font-bold text-white text-base">
+                    Investimentos / Cripto
+                  </div>
+                  <NumericFormat
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    prefix="R$ "
+                    allowNegative={false}
+                    value={formData.investments}
+                    className="rounded-lg p-1 text-center w-28"
+                    onValueChange={(value) =>
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        investments: value.floatValue || "",
+                      }))
+                    }
+                  />
+                </div>
+              </>
+            )}
+
             <div className="flex flex-1 justify-evenly items-center">
               <div className="font-bold text-white text-base">
                 Total Patrimônio Hoje
@@ -791,7 +801,7 @@ export default function Resume() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+  const session = await getSession({ req: context.req });
 
   // console.log("CADE A SESSION", session);
 
@@ -804,9 +814,40 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  return {
-    props: {
-      session,
-    },
-  };
+  try {
+    const { req } = context;
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    console.log("Token JWT:", token);
+    console.log(token);
+
+    // console.log(session?.user?.email);
+    const response = await fetch(
+      `http://localhost:3000/api/users_resume?email=${session?.user?.email}`
+    );
+    const responseData = await response.json();
+    // console.log(responseData);
+    const data = responseData[0];
+    // console.log("CADE OQ VEM DO SERVIDOR", data);
+
+    return {
+      props: {
+        session,
+        initialFormData: {
+          today: data.conta_corrente,
+          investments: data.investimentos,
+        },
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      props: {
+        session,
+        initialFormData: {
+          today: 0,
+          investments: 0,
+        },
+      },
+    };
+  }
 };
