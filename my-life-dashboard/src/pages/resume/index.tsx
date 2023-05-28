@@ -8,53 +8,28 @@ import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useTheme } from "next-themes";
-import cookies from "next-cookies";
 
 export default function Resume({ initialFormData }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [thereIsData, setThereIsData] = useState(false);
 
-  console.log(initialFormData);
+  console.log("DENTRO DA PAGINA NA SESSION TOKEN", session);
+
+  const roundedValue = parseFloat(Number(initialFormData.today).toFixed(2));
+  console.log(roundedValue);
+  console.log(roundedValue == 2250.55);
+  console.log(roundedValue === 2250.55);
 
   const [formData, setFormData] = useState({
-    today: initialFormData.today,
-    investments: initialFormData.investments,
+    today: parseFloat(Number(initialFormData.today).toFixed(2)),
+    investments: parseFloat(Number(initialFormData.investments).toFixed(2)),
   });
-
-  // console.log(thereIsData);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `/api/users_resume?email=${session?.user?.email}`
-  //       );
-  //       const responseData = await response.json();
-  //       const data = responseData[0];
-
-  //       console.log("OQ VEM DO SERVIDOR", data.conta_corrente);
-  //       console.log("OQ VEM DO SERVIDOR", data.investimentos);
-
-  //       setFormData({
-  //         today: data.conta_corrente,
-  //         investments: data.investimentos,
-  //       });
-
-  //       setThereIsData(true);
-  //       setIsLoading(false);
-  //     } catch (error) {
-  //       alert("Cadastre dados abaixo e Salve no Servidor");
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [session]);
 
   const handleChange = (fieldName, value) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [fieldName]: parseFloat(value.replace(/[^\d,-]/g, "").replace(",", ".")),
+      [fieldName]: parseFloat(value),
     }));
   };
 
@@ -509,12 +484,9 @@ export default function Resume({ initialFormData }) {
                     allowNegative={false}
                     value={formData.today}
                     className="rounded-lg p-1 text-center w-28"
-                    onValueChange={(value) =>
-                      setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        today: value.floatValue || "",
-                      }))
-                    }
+                    onValueChange={(values) => {
+                      handleChange("today", values.floatValue);
+                    }}
                   />
                 </div>
                 <div className="flex flex-1 justify-between items-center">
@@ -528,12 +500,9 @@ export default function Resume({ initialFormData }) {
                     allowNegative={false}
                     value={formData.investments}
                     className="rounded-lg p-1 text-center w-28"
-                    onValueChange={(value) =>
-                      setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        investments: value.floatValue || "",
-                      }))
-                    }
+                    onValueChange={(values) => {
+                      handleChange("investments", values.floatValue);
+                    }}
                   />
                 </div>
               </>
@@ -815,14 +784,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const { req } = context;
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    console.log("Token JWT:", token);
-    console.log(token);
-
     // console.log(session?.user?.email);
+    // const response = await fetch(
+    //   `http://localhost:3000/api/users_resume?email=${session?.user?.email}`
+    // );
     const response = await fetch(
-      `http://localhost:3000/api/users_resume?email=${session?.user?.email}`
+      `http://localhost:3000/api/users_resume?email=${session?.user?.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`, // Passa o token no cabeçalho de autorização
+        },
+      }
     );
     const responseData = await response.json();
     // console.log(responseData);

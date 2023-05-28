@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   jwt: {
-    secret: "SEGRED12312wOasd3sdas",
+    secret: process.env.JWT_SECRET,
     maxAge: 60 * 60 * 24 * 7,
   },
   providers: [
@@ -52,7 +52,12 @@ export const authOptions: NextAuthOptions = {
             if (!passwordMatch) {
               throw new Error("Senha incorreta");
             }
-            return { name: user.name, email: user.email, image: user.image };
+            return {
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              id: user.id,
+            };
           } catch (error) {
             console.error(error);
             throw error;
@@ -67,22 +72,25 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async session({ session, token, user }) {
+      if (session.user) {
+        session.user.id = user?.id || token?.sub;
+        session.user.token = token?.accessToken; // Adiciona o token à sessão
+      }
+      return session;
+    },
     async jwt({ token, account, profile }) {
       // console.log("jwt callback", token, account, profile);
       if (account) {
-        token.accessToken = jwt.sign({ sub: account.id }, "seu_secreto");
+        token.accessToken = jwt.sign(
+          { sub: account.id },
+          process.env.JWT_SECRET
+        );
       }
       // console.log("DENTRO DO NEXTAUTH", token);
       return token;
     },
 
-    session({ session, token, user }) {
-      // console.log("session callback", session, token, user);
-      if (session.user) {
-        session.user.id = user?.id || token?.sub;
-      }
-      return session;
-    },
     async signIn({ user, account, email, credentials }) {
       if (account?.provider === "credentials") {
         // console.log("Vai passar", credentials);
@@ -98,7 +106,10 @@ export const authOptions: NextAuthOptions = {
 
           if (rows.length > 0) {
             const userData = rows[0];
-            const token = jwt.sign({ email: userData.email }, "seu_secreto");
+            const token = jwt.sign(
+              { email: userData.email },
+              process.env.JWT_SECRET
+            );
             return {
               session: {
                 user: {
@@ -119,7 +130,10 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (newUser) {
-            const token = jwt.sign({ email: newUser.email }, "seu_secreto");
+            const token = jwt.sign(
+              { email: newUser.email },
+              process.env.JWT_SECRET
+            );
             return {
               session: {
                 user: {

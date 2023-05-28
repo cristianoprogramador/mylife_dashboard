@@ -53,31 +53,31 @@ export const createUser = async (
   }
 };
 
-export const loginUser = async (email: string, password: string) => {
-  const conn = await connection();
-  try {
-    const [rows] = await conn.execute<RowDataPacket[]>(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
-    if (rows.length === 0) {
-      throw new Error("Usuario não encontrado");
-    }
-    const user = rows[0] as User;
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      throw new Error("Senha incorreta");
-    }
-    const token = jwt.sign({ email }, "seu_secreto"); // Gera o token JWT
-    // Retorna um objeto com as informações do usuário e o token
-    return { name: user.name, email: user.email, image: user.image, token };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } finally {
-    conn.end();
-  }
-};
+// export const loginUser = async (email: string, password: string) => {
+//   const conn = await connection();
+//   try {
+//     const [rows] = await conn.execute<RowDataPacket[]>(
+//       "SELECT * FROM users WHERE email = ?",
+//       [email]
+//     );
+//     if (rows.length === 0) {
+//       throw new Error("Usuario não encontrado");
+//     }
+//     const user = rows[0] as User;
+//     const passwordMatch = await bcrypt.compare(password, user.password);
+//     if (!passwordMatch) {
+//       throw new Error("Senha incorreta");
+//     }
+//     const token = jwt.sign({ email }, process.env.JWT_SECRET); // Gera o token JWT
+//     // Retorna um objeto com as informações do usuário e o token
+//     return { name: user.name, email: user.email, image: user.image, token };
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   } finally {
+//     conn.end();
+//   }
+// };
 
 export const createUserProvider = async (
   name: string,

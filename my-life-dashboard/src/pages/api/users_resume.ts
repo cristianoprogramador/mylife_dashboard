@@ -12,20 +12,29 @@ type UserResume = {
 
 const handler: NextApiHandler = async (req, res) => {
   // const session = await getServerSession(req, res, authOptions);
-  const { session } = req.body;
+  const { authorization } = req.headers;
+  const token = authorization?.split(" ")[1]; // Extrai o token do cabeçalho de autorização
+
+  console.log("CADE O HEADER", token);
+
   const conn = await connection();
 
   // console.log("OQ TA CHEGANDO DA SESSION", session);
 
-  if (!session) {
+  // if (!session) {
+  //   res.status(401).json({ message: "You must be logged in." });
+  //   return;
+  // }
+
+  // if (session.user?.email !== req.query.email) {
+  //   console.log("EMAIL DA SESSAO", session.user?.email);
+  //   console.log(req.query.email);
+  //   return res.status(403).json({ message: "Forbidden" });
+  // }
+
+  if (!token) {
     res.status(401).json({ message: "You must be logged in." });
     return;
-  }
-
-  if (session.user?.email !== req.query.email) {
-    console.log("EMAIL DA SESSAO", session.user?.email);
-    console.log(req.query.email);
-    return res.status(403).json({ message: "Forbidden" });
   }
 
   if (req.method === "POST") {
