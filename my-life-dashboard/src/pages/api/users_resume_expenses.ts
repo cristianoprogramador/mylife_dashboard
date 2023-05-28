@@ -3,11 +3,32 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import connection from "./db";
 
-type UserResume = {
-  name: string;
-  age: number;
+type RequestBody = {
   email: string;
-  occupation: string;
+  rowData: any[];
+};
+
+const saveExpenses = async (email: string, rowData: any[]) => {
+  const conn = await connection();
+  try {
+    await conn.execute("DELETE FROM user_resume_expenses WHERE email = ?", [
+      email,
+    ]);
+
+    for (const data of rowData) {
+      await conn.execute(
+        "INSERT INTO user_resume_expenses (email, expense_type, value) VALUES (?, ?, ?)",
+        [email, data.expenseType, data.value]
+      );
+    }
+
+    console.log("Dados salvos com sucesso!");
+  } catch (error) {
+    console.error("Erro ao salvar dados:", error);
+    throw error;
+  } finally {
+    conn.end();
+  }
 };
 
 const handler: NextApiHandler = async (req, res) => {
@@ -25,31 +46,15 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === "POST") {
-    const { conta_corrente, investimentos, data_vencimento } = req.body;
+    const { rowData } = req.body as RequestBody;
+    const email = req.query.email as string;
 
     try {
-      await conn.execute(
-        "INSERT INTO user_resume (email, conta_corrente, investimentos, data_vencimento) VALUES (?, ?, ?, ?)",
-        [req.query.email, conta_corrente, investimentos, data_vencimento]
-      );
-      conn.end();
+      await saveExpenses(email, rowData); // salva as novas informações
       res.status(200).json({ message: "Dados salvos com sucesso!" });
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
       res.status(500).json({ message: "Erro ao salvar dados" });
-    }
-  } else if (req.method === "PUT") {
-    const { conta_corrente, investimentos, data_vencimento } = req.body;
-
-    try {
-      await conn.execute(
-        "UPDATE user_resume SET conta_corrente = ?, investimentos = ?, data_vencimento = ? WHERE email = ?",
-        [conta_corrente, investimentos, data_vencimento, req.query.email]
-      );
-      conn.end();
-      res.status(200).json({ message: "Dados salvos com sucesso!" });
-    } catch (error) {
-      res.status(405).json({ message: "Método não permitido" });
     }
   } else if (req.method === "GET") {
     const email = req.query.email as string;
@@ -57,7 +62,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     try {
       const [rows] = await conn.execute(
-        "SELECT * FROM user_resume WHERE email = ?",
+        "SELECT * FROM user_resume_expenses WHERE email = ?",
         [email]
       );
       res.status(200).json(rows);

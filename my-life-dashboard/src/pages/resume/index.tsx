@@ -9,17 +9,36 @@ import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useTheme } from "next-themes";
 
-export default function Resume({ initialFormData }) {
+export default function Resume({
+  initialFormData,
+  thereIsData,
+  expensesDataAll,
+}) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const [thereIsData, setThereIsData] = useState(false);
+  const [saveServer, setSaveServer] = useState(false);
+  const [saveServerExpenses, setSaveServerExpenses] = useState(false);
 
-  console.log("DENTRO DA PAGINA NA SESSION TOKEN", session);
+  const mappedData = expensesDataAll.map(({ expense_type, value }) => ({
+    expense_type,
+    value: parseFloat(Number(value).toFixed(2)),
+  }));
 
-  const roundedValue = parseFloat(Number(initialFormData.today).toFixed(2));
-  console.log(roundedValue);
-  console.log(roundedValue == 2250.55);
-  console.log(roundedValue === 2250.55);
+  const initialExpensesData = mappedData.reduce(
+    (acc, { expense_type, value }) => {
+      return { ...acc, [expense_type]: value };
+    },
+    {}
+  );
+
+  const defaultExpensesData = {
+    Energia: 220,
+    EnergiaAvg: 250,
+    Agua: 110,
+    AguaAvg: 100,
+  };
+
+  console.log("DENTRO DA PAGINA NA SESSION TOKEN", initialFormData);
 
   const [formData, setFormData] = useState({
     today: parseFloat(Number(initialFormData.today).toFixed(2)),
@@ -31,16 +50,14 @@ export default function Resume({ initialFormData }) {
       ...prevFormData,
       [fieldName]: parseFloat(value),
     }));
+    setSaveServer(true);
   };
 
   // Formulas para Contas Mensais
 
-  const [expensesData, setExpensesData] = useState({
-    Energia: 150,
-    EnergiaAvg: 170,
-    Agua: 115,
-    AguaAvg: 125,
-  });
+  const [expensesData, setExpensesData] = useState(
+    initialExpensesData ?? defaultExpensesData
+  );
 
   const [newExpense, setNewExpense] = useState("");
 
@@ -49,6 +66,7 @@ export default function Resume({ initialFormData }) {
       ...prevExpensesData,
       [fieldName]: parseFloat(value),
     }));
+    setSaveServerExpenses(true);
   };
 
   const handleInputChange = (e) => {
@@ -60,6 +78,8 @@ export default function Resume({ initialFormData }) {
     if (newExpense) {
       const newFieldName = newExpense.trim();
       const newFieldAvgName = `${newFieldName}Avg`;
+
+      setSaveServerExpenses(true);
 
       setExpensesData((prevExpensesData) => ({
         ...prevExpensesData,
@@ -74,6 +94,8 @@ export default function Resume({ initialFormData }) {
   const handleDeleteExpense = (index) => {
     const fieldName = Object.keys(expensesData)[index];
     const avgFieldName = Object.keys(expensesData)[index + 1];
+
+    setSaveServerExpenses(true);
 
     setExpensesData((prevExpensesData) => {
       const updatedExpensesData = { ...prevExpensesData };
@@ -285,29 +307,13 @@ export default function Resume({ initialFormData }) {
     0
   );
 
-  const formattedToday = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(formData.today);
-
-  const formattedInvestments = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(formData.investments);
-
   const totalBalance =
     parseFloat(formData.today) + parseFloat(formData.investments);
-
-  console.log("QUE ISSO", totalBalance);
 
   const formattedTotalBalance = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   }).format(totalBalance);
-
-  // console.log("Today:", formattedToday);
-  // console.log("Investments:", formattedInvestments);
-  // console.log("Total Balance:", formattedTotalBalance);
 
   const totalCurrentFormatted = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -336,11 +342,16 @@ export default function Resume({ initialFormData }) {
   );
 
   function getFinalDate(date: Date) {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 6);
+    return new Date(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      initialFormData.vencimento
+    );
   }
 
   function handleChangeFinalDate(event: any) {
     console.log("UE", event.target.value);
+    setSaveServer(true);
     setFinalDate(event.target.value);
   }
 
@@ -404,11 +415,14 @@ export default function Resume({ initialFormData }) {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.user.token}`, // Passa o token no cabeçalho de autorização
             },
             body: JSON.stringify(data),
           }
         );
         const responseData = await response.json();
+        setSaveServer(false);
+        alert("Dados Salvos com sucesso!");
         console.log(responseData);
       } catch (error) {
         console.error("Erro ao salvar dados:", error);
@@ -423,15 +437,47 @@ export default function Resume({ initialFormData }) {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.user.token}`, // Passa o token no cabeçalho de autorização
             },
             body: JSON.stringify(data),
           }
         );
         const responseData = await response.json();
+        alert("Dados Salvos com sucesso!");
+        setSaveServer(false);
         console.log(responseData);
       } catch (error) {
         console.error("Erro ao salvar dados:", error);
       }
+    }
+  };
+
+  const saveToServerExpenses = async () => {
+    const data = {
+      rowData: Object.entries(expensesData).map(([expenseType, value]) => ({
+        expenseType,
+        value,
+      })),
+    };
+    console.log(data);
+    try {
+      const response = await fetch(
+        `/api/users_resume_expenses?email=${session?.user?.email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.token}`, // Passa o token no cabeçalho de autorização
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const responseData = await response.json();
+      alert("Dados Salvos com sucesso!");
+      setSaveServerExpenses(false);
+      console.log(responseData);
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
     }
   };
 
@@ -518,6 +564,14 @@ export default function Resume({ initialFormData }) {
                 {formattedTotalBalance}
               </div>
             </div>
+            {saveServer && (
+              <button
+                onClick={saveToServer}
+                className={`${bgColorButtonGreen} `}
+              >
+                Salvar dados no Servidor
+              </button>
+            )}
           </div>
           {/* Segundo Bloco */}
           <div
@@ -620,6 +674,14 @@ export default function Resume({ initialFormData }) {
                 </div>
               </div>
             </div>
+            {saveServerExpenses && (
+              <button
+                onClick={saveToServerExpenses}
+                className={`${bgColorButtonGreen} `}
+              >
+                Salvar dados no Servidor
+              </button>
+            )}
           </div>
           {/* AQUI */}
           <div className={`${bgColor} rounded-lg p-4 flex flex-col gap-3 w-96`}>
@@ -758,12 +820,6 @@ export default function Resume({ initialFormData }) {
             />
           </div>
         </div>
-        <button
-          onClick={saveToServer}
-          className={`${bgColorButtonGreen} h-10 justify-center items-center align-middle`}
-        >
-          Salvar dados no Servidor
-        </button>
       </div>
     </div>
   );
@@ -771,8 +827,6 @@ export default function Resume({ initialFormData }) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ req: context.req });
-
-  // console.log("CADE A SESSION", session);
 
   if (!session) {
     return {
@@ -784,41 +838,67 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    // console.log(session?.user?.email);
-    // const response = await fetch(
-    //   `http://localhost:3000/api/users_resume?email=${session?.user?.email}`
-    // );
-    const response = await fetch(
-      `http://localhost:3000/api/users_resume?email=${session?.user?.email}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${session?.user.token}`, // Passa o token no cabeçalho de autorização
-        },
-      }
-    );
-    const responseData = await response.json();
-    // console.log(responseData);
-    const data = responseData[0];
-    // console.log("CADE OQ VEM DO SERVIDOR", data);
+    let initialFormData = {
+      today: 0,
+      investments: 0,
+    };
+    let expensesDataAll = [];
+
+    try {
+      const response1 = await fetch(
+        `http://localhost:3000/api/users_resume?email=${session?.user?.email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session?.user.token}`,
+          },
+        }
+      );
+      const responseData1 = await response1.json();
+      const data1 = responseData1[0];
+
+      initialFormData = {
+        today: data1.conta_corrente,
+        investments: data1.investimentos,
+        vencimento: data1.data_vencimento,
+      };
+    } catch (error) {
+      console.log("Erro ao obter dados de users_resume:", error);
+    }
+
+    try {
+      const response2 = await fetch(
+        `http://localhost:3000/api/users_resume_expenses?email=${session?.user?.email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session?.user.token}`,
+          },
+        }
+      );
+      const responseData2 = await response2.json();
+      expensesDataAll = responseData2;
+    } catch (error) {
+      console.log("Erro ao obter dados de user_resume_expenses:", error);
+    }
 
     return {
       props: {
         session,
-        initialFormData: {
-          today: data.conta_corrente,
-          investments: data.investimentos,
-        },
+        initialFormData,
+        expensesDataAll,
+        thereIsData: true,
       },
     };
   } catch (error) {
-    console.log(error);
+    console.log("Erro geral:", error);
     return {
       props: {
         session,
         initialFormData: {
           today: 0,
           investments: 0,
+          vencimento: 8,
         },
       },
     };
