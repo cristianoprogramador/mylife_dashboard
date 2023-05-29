@@ -19,6 +19,7 @@ export default function Resume({
   const [isLoading, setIsLoading] = useState(false);
   const [saveServer, setSaveServer] = useState(false);
   const [saveServerExpenses, setSaveServerExpenses] = useState(false);
+  const [saveServerCards, setSaveServerCards] = useState(false);
 
   const mappedData = expensesDataAll.map(({ expense_type, value }) => ({
     expense_type,
@@ -32,16 +33,17 @@ export default function Resume({
     {}
   );
 
-  const defaultExpensesData = {
-    Energia: 220,
-    EnergiaAvg: 250,
-    Agua: 110,
-    AguaAvg: 100,
-  };
-
   const [formData, setFormData] = useState({
     today: parseFloat(Number(initialFormData.today).toFixed(2)),
     investments: parseFloat(Number(initialFormData.investments).toFixed(2)),
+    creditCardAvg: parseFloat(Number(initialFormData.creditCardAvg).toFixed(2)),
+    paycheck: parseFloat(Number(initialFormData.paycheck).toFixed(2)),
+    stocksInvestiment: parseFloat(
+      Number(initialFormData.stocksInvestiment).toFixed(2)
+    ),
+    stocksInvestimentAvg: parseFloat(
+      Number(initialFormData.stocksInvestimentAvg).toFixed(2)
+    ),
   });
 
   const handleChange = (fieldName, value) => {
@@ -53,6 +55,13 @@ export default function Resume({
   };
 
   // Formulas para Contas Mensais
+
+  const defaultExpensesData = {
+    Energia: 220,
+    EnergiaAvg: 250,
+    Agua: 110,
+    AguaAvg: 100,
+  };
 
   const [expensesData, setExpensesData] = useState(
     initialExpensesData ?? defaultExpensesData
@@ -209,6 +218,7 @@ export default function Resume({
       }));
 
       setNewCreditCard("");
+      setSaveServerCards(true);
     }
   };
 
@@ -277,12 +287,6 @@ export default function Resume({
       return null;
     });
   };
-
-  const [creditCardAvg, setCreditCardAvg] = useState(1100);
-
-  const [paycheck, setPaycheck] = useState(3500);
-  const [stocksInvestiment, setStocksInvestiment] = useState(500);
-  const [stocksInvestimentAvg, setStocksInvestimentAvg] = useState(300);
 
   const totalCurrent = Object.entries(expensesData).reduce(
     (total, [field, value], index) => {
@@ -400,15 +404,14 @@ export default function Resume({
     formData.today -
     totalCurrent -
     totalCardsLimits +
-    paycheck -
-    stocksInvestiment;
+    formData.paycheck -
+    formData.stocksInvestiment;
 
-  const currentAccountAvg = totalAverage + stocksInvestimentAvg + creditCardAvg;
+  const currentAccountAvg =
+    totalAverage + formData.stocksInvestimentAvg + formData.creditCardAvg;
 
   const investmentsOfMonth =
-    parseFloat(formData.investments) + stocksInvestiment;
-
-  // console.log("INDO PRA LA", currentAccount);
+    parseFloat(formData.investments) + formData.stocksInvestiment;
 
   // console.log(parseInt(finalDate.split("-")[2]));
 
@@ -416,6 +419,10 @@ export default function Resume({
     const data = {
       conta_corrente: formData.today,
       investimentos: formData.investments,
+      allcards: formData.creditCardAvg,
+      investimentos_no_mes: formData.stocksInvestiment,
+      investimentos_na_media: formData.stocksInvestimentAvg,
+      salario: formData.paycheck,
       data_vencimento: parseInt(finalDate.split("-")[2]),
     };
 
@@ -496,7 +503,7 @@ export default function Resume({
 
   const saveToServerCards = async () => {
     const data = {
-      rowData: Object.entries(expensesData).map(([credit_cards, value]) => ({
+      rowData: Object.entries(creditCardsData).map(([credit_cards, value]) => ({
         credit_cards,
         value,
       })),
@@ -504,7 +511,7 @@ export default function Resume({
     console.log(data);
     try {
       const response = await fetch(
-        `/api/users_resume_expenses?email=${session?.user?.email}`,
+        `/api/users_resume_cards?email=${session?.user?.email}`,
         {
           method: "POST",
           headers: {
@@ -741,13 +748,20 @@ export default function Resume({
 
               <input
                 type="text"
-                value={newExpense}
+                value={newCreditCard}
                 onChange={handleInputChangeCreditCard}
                 placeholder="Nome do Cartão"
                 className="rounded-lg p-1 text-center w-full"
               />
             </div>
-
+            {saveServerCards && (
+              <button
+                onClick={saveToServerCards}
+                className={`${bgColorButtonGreen} `}
+              >
+                Salvar dados no Servidor
+              </button>
+            )}
             <div className="flex flex-1 justify-between items-center">
               <div className="font-bold text-white text-base justify-center flex flex-1">
                 Total dos Cartões
@@ -776,10 +790,10 @@ export default function Resume({
                   decimalSeparator=","
                   prefix="R$ "
                   allowNegative={false}
-                  value={creditCardAvg}
-                  className="rounded-lg p-2 text-center w-20 mr-6"
+                  value={formData.creditCardAvg}
+                  className="rounded-lg p-1 text-center w-28"
                   onValueChange={(values) => {
-                    setCreditCardAvg(parseFloat(values.floatValue));
+                    handleChange("creditCardAvg", values.floatValue);
                   }}
                 />
               </div>
@@ -801,10 +815,10 @@ export default function Resume({
                       decimalSeparator=","
                       prefix="R$ "
                       allowNegative={false}
-                      value={stocksInvestiment}
+                      value={formData.stocksInvestiment}
                       className="rounded-lg p-2 text-center w-20 flex justify-center align-middle"
                       onValueChange={(values) => {
-                        setStocksInvestiment(parseFloat(values.floatValue));
+                        handleChange("stocksInvestiment", values.floatValue);
                       }}
                     />
                   </div>
@@ -819,10 +833,10 @@ export default function Resume({
                       decimalSeparator=","
                       prefix="R$ "
                       allowNegative={false}
-                      value={stocksInvestimentAvg}
+                      value={formData.stocksInvestimentAvg}
                       className="rounded-lg p-2 text-center w-20  flex justify-center align-middle"
                       onValueChange={(values) => {
-                        setStocksInvestimentAvg(parseFloat(values.floatValue));
+                        handleChange("stocksInvestimentAvg", values.floatValue);
                       }}
                     />
                   </div>
@@ -838,10 +852,10 @@ export default function Resume({
                     decimalSeparator=","
                     prefix="R$ "
                     allowNegative={false}
-                    value={paycheck}
+                    value={formData.paycheck}
                     className="rounded-lg p-2 text-center w-20 mr-6"
                     onValueChange={(values) => {
-                      setPaycheck(parseFloat(values.floatValue));
+                      handleChange("paycheck", values.floatValue);
                     }}
                   />
                 </div>
@@ -857,8 +871,8 @@ export default function Resume({
               currentAccount={currentAccount}
               currentAccountAvg={currentAccountAvg}
               investments={investmentsOfMonth}
-              investmentsAvg={stocksInvestimentAvg}
-              paycheck={paycheck}
+              investmentsAvg={formData.stocksInvestimentAvg}
+              paycheck={formData.paycheck}
             />
           </div>
         </div>
@@ -908,6 +922,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         today: data1.conta_corrente,
         investments: data1.investimentos,
         vencimento: data1.data_vencimento,
+        creditCardAvg: data1.allcards,
+        stocksInvestiment: data1.investimentos_no_mes,
+        stocksInvestimentAvg: data1.investimentos_na_media,
+        paycheck: data1.salario,
       };
     } catch (error) {
       console.log("Erro ao obter dados de users_resume:", error);
@@ -957,6 +975,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             today: 2200,
             investments: 35000,
             vencimento: 8,
+            creditCardAvg: 500,
+            stocksInvestiment: 350,
+            stocksInvestimentAvg: 300,
+            paycheck: 3500,
           },
           expensesDataAll: [],
           cardsDataAll: [],
@@ -972,6 +994,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             today: 2200,
             investments: 35000,
             vencimento: 8,
+            creditCardAvg: 500,
+            stocksInvestiment: 350,
+            stocksInvestimentAvg: 300,
+            paycheck: 3500,
           },
           expensesDataAll: [],
           cardsDataAll,
@@ -987,6 +1013,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             today: 2200,
             investments: 35000,
             vencimento: 8,
+            creditCardAvg: 500,
+            stocksInvestiment: 350,
+            stocksInvestimentAvg: 300,
+            paycheck: 3500,
           },
           expensesDataAll,
           cardsDataAll: [],
@@ -1013,6 +1043,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             today: 2200,
             investments: 35000,
             vencimento: 8,
+            creditCardAvg: 500,
+            stocksInvestiment: 350,
+            stocksInvestimentAvg: 300,
+            paycheck: 3500,
           },
           expensesDataAll,
           cardsDataAll,
@@ -1061,6 +1095,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           today: 2200,
           investments: 35000,
           vencimento: 8,
+          creditCardAvg: 500,
+          stocksInvestiment: 350,
+          stocksInvestimentAvg: 300,
+          paycheck: 3500,
         },
         expensesDataAll: [],
         cardsDataAll: [],

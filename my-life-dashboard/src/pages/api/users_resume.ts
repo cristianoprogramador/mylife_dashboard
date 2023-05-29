@@ -3,13 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 import connection from "./db";
 
-type UserResume = {
-  name: string;
-  age: number;
-  email: string;
-  occupation: string;
-};
-
 const handler: NextApiHandler = async (req, res) => {
   // const session = await getServerSession(req, res, authOptions);
   const { authorization } = req.headers;
@@ -25,12 +18,29 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === "POST") {
-    const { conta_corrente, investimentos, data_vencimento } = req.body;
+    const {
+      conta_corrente,
+      investimentos,
+      allcards,
+      investimentos_no_mes,
+      investimentos_na_media,
+      salario,
+      data_vencimento,
+    } = req.body;
 
     try {
       await conn.execute(
-        "INSERT INTO user_resume (email, conta_corrente, investimentos, data_vencimento) VALUES (?, ?, ?, ?)",
-        [req.query.email, conta_corrente, investimentos, data_vencimento]
+        "INSERT INTO user_resume (email, conta_corrente, investimentos, allcards, investimentos_no_mes, investimentos_na_media, salario, data_vencimento) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          req.query.email,
+          conta_corrente,
+          investimentos,
+          allcards,
+          investimentos_no_mes,
+          investimentos_na_media,
+          salario,
+          data_vencimento,
+        ]
       );
       conn.end();
       res.status(200).json({ message: "Dados salvos com sucesso!" });
@@ -39,12 +49,28 @@ const handler: NextApiHandler = async (req, res) => {
       res.status(500).json({ message: "Erro ao salvar dados" });
     }
   } else if (req.method === "PUT") {
-    const { conta_corrente, investimentos, data_vencimento } = req.body;
-
+    const {
+      conta_corrente,
+      investimentos,
+      allcards,
+      investimentos_no_mes,
+      investimentos_na_media,
+      salario,
+      data_vencimento,
+    } = req.body;
     try {
       await conn.execute(
-        "UPDATE user_resume SET conta_corrente = ?, investimentos = ?, data_vencimento = ? WHERE email = ?",
-        [conta_corrente, investimentos, data_vencimento, req.query.email]
+        "UPDATE user_resume SET conta_corrente = ?, investimentos = ?, allcards = ?, investimentos_no_mes = ?, investimentos_na_media = ?, salario = ?, data_vencimento = ? WHERE email = ?",
+        [
+          conta_corrente,
+          investimentos,
+          allcards,
+          investimentos_no_mes,
+          investimentos_na_media,
+          salario,
+          data_vencimento,
+          req.query.email,
+        ]
       );
       conn.end();
       res.status(200).json({ message: "Dados salvos com sucesso!" });
