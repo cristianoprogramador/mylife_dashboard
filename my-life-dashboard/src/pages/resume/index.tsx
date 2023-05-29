@@ -11,9 +11,9 @@ import { useTheme } from "next-themes";
 
 export default function Resume({
   initialFormData,
-  thereIsData,
   expensesDataAll,
   cardsDataAll,
+  hasError1,
 }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
@@ -419,7 +419,7 @@ export default function Resume({
       data_vencimento: parseInt(finalDate.split("-")[2]),
     };
 
-    if (!thereIsData) {
+    if (hasError1) {
       console.log("ENTROU");
       try {
         const response = await fetch(
@@ -960,7 +960,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
           expensesDataAll: [],
           cardsDataAll: [],
-          thereIsData: false,
+          hasError1,
         },
       };
     } else if (hasError1 && hasError2) {
@@ -975,7 +975,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
           expensesDataAll: [],
           cardsDataAll,
-          thereIsData: true,
+          hasError1,
         },
       };
     } else if (hasError1 && hasError3) {
@@ -990,7 +990,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
           expensesDataAll,
           cardsDataAll: [],
-          thereIsData: true,
+          hasError1,
         },
       };
     } else if (hasError2 && hasError3) {
@@ -1001,7 +1001,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           initialFormData,
           expensesDataAll: [],
           cardsDataAll: [],
-          thereIsData: true,
+          hasError1,
         },
       };
     } else if (hasError1) {
@@ -1016,7 +1016,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
           expensesDataAll,
           cardsDataAll,
-          thereIsData: true,
+          hasError1,
         },
       };
     } else if (hasError2) {
@@ -1027,7 +1027,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           initialFormData,
           expensesDataAll: [],
           cardsDataAll,
-          thereIsData: true,
+          hasError1,
         },
       };
     } else if (hasError3) {
@@ -1038,7 +1038,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           initialFormData,
           expensesDataAll,
           cardsDataAll: [],
-          thereIsData: true,
+          hasError1,
         },
       };
     }
@@ -1049,7 +1049,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         initialFormData,
         expensesDataAll,
         cardsDataAll,
-        thereIsData: true,
+        hasError1,
       },
     };
   } catch (error) {
@@ -1064,7 +1064,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
         expensesDataAll: [],
         cardsDataAll: [],
-        thereIsData: false,
+        hasError1,
       },
     };
   }
