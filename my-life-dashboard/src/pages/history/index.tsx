@@ -224,6 +224,7 @@ export default function History() {
       );
       const responseData = await response.json();
       console.log(responseData);
+      alert("Dados Salvos com sucesso!");
 
       // const response = await axios.post(
       //   `http://localhost:3030/spending_history/${session?.user?.email}`,

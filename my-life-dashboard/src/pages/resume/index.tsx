@@ -13,6 +13,7 @@ export default function Resume({
   initialFormData,
   thereIsData,
   expensesDataAll,
+  cardsDataAll,
 }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +38,6 @@ export default function Resume({
     Agua: 110,
     AguaAvg: 100,
   };
-
-  console.log("DENTRO DA PAGINA NA SESSION TOKEN", initialFormData);
 
   const [formData, setFormData] = useState({
     today: parseFloat(Number(initialFormData.today).toFixed(2)),
@@ -161,10 +160,28 @@ export default function Resume({
 
   // Formulas para Cartões de Créditos
 
-  const [creditCardsData, setCreditCardsData] = useState({
+  const mappedDataCards = cardsDataAll.map(({ credit_cards, value }) => ({
+    credit_cards,
+    value: parseFloat(Number(value).toFixed(2)),
+  }));
+
+  const initialExpensesDataCards = mappedDataCards.reduce(
+    (acc, { credit_cards, value }) => {
+      return { ...acc, [credit_cards]: value };
+    },
+    {}
+  );
+
+  const defaultCardsData = {
     Nubank: 650,
     NubankLimit: 1000,
-  });
+    Santander: 250,
+    SantanderLimit: 450,
+  };
+
+  const [creditCardsData, setCreditCardsData] = useState(
+    initialExpensesDataCards ?? defaultCardsData
+  );
 
   const [newCreditCard, setNewCreditCard] = useState("");
 
@@ -452,6 +469,35 @@ export default function Resume({
     const data = {
       rowData: Object.entries(expensesData).map(([expenseType, value]) => ({
         expenseType,
+        value,
+      })),
+    };
+    console.log(data);
+    try {
+      const response = await fetch(
+        `/api/users_resume_expenses?email=${session?.user?.email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.token}`, // Passa o token no cabeçalho de autorização
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const responseData = await response.json();
+      alert("Dados Salvos com sucesso!");
+      setSaveServerExpenses(false);
+      console.log(responseData);
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+    }
+  };
+
+  const saveToServerCards = async () => {
+    const data = {
+      rowData: Object.entries(expensesData).map(([credit_cards, value]) => ({
+        credit_cards,
         value,
       })),
     };
@@ -839,13 +885,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       investments: 0,
     };
     let expensesDataAll = [];
+    let cardsDataAll = [];
 
     let hasError1 = false; // Variável para controlar se houve erro no primeiro fetch
     let hasError2 = false; // Variável para controlar se houve erro no segundo fetch
+    let hasError3 = false; // Variável para controlar se houve erro no terceiro fetch
 
     try {
       const response1 = await fetch(
-        `http://localhost:3000/api/users_resume?email=${session?.user?.email}`,
+        `https://mylife-dashboard.vercel.app/api/users_resume?email=${session?.user?.email}`,
         {
           method: "GET",
           headers: {
@@ -868,7 +916,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     try {
       const response2 = await fetch(
-        `http://localhost:3000/api/users_resume_expenses?email=${session?.user?.email}`,
+        `https://mylife-dashboard.vercel.app/api/users_resume_expenses?email=${session?.user?.email}`,
         {
           method: "GET",
           headers: {
@@ -883,8 +931,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       hasError2 = true; // Define que houve erro no segundo fetch
     }
 
-    if (hasError1 && hasError2) {
-      // Retorna os dados falsos para ambos os fetches
+    try {
+      const response3 = await fetch(
+        `https://mylife-dashboard.vercel.app/api/users_resume_cards?email=${session?.user?.email}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session?.user.token}`,
+          },
+        }
+      );
+      const responseData3 = await response3.json();
+      cardsDataAll = responseData3;
+    } catch (error) {
+      console.log("Erro ao obter dados de user_resume_cards:", error);
+      hasError3 = true; // Define que houve erro no terceiro fetch
+    }
+
+    if (hasError1 && hasError2 && hasError3) {
+      // Retorna os dados falsos para todos os fetches
       return {
         props: {
           session,
@@ -894,7 +959,49 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             vencimento: 8,
           },
           expensesDataAll: [],
+          cardsDataAll: [],
           thereIsData: false,
+        },
+      };
+    } else if (hasError1 && hasError2) {
+      // Retorna os dados falsos apenas para o primeiro e segundo fetches
+      return {
+        props: {
+          session,
+          initialFormData: {
+            today: 2200,
+            investments: 35000,
+            vencimento: 8,
+          },
+          expensesDataAll: [],
+          cardsDataAll,
+          thereIsData: true,
+        },
+      };
+    } else if (hasError1 && hasError3) {
+      // Retorna os dados falsos apenas para o primeiro e terceiro fetches
+      return {
+        props: {
+          session,
+          initialFormData: {
+            today: 2200,
+            investments: 35000,
+            vencimento: 8,
+          },
+          expensesDataAll,
+          cardsDataAll: [],
+          thereIsData: true,
+        },
+      };
+    } else if (hasError2 && hasError3) {
+      // Retorna os dados falsos apenas para o segundo e terceiro fetches
+      return {
+        props: {
+          session,
+          initialFormData,
+          expensesDataAll: [],
+          cardsDataAll: [],
+          thereIsData: true,
         },
       };
     } else if (hasError1) {
@@ -908,6 +1015,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             vencimento: 8,
           },
           expensesDataAll,
+          cardsDataAll,
           thereIsData: true,
         },
       };
@@ -918,6 +1026,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           session,
           initialFormData,
           expensesDataAll: [],
+          cardsDataAll,
+          thereIsData: true,
+        },
+      };
+    } else if (hasError3) {
+      // Retorna os dados falsos apenas para o terceiro fetch
+      return {
+        props: {
+          session,
+          initialFormData,
+          expensesDataAll,
+          cardsDataAll: [],
           thereIsData: true,
         },
       };
@@ -928,6 +1048,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         session,
         initialFormData,
         expensesDataAll,
+        cardsDataAll,
         thereIsData: true,
       },
     };
@@ -942,6 +1063,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           vencimento: 8,
         },
         expensesDataAll: [],
+        cardsDataAll: [],
         thereIsData: false,
       },
     };
