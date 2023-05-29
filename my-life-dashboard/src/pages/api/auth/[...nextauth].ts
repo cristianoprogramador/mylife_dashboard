@@ -91,9 +91,8 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async signIn({ user, account, email, credentials }) {
+    async signIn({ user, account, email, credentials, session }) {
       if (account?.provider === "credentials") {
-        // console.log("Vai passar", credentials);
         return true;
       } else {
         const conn = await connection();
@@ -116,10 +115,10 @@ export const authOptions: NextAuthOptions = {
                   name: userData.name,
                   email: userData.email,
                   image: userData.image,
+                  token: token,
                 },
-                expires: session.expires,
+                expires: user?.expires, // Use user.expires instead of session.expires
               },
-              token: token,
             };
           }
 
@@ -140,10 +139,10 @@ export const authOptions: NextAuthOptions = {
                   name: user.name,
                   email: user.email,
                   image: user.image,
+                  token: token,
                 },
-                expires: session.expires,
+                expires: user?.expires, // Use user.expires instead of session.expires
               },
-              token: token,
             };
           }
         } catch (error) {

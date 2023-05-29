@@ -342,11 +342,7 @@ export default function Resume({
   );
 
   function getFinalDate(date: Date) {
-    return new Date(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      initialFormData.vencimento
-    );
+    return new Date(date.getFullYear(), date.getMonth() + 1, 8);
   }
 
   function handleChangeFinalDate(event: any) {
@@ -844,6 +840,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
     let expensesDataAll = [];
 
+    let hasError1 = false; // Variável para controlar se houve erro no primeiro fetch
+    let hasError2 = false; // Variável para controlar se houve erro no segundo fetch
+
     try {
       const response1 = await fetch(
         `http://localhost:3000/api/users_resume?email=${session?.user?.email}`,
@@ -864,6 +863,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     } catch (error) {
       console.log("Erro ao obter dados de users_resume:", error);
+      hasError1 = true; // Define que houve erro no primeiro fetch
     }
 
     try {
@@ -880,6 +880,47 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       expensesDataAll = responseData2;
     } catch (error) {
       console.log("Erro ao obter dados de user_resume_expenses:", error);
+      hasError2 = true; // Define que houve erro no segundo fetch
+    }
+
+    if (hasError1 && hasError2) {
+      // Retorna os dados falsos para ambos os fetches
+      return {
+        props: {
+          session,
+          initialFormData: {
+            today: 2200,
+            investments: 35000,
+            vencimento: 8,
+          },
+          expensesDataAll: [],
+          thereIsData: false,
+        },
+      };
+    } else if (hasError1) {
+      // Retorna os dados falsos apenas para o primeiro fetch
+      return {
+        props: {
+          session,
+          initialFormData: {
+            today: 2200,
+            investments: 35000,
+            vencimento: 8,
+          },
+          expensesDataAll,
+          thereIsData: true,
+        },
+      };
+    } else if (hasError2) {
+      // Retorna os dados falsos apenas para o segundo fetch
+      return {
+        props: {
+          session,
+          initialFormData,
+          expensesDataAll: [],
+          thereIsData: true,
+        },
+      };
     }
 
     return {
@@ -896,10 +937,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       props: {
         session,
         initialFormData: {
-          today: 0,
-          investments: 0,
+          today: 2200,
+          investments: 35000,
           vencimento: 8,
         },
+        expensesDataAll: [],
+        thereIsData: false,
       },
     };
   }
