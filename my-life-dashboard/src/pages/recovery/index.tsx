@@ -91,7 +91,7 @@ export default function Recovery() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col flex-1 items-center justify-center align-middle">
       <Head>
         <title>Recuperação de Senha</title>
       </Head>

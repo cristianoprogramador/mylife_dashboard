@@ -51,7 +51,7 @@ export default function Goals() {
 
   const handleInputChange = (e: any, month: any, objective: any) => {
     const newObjectivesData = { ...objectivesData };
-    console.log(newObjectivesData);
+    // console.log(newObjectivesData);
     if (!newObjectivesData[month]) {
       newObjectivesData[month] = {};
     }
@@ -105,7 +105,7 @@ export default function Goals() {
     data.append("email", session?.user?.email || "");
     data.append("year", selectedYear.toString());
 
-    console.log(JSON.stringify(goals));
+    // console.log(JSON.stringify(goals));
 
     try {
       // const response = await axios.post(

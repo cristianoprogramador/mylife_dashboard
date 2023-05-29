@@ -363,11 +363,15 @@ export default function Resume({
   );
 
   function getFinalDate(date: Date) {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 8);
+    return new Date(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      initialFormData.vencimento
+    );
   }
 
   function handleChangeFinalDate(event: any) {
-    console.log("UE", event.target.value);
+    // console.log("UE", event.target.value);
     setSaveServer(true);
     setFinalDate(event.target.value);
   }
@@ -427,7 +431,7 @@ export default function Resume({
     };
 
     if (hasError1) {
-      console.log("ENTROU");
+      // console.log("ENTROU");
       try {
         const response = await fetch(
           `/api/users_resume?email=${session?.user?.email}`,
@@ -448,7 +452,7 @@ export default function Resume({
         console.error("Erro ao salvar dados:", error);
       }
     } else {
-      console.log("ATUALIZAR");
+      // console.log("ATUALIZAR");
 
       try {
         const response = await fetch(
@@ -523,7 +527,7 @@ export default function Resume({
       );
       const responseData = await response.json();
       alert("Dados Salvos com sucesso!");
-      setSaveServerExpenses(false);
+      saveServerCards(false);
       console.log(responseData);
     } catch (error) {
       console.error("Erro ao salvar dados:", error);

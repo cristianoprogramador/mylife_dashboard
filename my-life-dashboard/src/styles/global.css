@@ -44,3 +44,16 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #246197;
 }
+
+/* Estilos específicos para o tema escuro */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background-color: #1f1f1f; /* Cor mais escura para o tema escuro */
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: #264164; /* Cor mais escura para o tema escuro */
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: #2c4a70; /* Cor mais escura para o tema escuro */
+}
