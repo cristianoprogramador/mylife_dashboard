@@ -15,6 +15,7 @@ type Entry = {
 
 export default function Diary() {
   const { data: session } = useSession();
+  const [isLoadingSave, setIsLoadingSave] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>(""); // Adicione a anotação de tipo string
   const {
     register,
@@ -77,6 +78,7 @@ export default function Diary() {
   };
 
   const saveToServer = async () => {
+    setIsLoadingSave(true);
     const data = new URLSearchParams();
     data.append("email", session?.user?.email || "");
     data.append("diaryEntries", JSON.stringify(diaryEntries));
@@ -107,6 +109,7 @@ export default function Diary() {
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }
+    setIsLoadingSave(false);
   };
 
   useEffect(() => {
@@ -321,8 +324,9 @@ export default function Diary() {
                 onClick={saveToServer}
                 type="button"
                 className={`${bgColorButtonGreen} w-full md:w-auto`}
+                disabled={isLoadingSave} // Desabilita o botão enquanto estiver carregando
               >
-                Salvar no Servidor
+                {isLoadingSave ? "Salvando..." : "Salvar no Servidor"}
               </button>
             </div>
           </div>

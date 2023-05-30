@@ -21,6 +21,10 @@ export default function Resume({
   const [saveServerExpenses, setSaveServerExpenses] = useState(false);
   const [saveServerCards, setSaveServerCards] = useState(false);
 
+  const [isLoadingSave1, setIsLoadingSave1] = useState(false);
+  const [isLoadingSave2, setIsLoadingSave2] = useState(false);
+  const [isLoadingSave3, setIsLoadingSave3] = useState(false);
+
   const mappedData = expensesDataAll.map(({ expense_type, value }) => ({
     expense_type,
     value: parseFloat(Number(value).toFixed(2)),
@@ -420,6 +424,7 @@ export default function Resume({
   // console.log(parseInt(finalDate.split("-")[2]));
 
   const saveToServer = async () => {
+    setIsLoadingSave1(true);
     const data = {
       conta_corrente: formData.today,
       investimentos: formData.investments,
@@ -474,9 +479,11 @@ export default function Resume({
         console.error("Erro ao salvar dados:", error);
       }
     }
+    setIsLoadingSave1(false);
   };
 
   const saveToServerExpenses = async () => {
+    setIsLoadingSave2(true);
     const data = {
       rowData: Object.entries(expensesData).map(([expenseType, value]) => ({
         expenseType,
@@ -503,9 +510,12 @@ export default function Resume({
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }
+    setIsLoadingSave2(false);
   };
 
   const saveToServerCards = async () => {
+    setIsLoadingSave3(true);
+
     const data = {
       rowData: Object.entries(creditCardsData).map(([credit_cards, value]) => ({
         credit_cards,
@@ -532,6 +542,7 @@ export default function Resume({
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }
+    setIsLoadingSave3(false);
   };
 
   const { theme, setTheme } = useTheme();
@@ -621,8 +632,9 @@ export default function Resume({
               <button
                 onClick={saveToServer}
                 className={`${bgColorButtonGreen} `}
+                disabled={isLoadingSave1} // Desabilita o botão enquanto estiver carregando
               >
-                Salvar dados no Servidor
+                {isLoadingSave1 ? "Salvando..." : "Salvar dados no Servidor"}
               </button>
             )}
           </div>
@@ -731,8 +743,9 @@ export default function Resume({
               <button
                 onClick={saveToServerExpenses}
                 className={`${bgColorButtonGreen} `}
+                disabled={isLoadingSave2} // Desabilita o botão enquanto estiver carregando
               >
-                Salvar dados no Servidor
+                {isLoadingSave2 ? "Salvando..." : "Salvar dados no Servidor"}
               </button>
             )}
           </div>
@@ -762,8 +775,9 @@ export default function Resume({
               <button
                 onClick={saveToServerCards}
                 className={`${bgColorButtonGreen} `}
+                disabled={isLoadingSave3} // Desabilita o botão enquanto estiver carregando
               >
-                Salvar dados no Servidor
+                {isLoadingSave3 ? "Salvando..." : "Salvar dados no Servidor"}
               </button>
             )}
             <div className="flex flex-1 justify-between items-center">

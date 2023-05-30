@@ -125,14 +125,6 @@ export default function Home() {
               alt="Workflow"
               onClick={() => signIn("google")}
             />
-            <Image
-              className="mx-auto h-10 w-auto cursor-pointer"
-              height={45}
-              width={45}
-              src="/facebook.svg"
-              alt="Workflow"
-              onClick={() => signIn("facebook")}
-            />
           </div>
         </form>
       </div>

@@ -45,6 +45,7 @@ export default function History() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(true);
   const { data: session } = useSession();
+  const [isLoadingSave1, setIsLoadingSave1] = useState(false);
 
   const [data, setData] = useState<RowData[]>([]);
 
@@ -207,6 +208,7 @@ export default function History() {
   };
 
   const saveToServer = async () => {
+    setIsLoadingSave1(true);
     const data = {
       email: session?.user?.email,
       rowData: rowData,
@@ -240,6 +242,7 @@ export default function History() {
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
     }
+    setIsLoadingSave1(false);
   };
 
   const { theme, setTheme } = useTheme();
@@ -429,8 +432,9 @@ export default function History() {
                 type="button"
                 onClick={saveToServer}
                 className={`${bgColorButtonGreen}`}
+                disabled={isLoadingSave1} // Desabilita o botão enquanto estiver carregando
               >
-                Salvar no Servidor
+                {isLoadingSave1 ? "Salvando..." : "Salvar no Servidor"}
               </button>
             </div>
           </div>

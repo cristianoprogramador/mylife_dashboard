@@ -18,11 +18,15 @@ export default function Profile(props: ProfileProps) {
   const [showDefaultImage, setShowDefaultImage] = useState(true);
   const [newName, setNewName] = useState("");
 
+  const [isLoadingSave1, setIsLoadingSave1] = useState(false);
+  const [isLoadingSave2, setIsLoadingSave2] = useState(false);
+
   const [image, setImage] = useState<File | null>(null);
   const [downloadURL, setDownloadURL] = useState("");
 
   const handleUploadFile = async () => {
     if (image) {
+      setIsLoadingSave1(true);
       const name = Date.now().toString() + "-" + image.name;
       const storageRef = ref(storage, `image/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
@@ -67,6 +71,7 @@ export default function Profile(props: ProfileProps) {
           }
         }
       );
+      setIsLoadingSave1(false);
     } else {
       alert("File not found");
     }
@@ -84,29 +89,9 @@ export default function Profile(props: ProfileProps) {
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      if (!image) return;
-      const formData = new FormData();
-      formData.append("myImage", image);
-
-      const { data } = await axios.post(
-        `/api/upload?email=${session?.user?.email}`,
-        formData
-      );
-
-      console.log("Image uploaded:", data);
-
-      const userData = JSON.parse(localStorage.getItem("userData") ?? "null"); // Obtém os dados do localStorage
-      userData.image = `/images/${data.filename}`; // Atualiza o campo 'name' em userData
-      localStorage.setItem("userData", JSON.stringify(userData)); // Atualiza os dados no localStorage
-      window.location.reload();
-    } catch (error: any) {
-      console.log(error.response?.data);
-    }
-  };
-
   const handleSubmitName = async () => {
+    setIsLoadingSave2(true);
+
     try {
       if (!newName || newName === dataProfile.name) {
         return;
@@ -132,6 +117,7 @@ export default function Profile(props: ProfileProps) {
     } catch (error: any) {
       console.log(error.response?.data);
     }
+    setIsLoadingSave2(false);
   };
 
   const handleNameChange = (e: any) => {
@@ -207,8 +193,9 @@ export default function Profile(props: ProfileProps) {
         <button
           className={`${bgColorButtonGreen}  mt-4`}
           onClick={handleUploadFile}
+          disabled={isLoadingSave1} // Desabilita o botão enquanto estiver carregando
         >
-          Salvar no Servidor
+          {isLoadingSave1 ? "Salvando..." : "Salvar no Servidor"}
         </button>
       )}
 
@@ -226,8 +213,12 @@ export default function Profile(props: ProfileProps) {
         />
       </div>
       <div className="mt-4 flex justify-center">
-        <button className={`${bgColorButtonGreen}`} onClick={handleSubmitName}>
-          Atualizar Nome
+        <button
+          className={`${bgColorButtonGreen}`}
+          onClick={handleSubmitName}
+          disabled={isLoadingSave2} // Desabilita o botão enquanto estiver carregando
+        >
+          {isLoadingSave2 ? "Salvando..." : "Atualizar Nome"}
         </button>
       </div>
     </div>

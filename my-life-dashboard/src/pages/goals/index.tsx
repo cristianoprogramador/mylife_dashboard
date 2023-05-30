@@ -34,6 +34,7 @@ export default function Goals() {
   const [addObjectiveClicked, setAddObjectiveClicked] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2023);
   const { data: session } = useSession();
+  const [isLoadingSave, setIsLoadingSave] = useState(false);
 
   const filteredMonths = selectedYear
     ? months
@@ -76,6 +77,7 @@ export default function Goals() {
   };
 
   const saveToServer = async () => {
+    setIsLoadingSave(true);
     const goals: Goal[] = [];
 
     Object.keys(objectivesData).forEach((monthYear) => {
@@ -98,6 +100,7 @@ export default function Goals() {
           });
         });
       }
+      setIsLoadingSave(false);
     });
 
     const data = new URLSearchParams();
@@ -250,8 +253,9 @@ export default function Goals() {
               <button
                 onClick={saveToServer}
                 className="px-4 mt-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition duration-300 ease-in-out"
+                disabled={isLoadingSave} // Desabilita o botão enquanto estiver carregando
               >
-                Salvar no Servidor
+                {isLoadingSave ? "Salvando..." : "Salvar no Servidor"}
               </button>
             </div>
           </div>
