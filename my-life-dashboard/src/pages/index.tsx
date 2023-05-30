@@ -6,17 +6,27 @@ import { GetServerSideProps } from "next";
 import { getSession, signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
-    signIn("credentials", { email, password });
+    await signIn("credentials", { redirect: false, email, password }).then(
+      (result) => {
+        if (result?.ok) {
+          router.push("/resume");
+        } else {
+          alert(`${result?.error}`);
+        }
+      }
+    );
   };
   return (
     <div className="flex flex-1 justify-center align-middle items-center">

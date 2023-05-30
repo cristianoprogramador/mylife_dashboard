@@ -929,17 +929,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const responseData = await response.json();
 
     const { resume, expenses, cards } = responseData;
-    // console.log(resume[0].conta_corrente);
+    // console.log("Cade o negocio", resume);
+    // console.log("Cade o negocio", expenses);
+    // console.log("Cade o negocio", cards);
 
-    initialFormData = {
-      today: resume[0].conta_corrente,
-      investments: resume[0].investimentos,
-      vencimento: resume[0].data_vencimento,
-      creditCardAvg: resume[0].allcards,
-      stocksInvestiment: resume[0].investimentos_no_mes,
-      stocksInvestimentAvg: resume[0].investimentos_na_media,
-      paycheck: resume[0].salario,
-    };
+    if (resume && resume.length > 0) {
+      initialFormData = {
+        today: resume[0].conta_corrente,
+        investments: resume[0].investimentos,
+        vencimento: resume[0].data_vencimento,
+        creditCardAvg: resume[0].allcards,
+        stocksInvestiment: resume[0].investimentos_no_mes,
+        stocksInvestimentAvg: resume[0].investimentos_na_media,
+        paycheck: resume[0].salario,
+      };
+    } else {
+      initialFormData = {
+        today: 2200,
+        investments: 35000,
+        vencimento: 8,
+        creditCardAvg: 500,
+        stocksInvestiment: 350,
+        stocksInvestimentAvg: 300,
+        paycheck: 3500,
+      };
+    }
 
     expensesDataAll = expenses;
     cardsDataAll = cards;
@@ -947,6 +961,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log("Erro ao obter dados do users_resume_combined:", error);
     hasError1 = true;
   }
+
+  // console.log(initialFormData);
+  // console.log(expensesDataAll);
+  // console.log(cardsDataAll);
 
   return {
     props: {

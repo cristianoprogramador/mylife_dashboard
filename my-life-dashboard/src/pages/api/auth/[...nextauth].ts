@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error(error);
-          throw new Error("Invalid login");
+          throw new Error(error);
         }
       },
     }),
@@ -90,7 +90,6 @@ export const authOptions: NextAuthOptions = {
       // console.log("DENTRO DO NEXTAUTH", token);
       return token;
     },
-
     async signIn({ user, account, email, credentials, session }) {
       if (account?.provider === "credentials") {
         return true;
