@@ -25,6 +25,7 @@ const handler: NextApiHandler = async (req, res) => {
           "SELECT * FROM user_resume WHERE email = ?",
           [email]
         );
+        // console.log(initialFormData);
       } catch (error) {
         console.error("Erro ao buscar dados de user_resume:", error);
         initialFormData = [
@@ -37,7 +38,7 @@ const handler: NextApiHandler = async (req, res) => {
             stocksInvestimentAvg: 300,
             paycheck: 3500,
           },
-        ]; // Defina um valor padrão para initialFormData em caso de erro
+        ];
       }
 
       try {
@@ -47,7 +48,7 @@ const handler: NextApiHandler = async (req, res) => {
         );
       } catch (error) {
         console.error("Erro ao buscar dados de user_resume_expenses:", error);
-        expensesDataAll = []; // Defina um valor padrão para expensesDataAll em caso de erro
+        expensesDataAll = [];
       }
 
       try {
@@ -57,7 +58,7 @@ const handler: NextApiHandler = async (req, res) => {
         );
       } catch (error) {
         console.error("Erro ao buscar dados de user_resume_cards:", error);
-        cardsDataAll = []; // Defina um valor padrão para cardsDataAll em caso de erro
+        cardsDataAll = [];
       }
 
       const result = {

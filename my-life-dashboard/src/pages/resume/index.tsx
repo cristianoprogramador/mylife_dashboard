@@ -897,6 +897,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  let initialFormData = {}; // Declare e inicialize a variável initialFormData
+  let expensesDataAll = [];
+  let cardsDataAll = [];
+  let hasError1 = false;
+
   try {
     const response = await fetch(
       `https://mylife-dashboard.vercel.app/api/users_resume_combined?email=${session?.user?.email}`,
@@ -910,37 +915,33 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const responseData = await response.json();
 
     const { resume, expenses, cards } = responseData;
+    // console.log(resume[0].conta_corrente);
 
     initialFormData = {
-      today: resume.conta_corrente,
-      investments: resume.investimentos,
-      vencimento: resume.data_vencimento,
-      creditCardAvg: resume.allcards,
-      stocksInvestiment: resume.investimentos_no_mes,
-      stocksInvestimentAvg: resume.investimentos_na_media,
-      paycheck: resume.salario,
+      today: resume[0].conta_corrente,
+      investments: resume[0].investimentos,
+      vencimento: resume[0].data_vencimento,
+      creditCardAvg: resume[0].allcards,
+      stocksInvestiment: resume[0].investimentos_no_mes,
+      stocksInvestimentAvg: resume[0].investimentos_na_media,
+      paycheck: resume[0].salario,
     };
 
     expensesDataAll = expenses;
     cardsDataAll = cards;
   } catch (error) {
     console.log("Erro ao obter dados do users_resume_combined:", error);
-    return {
-      props: {
-        session,
-        initialFormData: {
-          today: 2200,
-          investments: 35000,
-          vencimento: 8,
-          creditCardAvg: 500,
-          stocksInvestiment: 350,
-          stocksInvestimentAvg: 300,
-          paycheck: 3500,
-        },
-        expensesDataAll: [],
-        cardsDataAll: [],
-        hasError1: true,
-      },
-    };
+    hasError1 = true;
   }
+
+  return {
+    props: {
+      session,
+      initialFormData,
+
+      expensesDataAll,
+      cardsDataAll,
+      hasError1,
+    },
+  };
 };
