@@ -898,200 +898,33 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    let initialFormData = {
-      today: 0,
-      investments: 0,
+    const response = await fetch(
+      `https://mylife-dashboard.vercel.app/api/users_resume_combined?email=${session?.user?.email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`,
+        },
+      }
+    );
+    const responseData = await response.json();
+
+    const { resume, expenses, cards } = responseData;
+
+    initialFormData = {
+      today: resume.conta_corrente,
+      investments: resume.investimentos,
+      vencimento: resume.data_vencimento,
+      creditCardAvg: resume.allcards,
+      stocksInvestiment: resume.investimentos_no_mes,
+      stocksInvestimentAvg: resume.investimentos_na_media,
+      paycheck: resume.salario,
     };
-    let expensesDataAll = [];
-    let cardsDataAll = [];
 
-    let hasError1 = false; // Variável para controlar se houve erro no primeiro fetch
-    let hasError2 = false; // Variável para controlar se houve erro no segundo fetch
-    let hasError3 = false; // Variável para controlar se houve erro no terceiro fetch
-
-    try {
-      const response1 = await fetch(
-        `https://mylife-dashboard.vercel.app/api/users_resume?email=${session?.user?.email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.token}`,
-          },
-        }
-      );
-      const responseData1 = await response1.json();
-      const data1 = responseData1[0];
-
-      initialFormData = {
-        today: data1.conta_corrente,
-        investments: data1.investimentos,
-        vencimento: data1.data_vencimento,
-        creditCardAvg: data1.allcards,
-        stocksInvestiment: data1.investimentos_no_mes,
-        stocksInvestimentAvg: data1.investimentos_na_media,
-        paycheck: data1.salario,
-      };
-    } catch (error) {
-      console.log("Erro ao obter dados de users_resume:", error);
-      hasError1 = true; // Define que houve erro no primeiro fetch
-    }
-
-    try {
-      const response2 = await fetch(
-        `https://mylife-dashboard.vercel.app/api/users_resume_expenses?email=${session?.user?.email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.token}`,
-          },
-        }
-      );
-      const responseData2 = await response2.json();
-      expensesDataAll = responseData2;
-    } catch (error) {
-      console.log("Erro ao obter dados de user_resume_expenses:", error);
-      hasError2 = true; // Define que houve erro no segundo fetch
-    }
-
-    try {
-      const response3 = await fetch(
-        `https://mylife-dashboard.vercel.app/api/users_resume_cards?email=${session?.user?.email}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${session?.user.token}`,
-          },
-        }
-      );
-      const responseData3 = await response3.json();
-      cardsDataAll = responseData3;
-    } catch (error) {
-      console.log("Erro ao obter dados de user_resume_cards:", error);
-      hasError3 = true; // Define que houve erro no terceiro fetch
-    }
-
-    if (hasError1 && hasError2 && hasError3) {
-      // Retorna os dados falsos para todos os fetches
-      return {
-        props: {
-          session,
-          initialFormData: {
-            today: 2200,
-            investments: 35000,
-            vencimento: 8,
-            creditCardAvg: 500,
-            stocksInvestiment: 350,
-            stocksInvestimentAvg: 300,
-            paycheck: 3500,
-          },
-          expensesDataAll: [],
-          cardsDataAll: [],
-          hasError1,
-        },
-      };
-    } else if (hasError1 && hasError2) {
-      // Retorna os dados falsos apenas para o primeiro e segundo fetches
-      return {
-        props: {
-          session,
-          initialFormData: {
-            today: 2200,
-            investments: 35000,
-            vencimento: 8,
-            creditCardAvg: 500,
-            stocksInvestiment: 350,
-            stocksInvestimentAvg: 300,
-            paycheck: 3500,
-          },
-          expensesDataAll: [],
-          cardsDataAll,
-          hasError1,
-        },
-      };
-    } else if (hasError1 && hasError3) {
-      // Retorna os dados falsos apenas para o primeiro e terceiro fetches
-      return {
-        props: {
-          session,
-          initialFormData: {
-            today: 2200,
-            investments: 35000,
-            vencimento: 8,
-            creditCardAvg: 500,
-            stocksInvestiment: 350,
-            stocksInvestimentAvg: 300,
-            paycheck: 3500,
-          },
-          expensesDataAll,
-          cardsDataAll: [],
-          hasError1,
-        },
-      };
-    } else if (hasError2 && hasError3) {
-      // Retorna os dados falsos apenas para o segundo e terceiro fetches
-      return {
-        props: {
-          session,
-          initialFormData,
-          expensesDataAll: [],
-          cardsDataAll: [],
-          hasError1,
-        },
-      };
-    } else if (hasError1) {
-      // Retorna os dados falsos apenas para o primeiro fetch
-      return {
-        props: {
-          session,
-          initialFormData: {
-            today: 2200,
-            investments: 35000,
-            vencimento: 8,
-            creditCardAvg: 500,
-            stocksInvestiment: 350,
-            stocksInvestimentAvg: 300,
-            paycheck: 3500,
-          },
-          expensesDataAll,
-          cardsDataAll,
-          hasError1,
-        },
-      };
-    } else if (hasError2) {
-      // Retorna os dados falsos apenas para o segundo fetch
-      return {
-        props: {
-          session,
-          initialFormData,
-          expensesDataAll: [],
-          cardsDataAll,
-          hasError1,
-        },
-      };
-    } else if (hasError3) {
-      // Retorna os dados falsos apenas para o terceiro fetch
-      return {
-        props: {
-          session,
-          initialFormData,
-          expensesDataAll,
-          cardsDataAll: [],
-          hasError1,
-        },
-      };
-    }
-
-    return {
-      props: {
-        session,
-        initialFormData,
-        expensesDataAll,
-        cardsDataAll,
-        hasError1,
-      },
-    };
+    expensesDataAll = expenses;
+    cardsDataAll = cards;
   } catch (error) {
-    console.log("Erro geral:", error);
+    console.log("Erro ao obter dados do users_resume_combined:", error);
     return {
       props: {
         session,
@@ -1106,7 +939,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
         expensesDataAll: [],
         cardsDataAll: [],
-        hasError1,
+        hasError1: true,
       },
     };
   }
