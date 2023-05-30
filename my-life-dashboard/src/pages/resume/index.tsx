@@ -25,6 +25,8 @@ export default function Resume({
   const [isLoadingSave2, setIsLoadingSave2] = useState(false);
   const [isLoadingSave3, setIsLoadingSave3] = useState(false);
 
+  const [hasError, sethasError] = useState(hasError1);
+
   const mappedData = expensesDataAll.map(({ expense_type, value }) => ({
     expense_type,
     value: parseFloat(Number(value).toFixed(2)),
@@ -435,8 +437,9 @@ export default function Resume({
       data_vencimento: parseInt(finalDate.split("-")[2]),
     };
 
-    if (hasError1) {
-      // console.log("ENTROU");
+    if (hasError) {
+      console.log("ENTROU");
+      sethasError(false);
       try {
         const response = await fetch(
           `/api/users_resume?email=${session?.user?.email}`,
@@ -457,7 +460,7 @@ export default function Resume({
         console.error("Erro ao salvar dados:", error);
       }
     } else {
-      // console.log("ATUALIZAR");
+      console.log("ATUALIZAR");
 
       try {
         const response = await fetch(
@@ -929,7 +932,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const responseData = await response.json();
 
     const { resume, expenses, cards } = responseData;
-    // console.log("Cade o negocio", resume);
+    console.log("Cade o negocio", resume);
     // console.log("Cade o negocio", expenses);
     // console.log("Cade o negocio", cards);
 
@@ -953,6 +956,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         stocksInvestimentAvg: 300,
         paycheck: 3500,
       };
+      hasError1 = true;
     }
 
     expensesDataAll = expenses;
@@ -962,7 +966,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     hasError1 = true;
   }
 
-  // console.log(initialFormData);
+  console.log(initialFormData);
   // console.log(expensesDataAll);
   // console.log(cardsDataAll);
 
