@@ -127,8 +127,8 @@ export default function Home() {
             />
             <Image
               className="mx-auto h-10 w-auto cursor-pointer"
-              height={40}
-              width={40}
+              height={45}
+              width={45}
               src="/facebook.svg"
               alt="Workflow"
               onClick={() => signIn("facebook")}
