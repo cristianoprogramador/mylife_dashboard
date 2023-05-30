@@ -19,7 +19,7 @@ export default function Home() {
     signIn("credentials", { email, password });
   };
   return (
-    <div className="flex flex-1 justify-center align-middle">
+    <div className="flex flex-1 justify-center align-middle items-center">
       <Head>
         <title>Home</title>
       </Head>
@@ -124,6 +124,14 @@ export default function Home() {
               src="/google.svg"
               alt="Workflow"
               onClick={() => signIn("google")}
+            />
+            <Image
+              className="mx-auto h-10 w-auto cursor-pointer"
+              height={40}
+              width={40}
+              src="/facebook.svg"
+              alt="Workflow"
+              onClick={() => signIn("facebook")}
             />
           </div>
         </form>

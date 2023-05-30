@@ -68,7 +68,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-1 justify-center align-middle">
+    <div className="flex flex-1 justify-center align-middle  items-center">
       <Head>
         <title>SignUp</title>
       </Head>
